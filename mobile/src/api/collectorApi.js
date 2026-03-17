@@ -25,3 +25,8 @@ export const getHistory = async () => {
     const res = await client.get('/collector/history');
     return res.data;
 };
+
+export const getStats = async () => {
+    const res = await client.get('/collector/stats');
+    return res.data;
+};

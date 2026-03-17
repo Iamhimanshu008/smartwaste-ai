@@ -4,6 +4,7 @@ import HomeScreen from '../screens/collector/HomeScreen';
 import MapScreen from '../screens/collector/MapScreen';
 import BinDetailScreen from '../screens/collector/BinDetailScreen';
 import HistoryScreen from '../screens/collector/HistoryScreen';
+import StatsScreen from '../screens/collector/StatsScreen';
 import { COLORS } from '../config';
 
 // Inline SVG-style icon component using unicode
@@ -66,6 +67,11 @@ export default function CollectorNavigator() {
                 name="History"
                 component={HistoryScreen}
                 options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="🕐" focused={focused} />, tabBarLabel: 'History' }}
+            />
+            <Tab.Screen
+                name="Stats"
+                component={StatsScreen}
+                options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="📊" focused={focused} />, tabBarLabel: 'Stats' }}
             />
         </Tab.Navigator>
     );
