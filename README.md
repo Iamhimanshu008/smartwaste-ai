@@ -85,6 +85,22 @@ cp .env.example .env
 
 See `.env.example` for all required variables including `DATABASE_URL`, `SECRET_KEY`, and `GOOGLE_API_KEY`.
 
+### 📱 Mobile App Setup (WiFi IP)
+
+For the mobile app to connect to your local backend, you need to set your WiFi IP:
+
+1. Copy the mobile example env:
+   ```bash
+   cp mobile/.env.example mobile/.env
+   ```
+2. Find your WiFi IP:
+   - **Windows**: `ipconfig` → Look for "IPv4 Address"
+   - **Mac/Linux**: `ifconfig`
+3. Update `mobile/.env` with your IP:
+   ```
+   EXPO_PUBLIC_API_URL=http://your-ip-address:8000
+   ```
+
 ---
 
 ## 🌟 Key Features
