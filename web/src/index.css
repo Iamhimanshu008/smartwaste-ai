@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --sw-dark: #1B4332;
+  --sw-mid: #2D6A4F;
+  --sw-light: #52B788;
+  --sw-accent: #95D5B2;
+  --sw-gold: #F4A261;
+  --sw-bg: #F0FAF4;
+  --sw-white: #FFFFFF;
+  --sw-text: #1E3A2F;
+  --sw-text-secondary: #6B7C6E;
+  --sw-danger: #E63946;
+  --sw-warning: #F4A261;
+  --sw-success: #2DC653;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, 'Noto Sans Devanagari', sans-serif;
+  background-color: var(--sw-bg);
+  color: var(--sw-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography Utilities ── */
+.font-display {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+}
+
+.font-mono-data {
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--sw-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sw-accent);
+  border-radius: 3px;
+}
+
+/* ── Truck Icon for LiveTracker ── */
+.sw-truck-icon {
+  filter: hue-rotate(150deg) saturate(1.5) brightness(0.6);
+  transition: all 1s ease-out;
+}
+
+/* ── Leaflet Overrides ── */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.leaflet-popup-content {
+  margin: 12px 16px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Heatmap Legend ── */
+.heatmap-legend {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  padding: 14px 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  min-width: 260px;
+}
+.heatmap-legend-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sw-text);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+.heatmap-legend-bar {
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #22C55E, #F4A261, #F97316, #EF4444, #DC2626);
+  margin-bottom: 6px;
+}
+.heatmap-legend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* ── Pulsing ring for critical bins ── */
+.heatmap-pulse-ring {
+  animation: heatmap-pulse 1.8s ease-in-out infinite;
+}
+@keyframes heatmap-pulse {
+  0%, 100% { opacity: 0.3; stroke-width: 2px; }
+  50%      { opacity: 0.8; stroke-width: 4px; }
+}
+
+/* ── Zone Temperature Badge ── */
+.zone-temp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.zone-temp-badge.high {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+.zone-temp-badge.medium {
+  background: #FEF3C7;
+  color: #D97706;
+}
+.zone-temp-badge.low {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+/* ── Loading Skeleton ── */
+.skeleton {
+  background: linear-gradient(90deg, #e8f5e9 25%, #c8e6c9 50%, #e8f5e9 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Card Hover Lift ── */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* ── Eco Green Left Border Accent ── */
+.card-accent-left {
+  border-left: 4px solid var(--sw-light);
+}
+
+/* ── Status Badge Colors ── */
+.status-critical { background: #FEE2E2; color: #DC2626; }
+.status-high { background: #FED7AA; color: #C2410C; }
+.status-medium { background: #FEF3C7; color: #B45309; }
+.status-low { background: #D1FAE5; color: #059669; }
+.status-empty { background: #F3F4F6; color: #6B7280; }
+.status-collected { background: #1B4332; color: white; }
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Mobile Bottom Nav ── */
+@media (max-width: 768px) {
+  .sidebar-desktop {
+    display: none !important;
+  }
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
+  .main-content-mobile {
+    margin-left: 0 !important;
+    padding-bottom: 72px;
+  }
+}
+@media (min-width: 769px) {
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+}

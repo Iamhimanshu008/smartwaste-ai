@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+sqlalchemy>=2.0
+geoalchemy2
+psycopg2-binary
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+google-genai
+ortools
+pydantic-settings
+pydantic[email]
+email-validator
+shapely
+python-dotenv
+aiofiles
+openpyxl

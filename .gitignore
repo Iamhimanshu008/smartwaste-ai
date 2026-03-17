@@ -1,0 +1,25 @@
+# Environment variables - KABHI PUSH MAT KARNA
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+backend/__pycache__/
+
+# Node
+node_modules/
+web/node_modules/
+mobile/node_modules/
+
+# Build files
+web/dist/
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# Docker volumes
+pgdata/
+uploads/
