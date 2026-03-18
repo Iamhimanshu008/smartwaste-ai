@@ -11,7 +11,7 @@
 
 export const API_BASE_URL = 
     process.env.EXPO_PUBLIC_API_URL || 
-    'http://192.168.43.153:8000';
+    'http://172.24.49.198:8000';
 
 export const COLORS = {
     dark: '#1B4332',

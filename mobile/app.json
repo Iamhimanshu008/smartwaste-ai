@@ -29,6 +29,13 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow SmartWaste AI to use your location."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#1B4332"
+        }
       ]
     ]
   }
