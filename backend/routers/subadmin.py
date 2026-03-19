@@ -137,26 +137,6 @@ def verify_report(
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error while verifying report: {exc}") from exc
 
-    # Send push notification if fill level >= 80
-    if fill_level >= 80:
-        from services.push_notifications import send_push_notification
-        import asyncio
-        from models.user import User
-        
-        collectors = db.query(User).filter(
-            User.role == "collector",
-            User.push_token.isnot(None)
-        ).all()
-        
-        tokens = [c.push_token for c in collectors]
-        
-        if tokens:
-            asyncio.create_task(send_push_notification(
-                tokens=tokens,
-                title="🚨 Bin Alert — High Fill Level",
-                body=f"Bin {bin_obj.label} is {fill_level}% full — needs collection soon!",
-                data={"bin_id": bin_obj.id, "fill_level": fill_level}
-            ))
 
     # Always trigger route optimization for demo purposes
     try:

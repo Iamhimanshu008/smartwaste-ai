@@ -5,20 +5,11 @@
     "version": "1.0.0",
     "sdkVersion": "54.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "backgroundColor": "#1B4332"
-    },
     "ios": {
       "supportsTablet": false
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1B4332"
-      },
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",
@@ -43,19 +34,7 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow SmartWaste AI to use your location."
         }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/icon.png",
-          "color": "#1B4332"
-        }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "41ccdf6f-e09b-4cda-8540-a1afb4425748"
-      }
-    }
+    ]
   }
 }

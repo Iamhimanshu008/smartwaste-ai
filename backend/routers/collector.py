@@ -63,16 +63,6 @@ def _latest_urgency_for_bin(db: Session, bin_id: int, fill_level: int | None) ->
     return urgency_from_fill_level(fill_level)
 
 
-@router.post("/push-token")
-def save_push_token(
-    token: str,
-    current_user: User = Depends(require_role("collector")),
-    db: Session = Depends(get_db)
-):
-    current_user.push_token = token
-    db.commit()
-    return {"status": "token saved"}
-
 
 @router.get("/route/today")
 def get_today_route(

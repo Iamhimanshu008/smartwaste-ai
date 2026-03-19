@@ -31,5 +31,3 @@ export const getStats = async () => {
     return res.data;
 };
 
-export const savePushToken = (token) => 
-    client.post(`/collector/push-token?token=${encodeURIComponent(token)}`);
