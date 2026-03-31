@@ -16,3 +16,4 @@ python-dotenv
 aiofiles
 openpyxl
 httpx
+boto3
