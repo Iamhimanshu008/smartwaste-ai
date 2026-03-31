@@ -69,21 +69,17 @@ def _normalize_analysis(payload: dict) -> dict:
     }
 
 
-def analyze_bin_image(image_path: str, mime_type: str | None = None) -> dict:
+def analyze_bin_image(image_bytes: bytes, mime_type: str = "image/jpeg") -> dict:
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise RuntimeError("GOOGLE_API_KEY is not configured")
 
     client = genai.Client(api_key=api_key)
 
-    with open(image_path, "rb") as image_file:
-        image_data = image_file.read()
-
-    resolved_mime_type = mime_type or mimetypes.guess_type(image_path)[0] or "image/jpeg"
     response = client.models.generate_content(
         model="gemini-1.5-flash",
         contents=[
-            types.Part.from_bytes(data=image_data, mime_type=resolved_mime_type),
+            types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
             PROMPT,
         ]
     )
