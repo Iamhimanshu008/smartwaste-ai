@@ -17,8 +17,10 @@ from schemas.bin import PublicBinRead
 from services.image_analyzer import DEFAULT_ANALYSIS, analyze_bin_image
 from services.report_utils import build_report_notes
 from models.collector_location import CollectorLocation
-from models.user import User
+from models.user import User, UserRole
 from models.route import Route, RouteStop
+from services.notification_service import save_and_send_notification
+from services.storage_service import upload_image
 
 router = APIRouter(prefix="/api/public", tags=["Public"])
 
@@ -61,28 +63,24 @@ def submit_public_report(
             detail=f"You must be within 50 meters of the bin to submit a report."
         )
 
-    upload_dir = Path(os.path.abspath(settings.UPLOAD_DIR))
-    upload_dir.mkdir(parents=True, exist_ok=True)
-
     file_ext = Path(upload.filename or "").suffix or ".jpg"
     filename = f"{uuid.uuid4().hex}{file_ext}"
-    file_path = upload_dir / filename
+    file_bytes = upload.file.read()
 
     try:
-        with open(file_path, "wb") as destination:
-            destination.write(upload.file.read())
-    except OSError as exc:
+        minio_url = upload_image(file_bytes, filename, upload.content_type)
+    except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Failed to save uploaded image: {exc}") from exc
 
     analysis = DEFAULT_ANALYSIS.copy()
     try:
-        analysis = analyze_bin_image(str(file_path), upload.content_type)
+        analysis = analyze_bin_image(file_bytes, upload.content_type)
     except Exception:
         analysis = DEFAULT_ANALYSIS.copy()
 
     report = BinReport(
         bin_id=bin_id,
-        image_url=f"/uploads/{filename}",
+        image_url=minio_url,
         fill_level=analysis["fill_level"],
         waste_type=analysis["waste_type"],
         urgency=analysis["urgency"],
@@ -105,6 +103,26 @@ def submit_public_report(
     except SQLAlchemyError as exc:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error while saving report: {exc}") from exc
+
+    # ── EVENT B: Notify sub-admin if bin is critical (>90% fill) ──
+    try:
+        if int(report.fill_level or 0) > 90:
+            sub_admin = (
+                db.query(User)
+                .filter(User.zone_id == bin_obj.zone_id, User.role == UserRole.sub_admin, User.is_active == True)
+                .first()
+            )
+            if sub_admin:
+                save_and_send_notification(
+                    db=db,
+                    user_id=sub_admin.id,
+                    title="Critical Bin Alert! 🚨",
+                    body=f"{bin_obj.label} is {report.fill_level}% full — urgent collection needed",
+                    data={"type": "critical_bin", "bin_id": bin_id},
+                )
+                db.commit()
+    except Exception:
+        pass  # Never block report submission
 
     return {
         "report_id": report.id,

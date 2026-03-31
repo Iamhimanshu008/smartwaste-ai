@@ -20,6 +20,7 @@ from models.report import SHGReport, BinReport
 from models.route import Route
 from services.auth_service import require_role
 from services.report_utils import urgency_from_fill_level
+from services.storage_service import upload_image
 
 router = APIRouter(prefix="/api/shg", tags=["SHG"])
 
@@ -68,14 +69,13 @@ def submit_shg_report(
 
     image_url = None
     if image:
-        upload_dir = Path(os.path.abspath(settings.UPLOAD_DIR))
-        upload_dir.mkdir(parents=True, exist_ok=True)
         file_ext = Path(image.filename or "").suffix or ".jpg"
         filename = f"{uuid.uuid4().hex}{file_ext}"
-        file_path = upload_dir / filename
-        with open(file_path, "wb") as destination:
-            destination.write(image.file.read())
-        image_url = f"/uploads/{filename}"
+        file_bytes = image.file.read()
+        try:
+            image_url = upload_image(file_bytes, filename, image.content_type)
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"Failed to upload image: {exc}") from exc
 
     report = SHGReport(
         shg_user_id=current_user.id,
