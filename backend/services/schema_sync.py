@@ -109,6 +109,10 @@ SCHEMA_STATEMENTS = [
     ALTER TABLE IF EXISTS shg_reports
       ADD COLUMN IF NOT EXISTS bin_id INTEGER REFERENCES bins(id);
     """,
+    """
+    ALTER TABLE IF EXISTS users
+      ADD COLUMN IF NOT EXISTS expo_push_token VARCHAR(255);
+    """,
 ]
 
 

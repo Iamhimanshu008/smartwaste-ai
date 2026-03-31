@@ -23,6 +23,7 @@ from services.report_utils import (
     status_from_fill_level,
 )
 from services.route_optimizer import create_route_for_zone
+from services.notification_service import save_and_send_notification
 
 router = APIRouter(prefix="/api/subadmin", tags=["Sub-Admin"])
 
@@ -148,6 +149,41 @@ def verify_report(
             route_name_prefix="Auto Route",
         )
         db.commit()
+
+        # ── EVENT A: Notify collector when new route is assigned ──
+        try:
+            if route_result and isinstance(route_result, dict):
+                route_id = route_result.get("route_id")
+                if route_id:
+                    from models.route import Route as RouteModel
+                    new_route = db.query(RouteModel).filter(RouteModel.id == route_id).first()
+                    if new_route and new_route.collector_id:
+                        stop_count = len(new_route.stops) if new_route.stops else 0
+                        save_and_send_notification(
+                            db=db,
+                            user_id=new_route.collector_id,
+                            title="New Route Ready! 🚛",
+                            body=f"{stop_count} bins optimized. Start collection.",
+                            data={"type": "route_assigned", "route_id": route_id},
+                        )
+                        db.commit()
+        except Exception:
+            pass  # Never block verify response
+
+        # ── EVENT C: Notify reporter that report was verified ──
+        try:
+            if report.verified_by:
+                save_and_send_notification(
+                    db=db,
+                    user_id=report.verified_by,
+                    title="Report Verified ✓",
+                    body="Your bin report has been verified. Collection scheduled.",
+                    data={"type": "report_verified", "report_id": report.id},
+                )
+                db.commit()
+        except Exception:
+            pass  # Never block verify response
+
         return {
             "success": True,
             "message": "Report verified! Route auto-optimized.",
@@ -156,6 +192,20 @@ def verify_report(
         }
     except Exception:
         db.rollback()
+        # ── EVENT C fallback: Still notify even if route optimization failed ──
+        try:
+            if report.verified_by:
+                save_and_send_notification(
+                    db=db,
+                    user_id=report.verified_by,
+                    title="Report Verified ✓",
+                    body="Your bin report has been verified. Collection scheduled.",
+                    data={"type": "report_verified", "report_id": report.id},
+                )
+                db.commit()
+        except Exception:
+            pass
+
         return {
             "success": True,
             "message": "Report verified, but route optimization failed.",

@@ -12,7 +12,7 @@ from sqlalchemy import text
 
 from config import settings
 from database import engine, Base, SessionLocal
-from models import Zone, User, Bin, BinReport, SHGReport, Route, RouteStop, Collection, Recycler, RecyclerBid
+from models import Zone, User, Bin, BinReport, SHGReport, Route, RouteStop, Collection, Recycler, RecyclerBid, Notification
 from services.schema_sync import sync_database_schema
 
 
@@ -87,6 +87,7 @@ from routers.subadmin import router as subadmin_router
 from routers.shg import router as shg_router
 from routers.collector import router as collector_router
 from routers.recycler import router as recycler_router
+from routers.notifications import router as notifications_router
 
 app.include_router(auth_router)
 app.include_router(public_router)
@@ -95,6 +96,7 @@ app.include_router(subadmin_router)
 app.include_router(shg_router)
 app.include_router(collector_router)
 app.include_router(recycler_router)
+app.include_router(notifications_router)
 
 
 @app.get("/")

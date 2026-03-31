@@ -56,6 +56,12 @@ const useStore = create((set, get) => ({
     // ── Bins ────────────────────────────────────────────────
     publicBins: [],
     setPublicBins: (bins) => set({ publicBins: bins }),
+
+    // ── Notifications ───────────────────────────────────────
+    unreadCount: 0,
+    setUnreadCount: (count) => set({ unreadCount: count }),
+    notifications: [],
+    setNotifications: (list) => set({ notifications: list }),
 }));
 
 export default useStore;

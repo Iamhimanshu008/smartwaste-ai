@@ -1,8 +1,9 @@
 """
-Auth router: login and current user endpoints.
+Auth router: login, current user, and device registration endpoints.
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from database import get_db
@@ -15,6 +16,10 @@ from services.auth_service import (
 )
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+
+
+class RegisterDeviceRequest(BaseModel):
+    expo_push_token: str
 
 
 @router.post("/login", response_model=Token)
@@ -41,3 +46,16 @@ def login(
 def get_me(current_user: User = Depends(get_current_user)):
     """Return the currently authenticated user."""
     return current_user
+
+
+@router.post("/register-device")
+def register_device(
+    payload: RegisterDeviceRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Save or update the Expo push token for the current user."""
+    current_user.expo_push_token = payload.expo_push_token
+    db.commit()
+    return {"success": True, "message": "Device registered for push notifications."}
+

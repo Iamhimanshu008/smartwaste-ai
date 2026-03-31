@@ -4,7 +4,10 @@ import BinsScreen from '../screens/shg/BinsScreen';
 import ReportScreen from '../screens/shg/ReportScreen';
 import HistoryScreen from '../screens/shg/HistoryScreen';
 import ScheduleScreen from '../screens/shg/ScheduleScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
+import NotificationBell from '../components/NotificationBell';
 import { COLORS } from '../config';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const TabIcon = ({ emoji, focused }) => (
     <View style={{ alignItems: 'center' }}>
@@ -13,6 +16,15 @@ const TabIcon = ({ emoji, focused }) => (
 );
 
 const Tab = createBottomTabNavigator();
+const AlertsStack = createNativeStackNavigator();
+
+function AlertsStackNavigator() {
+    return (
+        <AlertsStack.Navigator screenOptions={{ headerShown: false }}>
+            <AlertsStack.Screen name="Notifications" component={NotificationsScreen} />
+        </AlertsStack.Navigator>
+    );
+}
 
 export default function SHGNavigator() {
     return (
@@ -42,6 +54,14 @@ export default function SHGNavigator() {
                 options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="📝" focused={focused} />, tabBarLabel: 'Report' }}
             />
             <Tab.Screen
+                name="Alerts"
+                component={AlertsStackNavigator}
+                options={{
+                    tabBarIcon: () => <NotificationBell />,
+                    tabBarLabel: 'Alerts',
+                }}
+            />
+            <Tab.Screen
                 name="History"
                 component={HistoryScreen}
                 options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="🕐" focused={focused} />, tabBarLabel: 'History' }}
@@ -54,3 +74,4 @@ export default function SHGNavigator() {
         </Tab.Navigator>
     );
 }
+

@@ -22,6 +22,7 @@ class User(Base):
     role = Column(Enum(UserRole), nullable=False, default=UserRole.shg)
     zone_id = Column(Integer, ForeignKey("zones.id"), nullable=True)
     is_active = Column(Boolean, default=True)
+    expo_push_token = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

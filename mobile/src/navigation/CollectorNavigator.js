@@ -5,6 +5,8 @@ import MapScreen from '../screens/collector/MapScreen';
 import BinDetailScreen from '../screens/collector/BinDetailScreen';
 import HistoryScreen from '../screens/collector/HistoryScreen';
 import StatsScreen from '../screens/collector/StatsScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
+import NotificationBell from '../components/NotificationBell';
 import { COLORS } from '../config';
 
 // Inline SVG-style icon component using unicode
@@ -17,6 +19,7 @@ const TabIcon = ({ emoji, focused }) => (
 
 const Tab = createBottomTabNavigator();
 const MapStack = createNativeStackNavigator();
+const AlertsStack = createNativeStackNavigator();
 
 function MapStackNavigator() {
     return (
@@ -32,7 +35,20 @@ function MapStackNavigator() {
                     headerTitleStyle: { fontWeight: '700' },
                 }}
             />
+            <MapStack.Screen
+                name="Notifications"
+                component={NotificationsScreen}
+                options={{ headerShown: false }}
+            />
         </MapStack.Navigator>
+    );
+}
+
+function AlertsStackNavigator() {
+    return (
+        <AlertsStack.Navigator screenOptions={{ headerShown: false }}>
+            <AlertsStack.Screen name="Notifications" component={NotificationsScreen} />
+        </AlertsStack.Navigator>
     );
 }
 
@@ -64,6 +80,14 @@ export default function CollectorNavigator() {
                 options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="🗺️" focused={focused} />, tabBarLabel: 'Map' }}
             />
             <Tab.Screen
+                name="Alerts"
+                component={AlertsStackNavigator}
+                options={{
+                    tabBarIcon: () => <NotificationBell />,
+                    tabBarLabel: 'Alerts',
+                }}
+            />
+            <Tab.Screen
                 name="History"
                 component={HistoryScreen}
                 options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="🕐" focused={focused} />, tabBarLabel: 'History' }}
@@ -76,3 +100,4 @@ export default function CollectorNavigator() {
         </Tab.Navigator>
     );
 }
+

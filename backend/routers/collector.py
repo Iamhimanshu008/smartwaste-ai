@@ -16,11 +16,12 @@ from models.bin import Bin, BinStatus
 from models.collection import Collection
 from models.report import BinReport
 from models.route import Route, RouteStatus, RouteStop
-from models.user import User
+from models.user import User, UserRole
 from models.zone import Zone
 from models.collector_location import CollectorLocation
 from services.auth_service import require_role
 from services.report_utils import urgency_from_fill_level
+from services.notification_service import save_and_send_notification
 
 router = APIRouter(prefix="/api/collector", tags=["Collector"])
 
@@ -220,6 +221,31 @@ def collect_bin(
             if all(all_stop.status == "collected" for all_stop in all_stops):
                 route.status = RouteStatus.completed
                 route.total_waste_kg = sum(all_stop.waste_collected_kg or 0 for all_stop in all_stops)
+
+                # ── EVENT D: Notify sub-admin that route is complete ──
+                try:
+                    zone = db.query(Zone).filter(Zone.id == current_user.zone_id).first()
+                    sub_admin = (
+                        db.query(User)
+                        .filter(
+                            User.zone_id == current_user.zone_id,
+                            User.role == UserRole.sub_admin,
+                            User.is_active == True,
+                        )
+                        .first()
+                    )
+                    if sub_admin:
+                        stop_count = len(all_stops)
+                        zone_name = zone.name if zone else "your zone"
+                        save_and_send_notification(
+                            db=db,
+                            user_id=sub_admin.id,
+                            title="Route Complete ✅",
+                            body=f"All {stop_count} bins collected in {zone_name}",
+                            data={"type": "route_complete", "route_id": route.id},
+                        )
+                except Exception:
+                    pass  # Never block collection response
 
         db.commit()
         db.refresh(collection)

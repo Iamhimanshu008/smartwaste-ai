@@ -7,11 +7,13 @@ import CollectorNavigator from './CollectorNavigator';
 import SHGNavigator from './SHGNavigator';
 import PublicNavigator from './PublicNavigator';
 import { COLORS } from '../config';
+import { registerForPushNotifications, setupNotificationListeners } from '../utils/notifications';
+import { getUnreadCount } from '../api/notificationApi';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
-    const { token, user, loadStoredAuth } = useStore();
+    const { token, user, loadStoredAuth, setUnreadCount } = useStore();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -21,6 +23,36 @@ export default function AppNavigator() {
         };
         init();
     }, []);
+
+    // Register for push notifications after login
+    useEffect(() => {
+        if (!token || !user) return;
+
+        // Register device & setup listeners
+        registerForPushNotifications();
+
+        const cleanup = setupNotificationListeners(
+            // On notification received in foreground
+            async () => {
+                try {
+                    const data = await getUnreadCount();
+                    setUnreadCount(data.count || 0);
+                } catch (e) { }
+            },
+            // On notification tapped — could navigate to specific screen
+            null,
+        );
+
+        // Fetch initial unread count
+        (async () => {
+            try {
+                const data = await getUnreadCount();
+                setUnreadCount(data.count || 0);
+            } catch (e) { }
+        })();
+
+        return cleanup;
+    }, [token, user]);
 
     if (loading) {
         return (
@@ -47,3 +79,4 @@ export default function AppNavigator() {
         </Stack.Navigator>
     );
 }
+
