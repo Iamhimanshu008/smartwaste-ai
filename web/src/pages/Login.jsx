@@ -137,6 +137,13 @@ export default function Login() {
                                 </>
                             )}
                         </button>
+                        <button
+                            type="button"
+                            onClick={() => setCredentials({ username: 'recycler1@smartwaste.com', password: 'Rec@123' })}
+                            className="w-full mt-2 py-3 px-4 border border-sw-mid/30 rounded-2xl text-sm font-semibold text-sw-mid bg-sw-bg hover:bg-sw-light/30 transition-all focus:outline-none"
+                        >
+                            Log in as Demo Recycler
+                        </button>
                     </form>
 
                     {/* Public Map Link */}

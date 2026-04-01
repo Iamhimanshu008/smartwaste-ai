@@ -9,6 +9,7 @@ class BidStatus(enum.Enum):
     pending = "pending"
     accepted = "accepted"
     rejected = "rejected"
+    completed = "completed"
 
 class Recycler(Base):
     __tablename__ = "recyclers"

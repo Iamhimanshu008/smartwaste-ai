@@ -9,6 +9,7 @@ class UserRole(str, enum.Enum):
     sub_admin = "sub_admin"
     shg = "shg"
     collector = "collector"
+    recycler = "recycler"
 
 
 class User(Base):

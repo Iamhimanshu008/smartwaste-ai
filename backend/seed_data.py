@@ -120,6 +120,17 @@ def seed_database():
             users.append(collector)
             collectors.append(collector)
 
+        # 1 Dummy Recycler User
+        recycler_user = User(
+            email="recycler1@smartwaste.com",
+            hashed_password=hash_password("Rec@123"),
+            full_name="GreenCycle Chhattisgarh",
+            role="recycler",
+            zone_id=zones[0].id,
+            is_active=True,
+        )
+        users.append(recycler_user)
+
         db.add_all(users)
         db.commit()
 
@@ -272,15 +283,16 @@ def seed_database():
         # ── Recyclers ──────────────────────────────────────────────
         recyclers = [
             Recycler(
-                name="Siltara Green Plastics",
+                name="GreenCycle Chhattisgarh",
                 contact_person="Ramesh Kumar",
                 phone="9876543210",
-                email="contact@siltaragreen.in",
+                email="recycler1@smartwaste.com",
                 address="Phase 1, Siltara Industrial Area, Raipur",
-                accepted_types="PET, HDPE",
+                accepted_types=["PET", "HDPE"],
                 price_per_kg=12.50,
-                status="approved",
-                rating=4.5
+                min_quantity_kg=50.0,
+                zone_id=zone1.id,
+                is_active=True,
             ),
             Recycler(
                 name="Bhanpuri Metal & Scraps",
@@ -288,10 +300,11 @@ def seed_database():
                 phone="9876543211",
                 email="sales@bhanpuriscraps.com",
                 address="Near Transport Nagar, Bhanpuri",
-                accepted_types="Metal, Glass, PVC",
+                accepted_types=["Metal", "Glass", "PVC"],
                 price_per_kg=22.00,
-                status="approved",
-                rating=4.2
+                min_quantity_kg=20.0,
+                zone_id=zone2.id,
+                is_active=True,
             ),
             Recycler(
                 name="Urla Eco Recyclers",
@@ -299,10 +312,11 @@ def seed_database():
                 phone="9876543212",
                 email="info@urlaeco.com",
                 address="Urla Industrial Estate, Raipur",
-                accepted_types="Mixed Plastic, e-Waste",
+                accepted_types=["Mixed Plastic", "e-Waste"],
                 price_per_kg=9.75,
-                status="approved",
-                rating=4.8
+                min_quantity_kg=100.0,
+                zone_id=zone3.id,
+                is_active=True,
             ),
             Recycler(
                 name="Nava Raipur Paper Mills",
@@ -310,10 +324,11 @@ def seed_database():
                 phone="9876543213",
                 email="purchasing@navapaper.in",
                 address="Sector 30 Industrial Zone, Nava Raipur",
-                accepted_types="Cardboard, Paper, Organic",
+                accepted_types=["Cardboard", "Paper", "Organic"],
                 price_per_kg=6.00,
-                status="approved",
-                rating=3.9
+                min_quantity_kg=50.0,
+                zone_id=zone4.id,
+                is_active=True,
             )
         ]
         

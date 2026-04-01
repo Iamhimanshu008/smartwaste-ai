@@ -6,14 +6,13 @@ import AdminDashboard from './pages/AdminDashboard';
 import SubAdminDashboard from './pages/SubAdminDashboard';
 import SHGDashboard from './pages/SHGDashboard';
 import CollectorDashboard from './pages/CollectorDashboard';
-import RecyclerPortal from './pages/RecyclerPortal';
+import RecyclerDashboard from './pages/RecyclerDashboard';
 
 export default function App() {
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/public" replace />} />
             <Route path="/public" element={<PublicView />} />
-            <Route path="/recycler" element={<RecyclerPortal />} />
             <Route path="/login" element={<Login />} />
 
             <Route
@@ -48,6 +47,15 @@ export default function App() {
                 element={
                     <ProtectedRoute allowedRoles={['collector']}>
                         <CollectorDashboard />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/recycler/*"
+                element={
+                    <ProtectedRoute allowedRoles={['recycler']}>
+                        <RecyclerDashboard />
                     </ProtectedRoute>
                 }
             />

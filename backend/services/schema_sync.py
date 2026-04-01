@@ -2,6 +2,8 @@ from sqlalchemy import text
 
 
 SCHEMA_STATEMENTS = [
+    "DO $$ BEGIN IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'userrole') THEN ALTER TYPE userrole ADD VALUE IF NOT EXISTS 'recycler'; END IF; END $$;",
+    "DO $$ BEGIN IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'bidstatus') THEN ALTER TYPE bidstatus ADD VALUE IF NOT EXISTS 'completed'; END IF; END $$;",
     """
     DO $$
     BEGIN
