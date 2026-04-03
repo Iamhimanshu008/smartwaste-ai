@@ -1,6 +1,7 @@
 """
 Collector router: assigned route execution, collection logging, and history.
 """
+import logging
 from collections import OrderedDict
 from datetime import date, datetime, timezone
 from typing import Optional
@@ -137,8 +138,6 @@ def collect_bin(
     waste_collected_kg: Optional[float] = Query(None),
     notes: Optional[str] = Query(None),
     route_id: Optional[int] = Query(None),
-    collector_lat: Optional[float] = None,
-    collector_lng: Optional[float] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("collector")),
 ):
@@ -153,19 +152,37 @@ def collect_bin(
     if not bin_obj:
         raise HTTPException(status_code=404, detail="Bin not found")
 
-    from utils.geofence import is_within_radius
-    
-    if collector_lat is None or collector_lng is None:
-        raise HTTPException(
-            status_code=400,
-            detail="Your current location is required to mark a bin as collected."
-        )
+    # ── Server-side geofence: use the collector's last known GPS from CollectorLocation ──
+    from utils.geofence import haversine_distance
 
-    if not is_within_radius(collector_lat, collector_lng, bin_obj.latitude, bin_obj.longitude):
-        raise HTTPException(
-            status_code=403,
-            detail="You must be within 50 meters of the bin to mark it as collected."
+    collector_location = (
+        db.query(CollectorLocation)
+        .filter(CollectorLocation.collector_id == current_user.id)
+        .first()
+    )
+
+    if collector_location is None:
+        # No location on record yet — allow collection but warn so ops can investigate
+        logging.getLogger(__name__).warning(
+            "Collector %d collected bin %d with no CollectorLocation record on file.",
+            current_user.id,
+            bin_id,
         )
+    else:
+        distance_m = haversine_distance(
+            collector_location.latitude,
+            collector_location.longitude,
+            bin_obj.latitude,
+            bin_obj.longitude,
+        )
+        if distance_m > 100:
+            raise HTTPException(
+                status_code=403,
+                detail=(
+                    f"You must be within 100m of the bin to collect it. "
+                    f"Current distance: {round(distance_m)}m."
+                ),
+            )
 
     route = None
     if target_route_id is not None:
