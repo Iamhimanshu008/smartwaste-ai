@@ -297,7 +297,7 @@ def create_route_for_zone(
         route.status = RouteStatus.planned
         route.total_distance_km = result["total_distance_km"]
         route.estimated_duration_min = result["estimated_duration_min"]
-        route.optimized = 1
+        route.optimized = True
     else:
         route = Route(
             name=f"{route_name_prefix} - {zone.name} - {today.isoformat()}",
@@ -307,7 +307,7 @@ def create_route_for_zone(
             status=RouteStatus.planned,
             total_distance_km=result["total_distance_km"],
             estimated_duration_min=result["estimated_duration_min"],
-            optimized=1,
+            optimized=True,
         )
         db.add(route)
         db.flush()
