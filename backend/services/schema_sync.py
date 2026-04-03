@@ -121,6 +121,21 @@ SCHEMA_STATEMENTS = [
     """
     UPDATE bins SET status = 'full' WHERE status = 'critical';
     """,
+    """
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'routes'
+          AND column_name = 'optimized'
+          AND data_type = 'integer'
+      ) THEN
+        ALTER TABLE routes
+          ALTER COLUMN optimized TYPE BOOLEAN
+          USING optimized::boolean;
+      END IF;
+    END $$;
+    """,
 ]
 
 
