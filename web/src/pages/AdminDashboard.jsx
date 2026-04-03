@@ -27,6 +27,13 @@ export default function AdminDashboard() {
     const { sidebarOpen } = useStore();
     const [tab, setTab] = useState('overview');
     const [showAI, setShowAI] = useState(false);
+    const [zones, setZones] = useState([]);
+
+    useEffect(() => {
+        adminApi.getZones()
+            .then(setZones)
+            .catch((e) => console.error('Failed to load zones', e));
+    }, []);
 
     // ── Overview Tab ─────────────────────────────────────────────
     function Overview() {
@@ -147,7 +154,7 @@ export default function AdminDashboard() {
                     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 card-hover">
                         <h3 className="font-semibold text-gray-900 mb-4 font-display">Zone Comparison</h3>
                         <ResponsiveContainer width="100%" height={280}>
-                            <BarChart data={analytics?.zone_wise || []}>
+                            <BarChart data={analytics?.zone_performance || []}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                                 <XAxis dataKey="zone_name" tick={{ fontSize: 11, fill: '#6B7C6E' }} />
                                 <YAxis tick={{ fontSize: 11, fill: '#6B7C6E' }} />
@@ -180,7 +187,7 @@ export default function AdminDashboard() {
                     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 card-hover">
                         <h3 className="font-semibold text-gray-900 mb-4 font-display">Zone Collection Rate</h3>
                         <div className="space-y-4">
-                            {(analytics?.zone_wise || []).map((zone, i) => {
+                            {(analytics?.zone_performance || []).map((zone, i) => {
                                 const rate = zone.total_bins > 0 ? Math.round((zone.collections_this_month / zone.total_bins) * 100) : 0;
                                 return (
                                     <div key={i}>
@@ -200,7 +207,7 @@ export default function AdminDashboard() {
                                     </div>
                                 );
                             })}
-                            {(!analytics?.zone_wise || analytics.zone_wise.length === 0) && (
+                            {(!analytics?.zone_performance || analytics.zone_performance.length === 0) && (
                                 <div className="text-center py-8 text-gray-400">
                                     <Leaf className="w-10 h-10 mx-auto mb-2 opacity-40" />
                                     <p className="text-sm">No zone data available</p>
@@ -341,10 +348,9 @@ export default function AdminDashboard() {
                                 <input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Address" className="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
                                 <div className="grid grid-cols-2 gap-3">
                                     <select value={form.zone_id} onChange={(e) => setForm({ ...form, zone_id: parseInt(e.target.value) })} className="px-3 py-2 border rounded-xl text-sm">
-                                        <option value={1}>Zone 1 - North</option>
-                                        <option value={2}>Zone 2 - South</option>
-                                        <option value={3}>Zone 3 - East</option>
-                                        <option value={4}>Zone 4 - West</option>
+                                        {zones.map((z) => (
+                                            <option key={z.id} value={z.id}>{z.name}</option>
+                                        ))}
                                     </select>
                                     <input value={form.capacity_kg} onChange={(e) => setForm({ ...form, capacity_kg: e.target.value })} placeholder="Capacity (kg)" className="px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
                                 </div>
@@ -469,10 +475,9 @@ export default function AdminDashboard() {
                                         <option value="collector">Collector</option>
                                     </select>
                                     <select value={form.zone_id} onChange={(e) => setForm({ ...form, zone_id: parseInt(e.target.value) })} className="px-3 py-2 border rounded-xl text-sm">
-                                        <option value={1}>Zone 1 - North</option>
-                                        <option value={2}>Zone 2 - South</option>
-                                        <option value={3}>Zone 3 - East</option>
-                                        <option value={4}>Zone 4 - West</option>
+                                        {zones.map((z) => (
+                                            <option key={z.id} value={z.id}>{z.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <button onClick={handleAdd} className="w-full py-2.5 bg-sw-mid text-white font-medium rounded-xl hover:bg-sw-dark transition-colors">Create User</button>
@@ -517,7 +522,7 @@ export default function AdminDashboard() {
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 card-hover">
                     <h3 className="font-semibold text-gray-900 mb-4 font-display">Zone Comparison</h3>
                     <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={data?.zone_wise || []}>
+                        <BarChart data={data?.zone_performance || []}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                             <XAxis dataKey="zone_name" tick={{ fontSize: 12, fill: '#6B7C6E' }} />
                             <YAxis tick={{ fontSize: 12, fill: '#6B7C6E' }} />
