@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime, func
+from sqlalchemy.orm import relationship
 from database import Base
 
 
@@ -28,6 +29,7 @@ class SHGReport(Base):
     id = Column(Integer, primary_key=True, index=True)
     shg_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     bin_id = Column(Integer, ForeignKey("bins.id"), nullable=True)
+    bin = relationship("Bin", foreign_keys=[bin_id])
     zone_id = Column(Integer, ForeignKey("zones.id"), nullable=False)
     plastic_collected_kg = Column(Float, nullable=False, default=0.0)
     plastic_type = Column(String(100), nullable=True)

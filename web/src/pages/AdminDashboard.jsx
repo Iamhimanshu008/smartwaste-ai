@@ -96,12 +96,7 @@ export default function AdminDashboard() {
         const co2Saved = ((stats?.total_plastic_kg || 0) * 1.5).toFixed(1);
         const dailyData = [...(analytics?.daily_collections || [])].reverse();
 
-        // Mock waste type distribution for chart
-        const wasteTypes = analytics?.waste_type_distribution || [
-            { name: 'Plastic', value: 65 },
-            { name: 'Mixed', value: 25 },
-            { name: 'Organic', value: 10 },
-        ];
+        const wasteTypes = analytics?.waste_type_distribution || [];
 
         return (
             <div className="space-y-6 animate-fade-in">

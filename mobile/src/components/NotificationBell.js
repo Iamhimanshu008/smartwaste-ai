@@ -54,7 +54,13 @@ export default function NotificationBell() {
     return (
         <TouchableOpacity
             id="notification-bell"
-            onPress={() => navigation.navigate('Notifications')}
+            onPress={() => {
+                try {
+                    navigation?.navigate('Notifications');
+                } catch (e) {
+                    // Navigation unavailable outside NavigationContainer — silent fail
+                }
+            }}
             style={styles.container}
             activeOpacity={0.7}
         >
