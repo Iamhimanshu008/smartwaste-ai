@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Column, Integer, String, Float, Enum, ForeignKey, DateTime, Date, func
+from sqlalchemy import Column, Integer, String, Float, Enum, ForeignKey, DateTime, Date, Boolean, func
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -23,7 +23,7 @@ class Route(Base):
     total_distance_km = Column(Float, nullable=True)
     estimated_duration_min = Column(Float, nullable=True)
     total_waste_kg = Column(Float, nullable=True)
-    optimized = Column(Integer, default=0)  # 0=manual, 1=AI optimized
+    optimized = Column(Boolean, default=False)  # False=manual, True=AI optimized
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
@@ -41,7 +41,7 @@ class RouteStop(Base):
     estimated_arrival = Column(DateTime(timezone=True), nullable=True)
     actual_arrival = Column(DateTime(timezone=True), nullable=True)
     waste_collected_kg = Column(Float, nullable=True)
-    status = Column(String(20), default="pending")  # pending, visited, skipped
+    status = Column(String(20), default="pending")  # pending, visited, skipped, collected
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     route = relationship("Route", back_populates="stops")
