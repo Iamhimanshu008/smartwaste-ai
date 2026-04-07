@@ -1,9 +1,9 @@
 """
 Auth router: login, current user, and device registration endpoints.
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from sqlalchemy.orm import Session
 
@@ -73,10 +73,26 @@ def register_device(
     db.commit()
     return {"success": True, "message": "Device registered for push notifications."}
 
-@router.post("/forgot-password")
-async def forgot_password(data: dict, db: Session = Depends(get_db)):
-    email = data.get("email")
-    user = db.query(User).filter(User.email == email).first()
-    # Don't reveal if email exists or not (security)
-    return {"message": "If this email exists, a reset link has been sent."}
+class ForgotPasswordRequest(BaseModel):
+    email: str
 
+
+@router.post("/forgot-password")
+async def forgot_password(
+    payload: ForgotPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    """Request a password reset. Always returns success for security."""
+    email = payload.email.strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+
+    # Check if user exists (server-side only — never reveal to client)
+    user = db.query(User).filter(User.email == email).first()
+
+    # TODO: When email service is configured, send a real reset link here.
+    # if user:
+    #     send_reset_email(user)
+
+    # Always return success — prevents email enumeration attacks
+    return {"message": "If this email is registered, a reset link has been sent."}

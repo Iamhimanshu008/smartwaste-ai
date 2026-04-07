@@ -3,6 +3,7 @@ import {
     View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator,
 } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
+import * as Location from 'expo-location';
 import { getBins, getLiveStatus } from '../../api/publicApi';
 import BinPin from '../../components/BinPin';
 import { COLORS, RAIPUR_COORDS } from '../../config';
@@ -11,27 +12,112 @@ export default function PublicMapScreen({ navigation }) {
     const [bins, setBins] = useState([]);
     const [collectors, setCollectors] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [mapReady, setMapReady] = useState(false);
+    const [mapError, setMapError] = useState(false);
+    const [locationGranted, setLocationGranted] = useState(false);
 
+    // Request location permissions on mount
+    useEffect(() => {
+        (async () => {
+            try {
+                const { status } = await Location.requestForegroundPermissionsAsync();
+                if (status === 'granted') {
+                    setLocationGranted(true);
+                } else {
+                    // Non-blocking: map still works without user location
+                    console.log('Location permission not granted — map will show default region');
+                }
+            } catch (e) {
+                console.log('Location permission error:', e);
+            }
+        })();
+    }, []);
+
+    // Fetch bins and live collector status
     useEffect(() => {
         getBins()
             .then(data => setBins(Array.isArray(data) ? data : []))
-            .catch(() => {})
+            .catch((err) => { console.log('Failed to fetch bins:', err); })
             .finally(() => setLoading(false));
-            
+
         const fetchStatus = () => {
             getLiveStatus().then(data => {
                 setCollectors(Array.isArray(data) ? data : []);
             }).catch(() => {});
         };
-        
+
         fetchStatus();
         const interval = setInterval(fetchStatus, 15000);
         return () => clearInterval(interval);
     }, []);
 
+    // Fallback UI if MapView fails to render (e.g. missing API key)
+    if (mapError) {
+        return (
+            <View style={styles.container}>
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorEmoji}>🗺️</Text>
+                    <Text style={styles.errorTitle}>Map Unavailable</Text>
+                    <Text style={styles.errorSub}>
+                        Google Maps could not load. Please check your internet connection and try again.
+                    </Text>
+                    <TouchableOpacity
+                        style={styles.retryBtn}
+                        onPress={() => setMapError(false)}
+                    >
+                        <Text style={styles.retryBtnText}>🔄  Retry</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Still allow navigation to report & recyclers */}
+                <View style={styles.fabContainer}>
+                    <TouchableOpacity
+                        style={[styles.loginLink, { backgroundColor: '#F3E8FF', marginBottom: 8, width: '100%', alignItems: 'center' }]}
+                        onPress={() => navigation.navigate('Recyclers')}
+                    >
+                        <Text style={[styles.loginLinkText, { color: '#7E22CE' }]}>🏭 Sell Waste to Recyclers</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.fab}
+                        onPress={() => navigation.navigate('Report', {})}
+                        activeOpacity={0.85}
+                    >
+                        <Text style={styles.fabText}>📸  Report Full Bin</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.loginLink}
+                        onPress={() => navigation.navigate('Login')}
+                    >
+                        <Text style={styles.loginLinkText}>Collector? Sign In →</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
-            <MapView style={styles.map} initialRegion={RAIPUR_COORDS}>
+            {/* Map loading placeholder */}
+            {!mapReady && (
+                <View style={styles.mapPlaceholder}>
+                    <ActivityIndicator size="large" color={COLORS.light} />
+                    <Text style={styles.mapPlaceholderText}>Loading map…</Text>
+                </View>
+            )}
+
+            <MapView
+                style={[styles.map, !mapReady && { opacity: 0 }]}
+                initialRegion={RAIPUR_COORDS}
+                showsUserLocation={locationGranted}
+                showsMyLocationButton={locationGranted}
+                onMapReady={() => setMapReady(true)}
+                onError={(e) => {
+                    console.log('MapView error:', e.nativeEvent);
+                    setMapError(true);
+                }}
+            >
                 {(bins || []).map((bin) => (
                     <Marker
                         key={bin.id}
@@ -124,6 +210,8 @@ export default function PublicMapScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     map: { flex: 1 },
+    mapPlaceholder: { ...StyleSheet.absoluteFillObject, backgroundColor: COLORS.dark, justifyContent: 'center', alignItems: 'center', zIndex: 1 },
+    mapPlaceholderText: { color: COLORS.accent, fontSize: 14, marginTop: 12, fontWeight: '600' },
     header: { position: 'absolute', top: 52, left: 16, right: 16 },
     headerCard: { backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', gap: 10, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 12, elevation: 5 },
     headerEmoji: { fontSize: 26 },
@@ -141,4 +229,11 @@ const styles = StyleSheet.create({
     calloutAddress: { fontSize: 11, color: '#888', marginTop: 4 },
     reportBtn: { marginTop: 8, backgroundColor: COLORS.gold, borderRadius: 8, paddingVertical: 8, paddingHorizontal: 12, alignSelf: 'flex-start' },
     reportBtnText: { fontSize: 12, fontWeight: '700', color: COLORS.white },
+    // Error fallback styles
+    errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.dark, paddingHorizontal: 40 },
+    errorEmoji: { fontSize: 64, marginBottom: 16 },
+    errorTitle: { fontSize: 22, fontWeight: '800', color: COLORS.white, marginBottom: 8 },
+    errorSub: { fontSize: 14, color: COLORS.accent, textAlign: 'center', lineHeight: 20 },
+    retryBtn: { marginTop: 20, backgroundColor: COLORS.gold, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 28 },
+    retryBtnText: { color: COLORS.white, fontSize: 15, fontWeight: '700' },
 });

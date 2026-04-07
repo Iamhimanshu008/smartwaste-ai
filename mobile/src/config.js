@@ -11,7 +11,7 @@
 
 export const API_BASE_URL = 
     process.env.EXPO_PUBLIC_API_URL || 
-    'https://c040-106-77-177-42.ngrok-free.app';
+    'http://192.168.43.195:8000';
 
 export const COLORS = {
     dark: '#1B4332',
