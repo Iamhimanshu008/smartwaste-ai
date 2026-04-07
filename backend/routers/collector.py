@@ -153,7 +153,9 @@ def collect_bin(
         raise HTTPException(status_code=404, detail="Bin not found")
 
     # ── Server-side geofence: use the collector's last known GPS from CollectorLocation ──
-    from utils.geofence import haversine_distance
+    from utils.geofence import haversine_distance, get_geofence_radius
+
+    geofence_radius = get_geofence_radius(db)
 
     collector_location = (
         db.query(CollectorLocation)
@@ -175,11 +177,11 @@ def collect_bin(
             bin_obj.latitude,
             bin_obj.longitude,
         )
-        if distance_m > 100:
+        if distance_m > geofence_radius:
             raise HTTPException(
                 status_code=403,
                 detail=(
-                    f"You must be within 100m of the bin to collect it. "
+                    f"You must be within {int(geofence_radius)}m of the bin to collect it. "
                     f"Current distance: {round(distance_m)}m."
                 ),
             )

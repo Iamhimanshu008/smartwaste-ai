@@ -20,7 +20,14 @@ import {
 } from 'recharts';
 import * as XLSX from 'xlsx';
 
-const CHART_COLORS = ['#1B4332', '#2D6A4F', '#52B788', '#95D5B2', '#F4A261', '#E63946'];
+const STATUS_COLORS = {
+    empty: '#9CA3AF',
+    low: '#22C55E',
+    medium: '#EAB308',
+    high: '#F97316',
+    full: '#EF4444',
+    default: '#9CA3AF'
+};
 const PIE_COLORS = ['#2D6A4F', '#52B788', '#F4A261'];
 
 export default function AdminDashboard() {
@@ -506,8 +513,8 @@ export default function AdminDashboard() {
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
                             <Pie data={data?.bin_status_distribution || []} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={100} innerRadius={50} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                                {(data?.bin_status_distribution || []).map((_, i) => (
-                                    <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                                {(data?.bin_status_distribution || []).map((entry, i) => (
+                                    <Cell key={i} fill={STATUS_COLORS[entry.status?.toLowerCase()] || STATUS_COLORS.default} />
                                 ))}
                             </Pie>
                             <Tooltip contentStyle={{ borderRadius: 12, border: 'none' }} />

@@ -1,9 +1,13 @@
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+# Ensure environment variables from .env are loaded into os.environ
+load_dotenv("../.env")
 
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://postgres:postgres@db:5432/smartwaste"
-    SECRET_KEY: str = "your-super-secret-key-change-in-production"
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
     GOOGLE_API_KEY: str = ""

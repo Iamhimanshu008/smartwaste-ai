@@ -31,6 +31,7 @@ from services.auth_service import hash_password, require_role
 from services.report_utils import normalize_bin_status
 from services.route_optimizer import create_route_for_zone
 from models.settings import SystemSettings
+from models.recycler import Recycler, RecyclerBid, BidStatus
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
@@ -776,6 +777,130 @@ def update_settings(
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to save settings: {exc}") from exc
     return _get_settings(db)
+
+
+# Recycler Management
+@router.get("/recyclers")
+def list_recyclers(
+    zone_id: Optional[int] = Query(None),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    """List all recyclers, optionally filtered by zone."""
+    query = db.query(Recycler)
+    if zone_id is not None:
+        query = query.filter(Recycler.zone_id == zone_id)
+    recyclers = query.order_by(Recycler.name.asc()).all()
+    return [
+        {
+            "id": r.id,
+            "name": r.name,
+            "contact_person": r.contact_person,
+            "phone": r.phone,
+            "email": r.email,
+            "address": r.address,
+            "latitude": r.latitude,
+            "longitude": r.longitude,
+            "accepted_types": r.accepted_types,
+            "price_per_kg": r.price_per_kg,
+            "min_quantity_kg": r.min_quantity_kg,
+            "zone_id": r.zone_id,
+            "is_active": r.is_active,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in recyclers
+    ]
+
+
+@router.get("/recyclers/stats")
+def get_recycler_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    """Return platform-wide recycler statistics."""
+    total_recyclers = db.query(func.count(Recycler.id)).filter(Recycler.is_active.is_(True)).scalar() or 0
+    total_bids = db.query(func.count(RecyclerBid.id)).scalar() or 0
+    pending_bids = db.query(func.count(RecyclerBid.id)).filter(RecyclerBid.status == BidStatus.pending).scalar() or 0
+    completed_bids = db.query(func.count(RecyclerBid.id)).filter(RecyclerBid.status == BidStatus.completed).scalar() or 0
+    completed_rows = db.query(RecyclerBid).filter(RecyclerBid.status == BidStatus.completed).all()
+    total_kg = round(sum(b.quantity_kg for b in completed_rows), 2)
+    total_value = round(sum(b.quantity_kg * b.offered_price_per_kg for b in completed_rows), 2)
+    return {
+        "total_recyclers": int(total_recyclers),
+        "total_bids": int(total_bids),
+        "pending_bids": int(pending_bids),
+        "completed_bids": int(completed_bids),
+        "total_kg_processed": total_kg,
+        "total_value": total_value,
+    }
+
+
+@router.post("/recyclers")
+def create_recycler(
+    data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    """Create a new recycler."""
+    recycler = Recycler(
+        name=data["name"],
+        contact_person=data["contact_person"],
+        phone=data["phone"],
+        email=data.get("email"),
+        address=data["address"],
+        latitude=float(data["latitude"]),
+        longitude=float(data["longitude"]),
+        accepted_types=data.get("accepted_types", []),
+        price_per_kg=float(data.get("price_per_kg", 0.0)),
+        min_quantity_kg=float(data.get("min_quantity_kg", 0.0)),
+        zone_id=int(data["zone_id"]),
+        is_active=data.get("is_active", True),
+    )
+    db.add(recycler)
+    db.commit()
+    db.refresh(recycler)
+    return {"id": recycler.id, "name": recycler.name, "message": "Recycler created successfully"}
+
+
+@router.put("/recyclers/{recycler_id}")
+def update_recycler(
+    recycler_id: int,
+    data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    """Update an existing recycler."""
+    recycler = db.query(Recycler).filter(Recycler.id == recycler_id).first()
+    if not recycler:
+        raise HTTPException(status_code=404, detail="Recycler not found")
+    updatable = ["name", "contact_person", "phone", "email", "address",
+                 "accepted_types", "price_per_kg", "min_quantity_kg", "zone_id", "is_active"]
+    for field in updatable:
+        if field in data:
+            setattr(recycler, field, data[field])
+    if "latitude" in data:
+        recycler.latitude = float(data["latitude"])
+    if "longitude" in data:
+        recycler.longitude = float(data["longitude"])
+    db.commit()
+    db.refresh(recycler)
+    return {"id": recycler.id, "name": recycler.name, "message": "Recycler updated successfully"}
+
+
+@router.delete("/recyclers/{recycler_id}")
+def delete_recycler(
+    recycler_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    """Delete a recycler and all associated bids."""
+    recycler = db.query(Recycler).filter(Recycler.id == recycler_id).first()
+    if not recycler:
+        raise HTTPException(status_code=404, detail="Recycler not found")
+    db.query(RecyclerBid).filter(RecyclerBid.recycler_id == recycler_id).delete(synchronize_session=False)
+    db.delete(recycler)
+    db.commit()
+    return {"message": "Recycler deleted successfully"}
 
 @router.get('/routes')
 def get_admin_routes(db: Session = Depends(get_db), current_user: User = Depends(require_role('admin'))):

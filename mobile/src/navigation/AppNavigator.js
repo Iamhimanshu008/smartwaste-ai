@@ -13,15 +13,19 @@ import { getUnreadCount } from '../api/notificationApi';
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
-    const { token, user, loadStoredAuth, setUnreadCount } = useStore();
+    const { token, user, setUnreadCount } = useStore();
     const [loading, setLoading] = useState(true);
 
+    // Wait for Zustand persist to rehydrate auth from AsyncStorage
     useEffect(() => {
-        const init = async () => {
-            await loadStoredAuth();
+        const unsub = useStore.persist.onFinishHydration(() => {
             setLoading(false);
-        };
-        init();
+        });
+        // If already hydrated (e.g. fast device), unblock immediately
+        if (useStore.persist.hasHydrated()) {
+            setLoading(false);
+        }
+        return unsub;
     }, []);
 
     // Register for push notifications after login

@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 # MinIO Configuration
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://minio:9000")
-MINIO_ROOT_USER = os.getenv("MINIO_ROOT_USER", "minioadmin")
-MINIO_ROOT_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD", "minioadminpassword")
+MINIO_ACCESS_KEY = os.environ["MINIO_ACCESS_KEY"]
+MINIO_SECRET_KEY = os.environ["MINIO_SECRET_KEY"]
 BUCKET_NAME = "smartwaste-photos"
 PUBLIC_URL_PREFIX = os.getenv("MINIO_PUBLIC_URL", "http://localhost:9000")
 
@@ -25,8 +25,8 @@ PUBLIC_URL_PREFIX = os.getenv("MINIO_PUBLIC_URL", "http://localhost:9000")
 s3_client = boto3.client(
     "s3",
     endpoint_url=MINIO_ENDPOINT,
-    aws_access_key_id=MINIO_ROOT_USER,
-    aws_secret_access_key=MINIO_ROOT_PASSWORD,
+    aws_access_key_id=MINIO_ACCESS_KEY,
+    aws_secret_access_key=MINIO_SECRET_KEY,
     config=Config(signature_version="s3v4"),
 )
 

@@ -256,9 +256,14 @@ export default function PublicView() {
                             <span className="text-xs ml-1 px-2 py-0.5 bg-sw-mid/10 rounded text-sw-mid font-bold uppercase">Public</span>
                         </div>
                     </div>
-                    <a href="/login" className="px-5 py-2 text-sm font-semibold text-sw-dark hover:bg-sw-bg rounded-xl transition-colors">
-                        Staff Login
-                    </a>
+                    <div className="flex items-center gap-2">
+                        <a href="/recyclers" className="px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 rounded-xl transition-colors hidden sm:block">
+                            Recycler Marketplace
+                        </a>
+                        <a href="/login" className="px-5 py-2 text-sm font-semibold text-sw-dark hover:bg-sw-bg rounded-xl transition-colors">
+                            Staff Login
+                        </a>
+                    </div>
                 </div>
             </header>
 

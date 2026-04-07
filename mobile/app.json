@@ -42,6 +42,12 @@
           "color": "#2D6A4F"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "41ccdf6f-e09b-4cda-8540-a1afb4425748"
+      }
+    },
+    "owner": "himanshu2992004"
   }
 }

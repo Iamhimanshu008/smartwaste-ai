@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from database import get_db
 from config import settings
 from models.user import User
-from models.bin import Bin
+from models.bin import Bin, BinStatus
 from models.report import SHGReport, BinReport
 from models.route import Route
 from services.auth_service import require_role
@@ -93,13 +93,13 @@ def submit_shg_report(
     # Update the bin
     bin_obj.fill_level = fill_level
     if fill_level >= 80:
-        bin_obj.status = "full"
+        bin_obj.status = BinStatus.full
     elif fill_level >= 50:
-        bin_obj.status = "medium"
+        bin_obj.status = BinStatus.medium
     elif fill_level >= 20:
-        bin_obj.status = "low"
+        bin_obj.status = BinStatus.low
     else:
-        bin_obj.status = "empty"
+        bin_obj.status = BinStatus.empty
 
     db.commit()
     db.refresh(report)

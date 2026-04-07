@@ -7,12 +7,14 @@ import SubAdminDashboard from './pages/SubAdminDashboard';
 import SHGDashboard from './pages/SHGDashboard';
 import CollectorDashboard from './pages/CollectorDashboard';
 import RecyclerDashboard from './pages/RecyclerDashboard';
+import RecyclerPortal from './pages/RecyclerPortal';
 
 export default function App() {
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/public" replace />} />
             <Route path="/public" element={<PublicView />} />
+            <Route path="/recyclers" element={<RecyclerPortal />} />
             <Route path="/login" element={<Login />} />
 
             <Route

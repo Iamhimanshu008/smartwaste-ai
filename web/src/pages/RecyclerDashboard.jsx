@@ -6,8 +6,8 @@ import axios from 'axios';
 
 // Assuming base URL is configured in axios or you can use relative path via vite proxy
 const api = axios.create({
-    baseURL: import.meta.env.VITE_BACKEND_HOST 
-        ? `http://${import.meta.env.VITE_BACKEND_HOST}:8000/api` 
+    baseURL: import.meta.env.VITE_API_URL 
+        ? `${import.meta.env.VITE_API_URL}/api` 
         : '/api'
 });
 

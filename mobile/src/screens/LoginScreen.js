@@ -138,7 +138,7 @@ export default function LoginScreen({ navigation }) {
                     {/* Guest access */}
                     <TouchableOpacity
                         style={styles.guestBtn}
-                        onPress={() => navigation.navigate('PublicStack')}
+                        onPress={() => navigation.navigate('PublicStack', { screen: 'PublicMap' })}
                     >
                         <Text style={styles.guestBtnText}>
                             📸  Report as Guest (No Login)

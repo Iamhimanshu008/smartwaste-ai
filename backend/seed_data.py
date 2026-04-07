@@ -293,6 +293,8 @@ def seed_database():
                 min_quantity_kg=50.0,
                 zone_id=zone1.id,
                 is_active=True,
+                latitude=21.3200,
+                longitude=81.6800,
             ),
             Recycler(
                 name="Bhanpuri Metal & Scraps",
@@ -305,6 +307,8 @@ def seed_database():
                 min_quantity_kg=20.0,
                 zone_id=zone2.id,
                 is_active=True,
+                latitude=21.2100,
+                longitude=81.3900,
             ),
             Recycler(
                 name="Urla Eco Recyclers",
@@ -317,6 +321,8 @@ def seed_database():
                 min_quantity_kg=100.0,
                 zone_id=zone3.id,
                 is_active=True,
+                latitude=21.2700,
+                longitude=81.5500,
             ),
             Recycler(
                 name="Nava Raipur Paper Mills",
@@ -329,6 +335,8 @@ def seed_database():
                 min_quantity_kg=50.0,
                 zone_id=zone4.id,
                 is_active=True,
+                latitude=21.1300,
+                longitude=81.7200,
             )
         ]
         

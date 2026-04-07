@@ -56,11 +56,12 @@ def submit_public_report(
     if not bin_obj:
         raise HTTPException(status_code=404, detail="Bin not found")
 
-    from utils.geofence import is_within_radius
-    if not is_within_radius(lat, lng, bin_obj.latitude, bin_obj.longitude):
+    from utils.geofence import is_within_radius, get_geofence_radius
+    geofence_radius = get_geofence_radius(db)
+    if not is_within_radius(lat, lng, bin_obj.latitude, bin_obj.longitude, geofence_radius):
         raise HTTPException(
             status_code=403,
-            detail=f"You must be within 50 meters of the bin to submit a report."
+            detail=f"You must be within {int(geofence_radius)} meters of the bin to submit a report."
         )
 
     file_ext = Path(upload.filename or "").suffix or ".jpg"
@@ -187,7 +188,7 @@ def get_live_collection_status(db: Session = Depends(get_db)):
                 current_bin_name = bin_obj.label
                 
                 # Simple logic: assume 20km/h speed. 
-                from services.route_optimizer import haversine_distance
+                from utils.geofence import haversine_distance
                 dist_m = haversine_distance(loc.latitude, loc.longitude, bin_obj.latitude, bin_obj.longitude)
                 distance_meters = int(dist_m)
                 dist_km = dist_m / 1000.0

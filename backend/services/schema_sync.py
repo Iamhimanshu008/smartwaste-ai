@@ -140,6 +140,7 @@ SCHEMA_STATEMENTS = [
 
 
 def sync_database_schema(engine) -> None:
-    with engine.begin() as connection:
-        for statement in SCHEMA_STATEMENTS:
+    for statement in SCHEMA_STATEMENTS:
+        with engine.connect() as connection:
             connection.execute(text(statement))
+            connection.commit()

@@ -170,20 +170,6 @@ def verify_report(
         except Exception:
             pass  # Never block verify response
 
-        # ── EVENT C: Notify the original reporter that their report was verified ──
-        try:
-            if report.reporter_id:  # Skip if null — guest/anonymous report
-                save_and_send_notification(
-                    db=db,
-                    user_id=report.reporter_id,
-                    title="Report Verified ✓",
-                    body="Your bin report has been verified. Collection scheduled.",
-                    data={"type": "report_verified", "report_id": report.id},
-                )
-                db.commit()
-        except Exception:
-            pass  # Never block verify response
-
         return {
             "success": True,
             "message": "Report verified! Route auto-optimized.",
@@ -192,20 +178,6 @@ def verify_report(
         }
     except Exception:
         db.rollback()
-        # ── EVENT C fallback: Still notify original reporter even if route optimization failed ──
-        try:
-            if report.reporter_id:  # Skip if null — guest/anonymous report
-                save_and_send_notification(
-                    db=db,
-                    user_id=report.reporter_id,
-                    title="Report Verified ✓",
-                    body="Your bin report has been verified. Collection scheduled.",
-                    data={"type": "report_verified", "report_id": report.id},
-                )
-                db.commit()
-        except Exception:
-            pass
-
         return {
             "success": True,
             "message": "Report verified, but route optimization failed.",

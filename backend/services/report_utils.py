@@ -16,7 +16,9 @@ def status_from_fill_level(fill_level: int | None) -> str:
     if level >= 60:
         return "high"
     if level >= 30:
-        return "high"
+        return "medium"
+    if level > 0:
+        return "low"
     return "empty"
 
 
@@ -36,10 +38,10 @@ def normalize_bin_status(status: Any, fill_level: int | None = None) -> str:
     mapping = {
         "inactive": "inactive",
         "empty": "empty",
-        "low": "high",
-        "medium": "high",
-        "partial": "high",
-        "high": "full",
+        "low": "low",
+        "medium": "medium",
+        "partial": "medium",
+        "high": "high",
         "full": "full",
         "overflow": "full",
         "critical": "full",

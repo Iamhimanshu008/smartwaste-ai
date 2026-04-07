@@ -11,6 +11,11 @@ import * as Location from 'expo-location';
 import { haversineDistance, isWithinRadius } from '../../utils/geofence';
 import { COLORS } from '../../config';
 
+// Client-side geofence radius for immediate UI feedback only.
+// The authoritative geofence check happens server-side using the admin-configured
+// GEOFENCE_RADIUS_METERS value (stored in the SystemSettings DB table).
+const CLIENT_GEOFENCE_RADIUS_M = 50;
+
 export default function BinDetailScreen({ route, navigation }) {
     const { stop } = route.params || {};
     const { markStopCollected } = useStore();
@@ -34,12 +39,12 @@ export default function BinDetailScreen({ route, navigation }) {
             });
             const { latitude, longitude } = loc.coords;
 
-            // Check distance
+            // Client-side proximity check (UI feedback only — server enforces the real limit)
             const distance = haversineDistance(latitude, longitude, stop.latitude, stop.longitude);
-            if (distance > 50) {
+            if (distance > CLIENT_GEOFENCE_RADIUS_M) {
                 Alert.alert(
                     "Too Far Away",
-                    `You are ${Math.round(distance)}m away. You must be within 50 meters of this bin to mark it collected.`
+                    `You are ${Math.round(distance)}m away. You must be within ${CLIENT_GEOFENCE_RADIUS_M} meters of this bin to mark it collected.`
                 );
                 setCollecting(false);
                 return;
