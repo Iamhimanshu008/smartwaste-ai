@@ -78,7 +78,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount uploads directory for serving photos
+# Ensure upload directory exists before mounting (StaticFiles validates at mount time)
+os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 # Include all routers

@@ -1,8 +1,10 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
+import os
 
-# Ensure environment variables from .env are loaded into os.environ
-load_dotenv("../.env")
+# Load .env for local dev — silently skip if not found (e.g. on Render/Railway)
+env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
+load_dotenv(env_path, override=False)
 
 
 class Settings(BaseSettings):
@@ -19,7 +21,8 @@ class Settings(BaseSettings):
     DEFAULT_TRUCK_CAPACITY_KG: float = 500.0
 
     class Config:
-        env_file = "../.env"
+        env_file = ".env", "../.env"  # Try both locations; skip if missing
+        env_file_encoding = "utf-8"
         extra = "ignore"
 
 
