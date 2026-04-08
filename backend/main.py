@@ -90,12 +90,21 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "")
 ALLOWED_ORIGINS = [origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()]
+
+# Always include these origins (local dev + deployed frontends)
+ALLOWED_ORIGINS += [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://smartwaste-ai-omega.vercel.app",
+]
+# Deduplicate
+ALLOWED_ORIGINS = list(set(ALLOWED_ORIGINS))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],  # Allow all origins (mobile app + web + Vercel)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
