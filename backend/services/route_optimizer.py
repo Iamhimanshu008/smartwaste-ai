@@ -70,7 +70,7 @@ def optimize_routes(
     eligible_bins = [
         b for b in bins_data
         if b.get("fill_level", 0) >= threshold
-        or b.get("status") in ("full", "overflow", "critical")
+        or b.get("status") in ("full", "high", "overflow", "critical")
         or b.get("urgency") in ("high", "critical")
         or b.get("id") in force_include_ids
     ]
@@ -101,11 +101,11 @@ def optimize_routes(
         weight = b.get("capacity_kg", 50.0) * b.get("fill_level", 50) / 100.0
         demands.append(int(weight))
 
-    # Identify urgent bins (full/overflow) — high penalty for dropping
+    # Identify urgent bins (full/overflow/high) — high penalty for dropping
     urgent_indices = set()
     for i, b in enumerate(eligible_bins):
         if (
-            b.get("status") in ("full", "overflow", "critical")
+            b.get("status") in ("full", "high", "overflow", "critical")
             or b.get("urgency") in ("high", "critical")
             or b.get("id") in force_include_ids
         ):

@@ -90,16 +90,39 @@ def submit_shg_report(
     )
     db.add(report)
 
-    # Update the bin
+    # Update the bin — align thresholds with route optimizer expectations
     bin_obj.fill_level = fill_level
-    if fill_level >= 80:
+    if fill_level >= 90:
+        bin_obj.status = BinStatus.overflow
+    elif fill_level >= 70:
         bin_obj.status = BinStatus.full
     elif fill_level >= 50:
+        bin_obj.status = BinStatus.high
+    elif fill_level >= 30:
         bin_obj.status = BinStatus.medium
-    elif fill_level >= 20:
+    elif fill_level >= 10:
         bin_obj.status = BinStatus.low
     else:
         bin_obj.status = BinStatus.empty
+
+    # Explicitly update timestamp so downstream queries see fresh data
+    bin_obj.updated_at = datetime.now(timezone.utc)
+
+    # Also create a BinReport so the sub-admin verification pipeline picks it up
+    urgency = urgency_from_fill_level(fill_level)
+    bin_report = BinReport(
+        bin_id=bin_id,
+        image_url=image_url,
+        fill_level=fill_level,
+        waste_type="mixed",
+        urgency=urgency,
+        ai_confidence=0.0,
+        ai_observations=f"SHG field report by {current_user.full_name}: {notes or 'No notes'}",
+        reporter_lat=bin_obj.latitude,
+        reporter_lng=bin_obj.longitude,
+        status="pending",
+    )
+    db.add(bin_report)
 
     db.commit()
     db.refresh(report)

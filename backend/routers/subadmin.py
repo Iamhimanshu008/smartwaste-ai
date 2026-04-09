@@ -131,6 +131,7 @@ def verify_report(
     fill_level = int(report.fill_level or 0)
     bin_obj.fill_level = fill_level
     bin_obj.status = BinStatus(status_from_fill_level(fill_level))
+    bin_obj.updated_at = datetime.now(timezone.utc)
 
     try:
         db.commit()

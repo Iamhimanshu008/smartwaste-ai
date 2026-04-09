@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from config import settings
 from database import get_db
-from models.bin import Bin
+from models.bin import Bin, BinStatus
 from models.report import BinReport
 from schemas.bin import PublicBinRead
 from services.image_analyzer import DEFAULT_ANALYSIS, analyze_bin_image
@@ -99,6 +99,12 @@ def submit_public_report(
     try:
         db.add(report)
         bin_obj.fill_level = analysis["fill_level"]
+
+        # CRITICAL FIX: Also update bin status so route optimizer picks it up
+        from services.report_utils import status_from_fill_level
+        bin_obj.status = BinStatus(status_from_fill_level(analysis["fill_level"]))
+        bin_obj.updated_at = datetime.now(timezone.utc)
+
         db.commit()
         db.refresh(report)
     except SQLAlchemyError as exc:
@@ -153,7 +159,7 @@ def get_report_status(report_id: int, db: Session = Depends(get_db)):
         "created_at": report.created_at,
     }
 
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 
 @router.get("/live-status")
 def get_live_collection_status(db: Session = Depends(get_db)):
