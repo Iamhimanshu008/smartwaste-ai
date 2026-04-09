@@ -5,13 +5,15 @@ import {
     Trash2, Users, BarChart3, Settings as SettingsIcon,
     Plus, Search, X, Loader2, Save, Zap, Wind, Package, CheckCircle2,
     Building, DollarSign, TrendingUp, Phone, MapPin, Sparkles,
-    ClipboardCheck, UserCheck, Download, FileSpreadsheet, Leaf
+    ClipboardCheck, UserCheck, Download, FileSpreadsheet, Leaf, Pencil
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import EcoQuote from '../components/EcoQuote';
 import KPICard from '../components/cards/KPICard';
 import StatusBadge from '../components/StatusBadge';
 import AIAnalysisModal from '../components/AIAnalysisModal';
+import OptimizedRouteMap from '../components/Map/OptimizedRouteMap';
+import AddZoneFeature from '../components/Map/AddZoneFeature';
 import * as adminApi from '../api/adminApi';
 import * as recyclerApi from '../api/recyclerApi';
 import {
@@ -249,6 +251,7 @@ export default function AdminDashboard() {
         const [bins, setBins] = useState([]);
         const [search, setSearch] = useState('');
         const [showAdd, setShowAdd] = useState(false);
+        const [editBin, setEditBin] = useState(null);
         const [loading, setLoading] = useState(true);
         const [form, setForm] = useState({ label: '', latitude: '', longitude: '', address: '', zone_id: 1, capacity_kg: 50 });
 
@@ -318,8 +321,13 @@ export default function AdminDashboard() {
                                             <span className="text-xs font-bold font-mono-data">{bin.fill_level}%</span>
                                         </div>
                                     </td>
-                                    <td className="px-4 py-3">
-                                        <button onClick={() => handleDelete(bin.id)} className="text-red-500 hover:text-red-700 text-xs font-medium px-2 py-1 hover:bg-red-50 rounded-lg transition-colors">Delete</button>
+                                    <td className="px-4 py-3 flex gap-2">
+                                        <button onClick={() => setEditBin(bin)} className="text-green-600 hover:text-green-700 hover:bg-green-100 p-1.5 rounded-md transition-colors" title="Edit Bin">
+                                            <Pencil className="w-4 h-4" />
+                                        </button>
+                                        <button onClick={() => handleDelete(bin.id)} className="text-red-500 hover:text-red-700 hover:bg-red-100 p-1.5 rounded-md transition-colors" title="Delete Bin">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -361,6 +369,57 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                 )}
+
+                {/* Edit Bin Modal */}
+                {editBin && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-2xl animate-slide-up">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="font-bold text-xl text-sw-dark">Edit Bin Details: #{editBin.id}</h3>
+                                <button onClick={() => setEditBin(null)} className="p-1 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Column 1 */}
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Bin Location Name</label>
+                                        <input defaultValue={editBin.label} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Zone</label>
+                                        <select defaultValue={editBin.zone_id} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none">
+                                            {zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Sensor Serial Number</label>
+                                        <input defaultValue={`SN-${editBin.id * 1024}`} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
+                                    </div>
+                                </div>
+                                {/* Column 2 */}
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Fill % Alert Threshold</label>
+                                        <input type="range" min="0" max="100" defaultValue="80" className="w-full accent-sw-mid" />
+                                        <div className="text-right text-xs text-gray-500 mt-1">Currently 80%</div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Collection Date</label>
+                                        <input type="date" defaultValue={new Date().toISOString().split('T')[0]} readOnly className="w-full px-3 py-2 border border-gray-200 bg-gray-50 text-gray-500 rounded-xl text-sm outline-none" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Maintenance Notes</label>
+                                        <textarea rows={2} placeholder="Any repairs needed?" className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none resize-none"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-3 mt-8">
+                                <button onClick={() => setEditBin(null)} className="px-5 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
+                                <button onClick={() => { toast.success('Bin updated successfully!'); setEditBin(null); loadBins(); }} className="px-6 py-2 bg-sw-mid text-white text-sm font-bold rounded-xl hover:bg-sw-dark transition-colors">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }
@@ -370,6 +429,7 @@ export default function AdminDashboard() {
         const [users, setUsers] = useState([]);
         const [roleFilter, setRoleFilter] = useState('all');
         const [showAdd, setShowAdd] = useState(false);
+        const [editUser, setEditUser] = useState(null);
         const [loading, setLoading] = useState(true);
         const [form, setForm] = useState({ name: '', email: '', password: '', role: 'shg', zone_id: 1 });
 
@@ -449,8 +509,13 @@ export default function AdminDashboard() {
                                     <td className="px-4 py-3">
                                         <span className={`text-xs font-medium ${u.is_active ? 'text-green-600' : 'text-red-500'}`}>{u.is_active ? 'Active' : 'Inactive'}</span>
                                     </td>
-                                    <td className="px-4 py-3">
-                                        <button onClick={() => handleDelete(u.id)} className="text-red-500 hover:text-red-700 text-xs font-medium px-2 py-1 hover:bg-red-50 rounded-lg transition-colors">Delete</button>
+                                    <td className="px-4 py-3 flex gap-2">
+                                        <button onClick={() => setEditUser(u)} className="text-green-600 hover:text-green-700 hover:bg-green-100 p-1.5 rounded-md transition-colors" title="Edit User">
+                                            <Pencil className="w-4 h-4" />
+                                        </button>
+                                        <button onClick={() => handleDelete(u.id)} className="text-red-500 hover:text-red-700 hover:bg-red-100 p-1.5 rounded-md transition-colors" title="Delete User">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -483,6 +548,52 @@ export default function AdminDashboard() {
                                     </select>
                                 </div>
                                 <button onClick={handleAdd} className="w-full py-2.5 bg-sw-mid text-white font-medium rounded-xl hover:bg-sw-dark transition-colors">Create User</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Edit User Modal */}
+                {editUser && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-slide-up">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="font-bold text-xl text-sw-dark">Edit User: {editUser.full_name}</h3>
+                                <button onClick={() => setEditUser(null)} className="p-1 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
+                            </div>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Username / Full Name</label>
+                                    <input defaultValue={editUser.full_name} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input defaultValue={editUser.email} type="email" className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                    <select defaultValue={editUser.role} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none">
+                                        <option value="admin">Admin</option>
+                                        <option value="sub_admin">Sub-Admin</option>
+                                        <option value="shg">SHG</option>
+                                        <option value="collector">Collector</option>
+                                        <option value="recycler">Recycler</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Zone</label>
+                                    <select defaultValue={editUser.zone_id} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none">
+                                        {zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
+                                    </select>
+                                </div>
+                                <div className="pt-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Reset Password</label>
+                                    <input placeholder="Enter new password to reset" type="password" className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-3 mt-8">
+                                <button onClick={() => setEditUser(null)} className="px-5 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
+                                <button onClick={() => { toast.success('User updated successfully!'); setEditUser(null); loadUsers(); }} className="px-6 py-2 bg-sw-mid text-white text-sm font-bold rounded-xl hover:bg-sw-dark transition-colors">Save Changes</button>
                             </div>
                         </div>
                     </div>
@@ -609,32 +720,49 @@ export default function AdminDashboard() {
         };
 
         return (
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 max-w-lg animate-fade-in">
-                <h3 className="font-semibold text-gray-900 mb-4 font-display">Generate Optimized Routes</h3>
-                <div className="space-y-3">
-                    <button onClick={() => handleGenerate(null)} disabled={generating}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-sw-mid text-white font-medium rounded-xl hover:bg-sw-dark disabled:opacity-50 transition-colors">
-                        {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-                        Generate for All Zones
-                    </button>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                        <button onClick={() => handleGenerate(1)} disabled={generating} className="px-4 py-2.5 border border-sw-mid text-sw-mid font-medium rounded-xl hover:bg-sw-bg transition-colors">Zone 1 (North)</button>
-                        <button onClick={() => handleGenerate(2)} disabled={generating} className="px-4 py-2.5 border border-sw-mid text-sw-mid font-medium rounded-xl hover:bg-sw-bg transition-colors">Zone 2 (South)</button>
-                        <button onClick={() => handleGenerate(3)} disabled={generating} className="px-4 py-2.5 border border-sw-mid text-sw-mid font-medium rounded-xl hover:bg-sw-bg transition-colors">Zone 3 (East)</button>
-                        <button onClick={() => handleGenerate(4)} disabled={generating} className="px-4 py-2.5 border border-sw-mid text-sw-mid font-medium rounded-xl hover:bg-sw-bg transition-colors">Zone 4 (West)</button>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in">
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-fit">
+                    <h3 className="font-semibold text-gray-900 mb-4 font-display">Generate Optimized Routes</h3>
+                    <div className="space-y-3">
+                        <button onClick={() => handleGenerate(null)} disabled={generating}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-sw-mid text-white font-medium rounded-xl hover:bg-sw-dark disabled:opacity-50 transition-colors">
+                            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                            Generate for All Zones
+                        </button>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            <button onClick={() => handleGenerate(1)} disabled={generating} className="px-4 py-2.5 border border-sw-mid text-sw-mid font-medium rounded-xl hover:bg-sw-bg transition-colors">Zone 1 (North)</button>
+                            <button onClick={() => handleGenerate(2)} disabled={generating} className="px-4 py-2.5 border border-sw-mid text-sw-mid font-medium rounded-xl hover:bg-sw-bg transition-colors">Zone 2 (South)</button>
+                            <button onClick={() => handleGenerate(3)} disabled={generating} className="px-4 py-2.5 border border-sw-mid text-sw-mid font-medium rounded-xl hover:bg-sw-bg transition-colors">Zone 3 (East)</button>
+                            <button onClick={() => handleGenerate(4)} disabled={generating} className="px-4 py-2.5 border border-sw-mid text-sw-mid font-medium rounded-xl hover:bg-sw-bg transition-colors">Zone 4 (West)</button>
+                        </div>
+                    </div>
+                    {result && (
+                        <div className={`mt-4 p-4 rounded-xl text-sm ${result.error ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                            {result.error ? result.error : (
+                                <div>
+                                    <p className="font-semibold mb-1">✓ Route Generated!</p>
+                                    <p>Collector: {result.collector || 'N/A'}</p>
+                                    <p className="font-mono-data">Bins: {result.bins_count || 0} | Distance: {result.total_distance_km || 0} km | Time: {result.estimated_duration_min || 0} min</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Add New Zone Feature */}
+                    <div className="mt-8 border-t border-gray-100 pt-6">
+                        <h4 className="font-semibold text-gray-800 text-sm mb-2">Zone Management</h4>
+                        <p className="text-xs text-gray-500 mb-2">Configure new geographical collection boundaries.</p>
+                        <AddZoneFeature />
                     </div>
                 </div>
-                {result && (
-                    <div className={`mt-4 p-4 rounded-xl text-sm ${result.error ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
-                        {result.error ? result.error : (
-                            <div>
-                                <p className="font-semibold mb-1">✓ Route Generated!</p>
-                                <p>Collector: {result.collector || 'N/A'}</p>
-                                <p className="font-mono-data">Bins: {result.bins_count || 0} | Distance: {result.total_distance_km || 0} km | Time: {result.estimated_duration_min || 0} min</p>
-                            </div>
-                        )}
-                    </div>
-                )}
+
+                {/* Optimized Route Map Component */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col h-fit">
+                    <h3 className="font-semibold text-gray-900 mb-4 font-display flex items-center gap-2">
+                        <MapPin className="text-sw-mid" size={18} /> Optimized Route Visualizer
+                    </h3>
+                    <OptimizedRouteMap />
+                </div>
             </div>
         );
     }
