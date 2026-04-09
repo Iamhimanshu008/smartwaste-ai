@@ -3,7 +3,7 @@ import {
     View, Text, StyleSheet, TouchableOpacity,
     Linking, ActivityIndicator, Alert, Modal, TextInput, Platform,
 } from 'react-native';
-import MapView, { Marker, Polyline, Circle } from 'react-native-maps';
+import MapView, { Marker, Polyline, Circle, UrlTile } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
 import useStore from '../../store';
@@ -149,7 +149,15 @@ export default function MapScreen({ navigation }) {
                 initialRegion={RAIPUR_COORDS}
                 showsUserLocation={false}
                 showsMyLocationButton={false}
+                mapType={Platform.OS === 'android' ? 'none' : 'standard'}
             >
+                {/* OpenStreetMap Tiles (free, no API key) */}
+                <UrlTile
+                    urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    maximumZ={19}
+                    flipY={false}
+                />
+
                 {/* Route Polyline */}
                 <Polyline coordinates={polylineCoords} strokeColor={COLORS.mid} strokeWidth={3} lineDashPattern={[10, 5]} />
 

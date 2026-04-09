@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import {
-    View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator,
+    View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Platform,
 } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import MapView, { Marker, Callout, UrlTile } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getBins, getLiveStatus } from '../../api/publicApi';
 import BinPin from '../../components/BinPin';
@@ -59,7 +59,7 @@ export default function PublicMapScreen({ navigation }) {
                     <Text style={styles.errorEmoji}>🗺️</Text>
                     <Text style={styles.errorTitle}>Map Unavailable</Text>
                     <Text style={styles.errorSub}>
-                        Google Maps could not load. Please check your internet connection and try again.
+                        Map could not load. Please check your internet connection and try again.
                     </Text>
                     <TouchableOpacity
                         style={styles.retryBtn}
@@ -112,12 +112,19 @@ export default function PublicMapScreen({ navigation }) {
                 initialRegion={RAIPUR_COORDS}
                 showsUserLocation={locationGranted}
                 showsMyLocationButton={locationGranted}
+                mapType={Platform.OS === 'android' ? 'none' : 'standard'}
                 onMapReady={() => setMapReady(true)}
                 onError={(e) => {
                     console.log('MapView error:', e.nativeEvent);
                     setMapError(true);
                 }}
             >
+                {/* OpenStreetMap Tiles (free, no API key) */}
+                <UrlTile
+                    urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    maximumZ={19}
+                    flipY={false}
+                />
                 {(bins || []).map((bin) => (
                     <Marker
                         key={bin.id}
