@@ -1,16 +1,45 @@
 import { CheckCircle, XCircle, Clock, MapPin } from 'lucide-react';
 
+/**
+ * Resolve image URLs that may be internal Docker/MinIO paths or relative paths.
+ * Production on Render uses local /uploads/ fallback (no MinIO), so the URL is
+ * a relative path like "/uploads/abc.jpg" that needs the backend origin prepended.
+ */
+function getValidImageUrl(url) {
+    if (!url) return null;
+
+    // Derive the backend origin from VITE_API_URL (e.g. "https://smartwaste-ai-xxx.onrender.com/api" → "https://smartwaste-ai-xxx.onrender.com")
+    const apiBase = import.meta.env.VITE_API_URL || '';
+    const backendOrigin = apiBase.replace(/\/api\/?$/, '');
+
+    // Case 1: Relative path (e.g. "/uploads/photo.jpg") — prepend backend origin
+    if (url.startsWith('/uploads') || url.startsWith('/static')) {
+        return backendOrigin ? `${backendOrigin}${url}` : url;
+    }
+
+    // Case 2: Internal MinIO/Docker URLs — replace with backend origin
+    if (url.includes('localhost:9000') || url.includes('minio:9000') || url.includes('172.') || url.includes('192.168.')) {
+        return url.replace(/https?:\/\/[^/]+/, backendOrigin || '');
+    }
+
+    // Case 3: Already a valid full URL
+    return url;
+}
+
 export default function ReportCard({ report, onVerify, onReject }) {
+    const imgSrc = getValidImageUrl(report.image_url);
+
     return (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
             <div className="flex">
                 {/* Photo Thumbnail */}
-                {report.image_url && (
+                {imgSrc && (
                     <div className="w-32 h-32 flex-shrink-0">
                         <img
-                            src={report.image_url}
+                            src={imgSrc}
                             alt="Bin report"
                             className="w-full h-full object-cover"
+                            onError={(e) => { e.target.style.display = 'none'; }}
                         />
                     </div>
                 )}
