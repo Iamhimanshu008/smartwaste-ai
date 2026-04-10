@@ -27,22 +27,21 @@ function getValidImageUrl(url) {
 }
 
 export default function ReportCard({ report, onVerify, onReject }) {
-    const imgSrc = getValidImageUrl(report.image_url);
+    const FALLBACK_BIN_IMG = 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?q=80&w=400&auto=format&fit=crop';
+    const imgSrc = getValidImageUrl(report.image_url) || FALLBACK_BIN_IMG;
 
     return (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
             <div className="flex">
                 {/* Photo Thumbnail */}
-                {imgSrc && (
-                    <div className="w-32 h-32 flex-shrink-0">
-                        <img
-                            src={imgSrc}
-                            alt="Bin report"
-                            className="w-full h-full object-cover"
-                            onError={(e) => { e.target.style.display = 'none'; }}
-                        />
-                    </div>
-                )}
+                <div className="w-32 h-32 flex-shrink-0 bg-gray-100">
+                    <img
+                        src={imgSrc}
+                        alt="Reported bin"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_BIN_IMG; }}
+                    />
+                </div>
 
                 {/* Details */}
                 <div className="flex-1 p-4">
