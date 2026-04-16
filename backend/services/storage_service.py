@@ -1,129 +1,70 @@
-"""
-Storage service: Handle image uploads to MinIO (S3 compatible) storage.
-Falls back to local file storage when MinIO is not configured (e.g. Render).
-"""
-import json
-import logging
+import cloudinary
+import cloudinary.uploader
 import os
-import uuid
-from fastapi import HTTPException
+import logging
+from config import settings
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# MinIO Configuration — use .get() so missing keys don't crash the app
-MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT", "")
-MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY", "")
-MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY", "")
-BUCKET_NAME = "smartwaste-photos"
-PUBLIC_URL_PREFIX = os.environ.get("MINIO_PUBLIC_URL", "http://localhost:9000")
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+    api_key=settings.CLOUDINARY_API_KEY,
+    api_secret=settings.CLOUDINARY_API_SECRET,
+    secure=True
+)
 
-# Upload directory for local fallback
-UPLOAD_DIR = os.environ.get("UPLOAD_DIR", "uploads")
+CLOUDINARY_FOLDER = "smartwaste"
 
-# Initialize boto3 client only if MinIO credentials are provided
-s3_client = None
+def is_cloudinary_configured() -> bool:
+    return all([
+        settings.CLOUDINARY_CLOUD_NAME,
+        settings.CLOUDINARY_API_KEY,
+        settings.CLOUDINARY_API_SECRET
+    ])
 
-if MINIO_ACCESS_KEY and MINIO_SECRET_KEY and MINIO_ENDPOINT:
-    try:
-        import boto3
-        from botocore.client import Config
-        from botocore.exceptions import ClientError
-
-        s3_client = boto3.client(
-            "s3",
-            endpoint_url=MINIO_ENDPOINT,
-            aws_access_key_id=MINIO_ACCESS_KEY,
-            aws_secret_access_key=MINIO_SECRET_KEY,
-            config=Config(signature_version="s3v4"),
-        )
-        logger.info("✅ MinIO client initialized successfully")
-    except Exception as e:
-        s3_client = None
-        logger.warning(f"⚠️ MinIO client init failed: {e}")
-else:
-    logger.info("⚠️ MinIO not configured — using local file storage fallback")
-
-
-def _init_bucket():
-    """Ensure the bucket exists and has a public read policy."""
-    if s3_client is None:
-        return
-
-    from botocore.exceptions import ClientError
-
-    try:
-        s3_client.head_bucket(Bucket=BUCKET_NAME)
-        logger.info(f"Bucket '{BUCKET_NAME}' already exists.")
-    except ClientError as e:
-        error_code = e.response["Error"]["Code"]
-        if error_code == "404":
-            logger.info(f"Bucket '{BUCKET_NAME}' not found. Creating...")
-            s3_client.create_bucket(Bucket=BUCKET_NAME)
-            
-            # Set public read policy so images can be accessed directly via URL
-            policy = {
-                "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Sid": "PublicReadGetObject",
-                        "Effect": "Allow",
-                        "Principal": "*",
-                        "Action": "s3:GetObject",
-                        "Resource": f"arn:aws:s3:::{BUCKET_NAME}/*"
-                    }
-                ]
-            }
-            s3_client.put_bucket_policy(Bucket=BUCKET_NAME, Policy=json.dumps(policy))
-            logger.info(f"Public read policy applied to '{BUCKET_NAME}'.")
-        else:
-            logger.error(f"Error checking bucket: {e}")
-            raise
-
-
-# Run bucket initialization synchronously on module load
-try:
-    _init_bucket()
-except Exception as e:
-    logger.warning(f"Could not initialize MinIO bucket on startup: {e}")
-
-
-def upload_image(file_bytes: bytes, filename: str, content_type: str = "image/jpeg") -> str:
+async def upload_image(file_bytes: bytes, filename: str, content_type: str = "image/jpeg") -> str:
     """
-    Upload an image to MinIO and return its public URL.
-    Falls back to local file storage when MinIO is not available.
+    Upload image to Cloudinary (production) or local /uploads (fallback).
+    Returns the public URL of the uploaded image.
     """
-    if not filename:
-        ext = ".jpg" if "jpeg" in content_type else ".png"
-        filename = f"{uuid.uuid4().hex}{ext}"
-
-    # ── Fallback: save to local uploads/ directory ──
-    if s3_client is None:
-        os.makedirs(UPLOAD_DIR, exist_ok=True)
-        local_path = os.path.join(UPLOAD_DIR, filename)
+    if is_cloudinary_configured():
         try:
-            with open(local_path, "wb") as f:
-                f.write(file_bytes)
-            logger.info(f"Saved locally: {local_path}")
-            return f"/uploads/{filename}"
+            result = cloudinary.uploader.upload(
+                file_bytes,
+                folder=CLOUDINARY_FOLDER,
+                public_id=filename.rsplit(".", 1)[0],
+                resource_type="image",
+                overwrite=True,
+                format=filename.rsplit(".", 1)[-1] if "." in filename else "jpg"
+            )
+            url = result.get("secure_url", "")
+            logger.info(f"✅ Cloudinary upload success: {url}")
+            return url
         except Exception as e:
-            logger.error(f"Local file save failed: {e}")
-            raise HTTPException(status_code=500, detail="File storage error.")
+            logger.error(f"❌ Cloudinary upload failed: {e}")
+            raise RuntimeError(f"Image upload failed: {str(e)}")
+    else:
+        # Local fallback
+        logger.warning("⚠️ Cloudinary not configured — using local file storage fallback")
+        upload_dir = settings.UPLOAD_DIR
+        os.makedirs(upload_dir, exist_ok=True)
+        file_path = os.path.join(upload_dir, filename)
+        with open(file_path, "wb") as f:
+            f.write(file_bytes)
+        return f"/uploads/{filename}"
 
-    # ── Primary: upload to MinIO ──
-    from botocore.exceptions import ClientError
-
-    try:
-        s3_client.put_object(
-            Bucket=BUCKET_NAME,
-            Key=filename,
-            Body=file_bytes,
-            ContentType=content_type,
-        )
-        
-        return f"{PUBLIC_URL_PREFIX}/{BUCKET_NAME}/{filename}"
-        
-    except ClientError as e:
-        logger.error(f"S3 Upload failed: {e}")
-        raise HTTPException(status_code=500, detail="Storage service error during image upload.")
+def delete_image(public_url: str) -> bool:
+    """Delete image from Cloudinary by URL."""
+    if is_cloudinary_configured() and "cloudinary.com" in public_url:
+        try:
+            # Extract public_id from URL
+            parts = public_url.split("/")
+            public_id = CLOUDINARY_FOLDER + "/" + parts[-1].rsplit(".", 1)[0]
+            cloudinary.uploader.destroy(public_id)
+            logger.info(f"✅ Cloudinary delete success: {public_id}")
+            return True
+        except Exception as e:
+            logger.error(f"❌ Cloudinary delete failed: {e}")
+            return False
+    return False

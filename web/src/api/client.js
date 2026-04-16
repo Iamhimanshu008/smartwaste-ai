@@ -1,12 +1,12 @@
 import axios from 'axios';
 import useStore from '../store';
 
-// Production: VITE_API_URL points to Render backend (e.g. https://smartwaste-ai-xxx.onrender.com/api)
-// Development: falls back to '/api' which Vite proxies to the Docker backend
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+// Production: VITE_API_URL points to Render backend (e.g. https://smartwaste-ai-f0i9.onrender.com)
+// Development: falls back to 'http://localhost:8000'
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const client = axios.create({
-    baseURL: API_BASE,
+    baseURL: BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -24,15 +24,31 @@ client.interceptors.request.use((config) => {
 // Response interceptor: handle 401
 client.interceptors.response.use(
     (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
+    async (error) => {
+        const originalRequest = error.config;
+        
+        if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url.includes('/auth/refresh')) {
             const token = useStore.getState().token;
-            // Only auto-logout if we have a token (not during login itself)
             // Skip for demo fallback token to avoid redirect loops
-            if (token && token !== 'demo-token-123') {
+            if (token === 'demo-token-123') {
                 useStore.getState().logout();
                 window.location.href = '/login';
+                return Promise.reject(error);
             }
+            
+            originalRequest._retry = true;
+            try {
+                const newToken = await useStore.getState().refreshAccessToken();
+                if (newToken) {
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                    return client(originalRequest);
+                }
+            } catch (err) {}
+        }
+
+        if (error.response?.status === 401) {
+            useStore.getState().logout();
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }

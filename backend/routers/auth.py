@@ -9,11 +9,13 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from models.user import User
-from schemas.auth import Token, UserRead
+from schemas.auth import Token, UserRead, RefreshRequest
 from services.auth_service import (
     verify_password,
     create_access_token,
     get_current_user,
+    create_refresh_token,
+    verify_refresh_token,
 )
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
@@ -52,8 +54,24 @@ def login(
         raise HTTPException(status_code=403, detail="User account is inactive")
 
     access_token = create_access_token(data={"sub": str(user.id)})
-    return Token(access_token=access_token, token_type="bearer")
+    refresh_token = create_refresh_token(user.id)
+    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
 
+
+@router.post("/refresh", response_model=Token)
+def refresh_token(payload: RefreshRequest, db: Session = Depends(get_db)):
+    """Refresh the access token using a valid refresh token."""
+    user_id_str = verify_refresh_token(payload.refresh_token)
+    user = db.query(User).filter(User.id == int(user_id_str)).first()
+    if not user or not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or inactive",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token = create_access_token(data={"sub": str(user.id)})
+    return Token(access_token=access_token, token_type="bearer")
 
 
 @router.get("/me", response_model=UserRead)

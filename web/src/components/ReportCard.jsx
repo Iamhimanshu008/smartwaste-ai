@@ -1,8 +1,8 @@
 import { CheckCircle, XCircle, Clock, MapPin } from 'lucide-react';
 
 /**
- * Resolve image URLs that may be internal Docker/MinIO paths or relative paths.
- * Production on Render uses local /uploads/ fallback (no MinIO), so the URL is
+ * Resolve image URLs that may be internal Docker/Cloudinary paths or relative paths.
+ * Production on Render uses local /uploads/ fallback (no Cloudinary), so the URL is
  * a relative path like "/uploads/abc.jpg" that needs the backend origin prepended.
  */
 function getValidImageUrl(url) {
@@ -17,8 +17,8 @@ function getValidImageUrl(url) {
         return backendOrigin ? `${backendOrigin}${url}` : url;
     }
 
-    // Case 2: Internal MinIO/Docker URLs — replace with backend origin
-    if (url.includes('localhost:9000') || url.includes('minio:9000') || url.includes('172.') || url.includes('192.168.')) {
+    // Case 2: Internal Cloudinary/Docker URLs — replace with backend origin
+    if (url.includes('localhost:9000') || url.includes('172.') || url.includes('192.168.')) {
         return url.replace(/https?:\/\/[^/]+/, backendOrigin || '');
     }
 

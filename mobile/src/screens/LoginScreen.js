@@ -21,10 +21,10 @@ export default function LoginScreen({ navigation }) {
         setLoading(true);
         try {
             const tokenData = await loginApi(emailToUse, passwordToUse, roleToUse);
-            const { access_token } = tokenData;
-            await login(null, access_token);
+            const { access_token, refresh_token } = tokenData;
+            await login(null, access_token, refresh_token);
             const user = await getMe();
-            await login(user, access_token);
+            await login(user, access_token, refresh_token);
             // Global state drives AppNavigator, so we don't need manual navigation replace
         } catch (err) {
             const detail = err.response?.data?.detail;

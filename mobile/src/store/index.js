@@ -8,10 +8,54 @@ const useStore = create(
             // ── Auth ────────────────────────────────────────────────
             user: null,
             token: null,
+            refreshToken: null,
 
-            login: (user, token) => set({ user, token }),
+            login: async (user, token, refreshToken) => {
+                set({ user, token, refreshToken });
+                try {
+                    await AsyncStorage.setItem('auth_token', token);
+                    if (refreshToken) {
+                        await AsyncStorage.setItem('refresh_token', refreshToken);
+                    }
+                    if (user) {
+                        await AsyncStorage.setItem('auth_user', JSON.stringify(user));
+                    }
+                } catch (e) {}
+            },
 
-            logout: () => set({ user: null, token: null }),
+            logout: async () => {
+                set({ user: null, token: null, refreshToken: null });
+                try {
+                    await AsyncStorage.removeItem('auth_token');
+                    await AsyncStorage.removeItem('refresh_token');
+                    await AsyncStorage.removeItem('auth_user');
+                } catch (e) {}
+            },
+
+            refreshAccessToken: async () => {
+                const rt = get().refreshToken || await AsyncStorage.getItem('refresh_token');
+                if (!rt) {
+                    get().logout();
+                    return null;
+                }
+                try {
+                    // Use a direct fetch/axios call ignoring interceptors to prevent loops
+                    const response = await fetch('https://smartwaste-ai-f0i9.onrender.com/api/auth/refresh', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ refresh_token: rt })
+                    });
+                    if (!response.ok) throw new Error('Refresh failed');
+                    const data = await response.json();
+                    
+                    set({ token: data.access_token });
+                    await AsyncStorage.setItem('auth_token', data.access_token);
+                    return data.access_token;
+                } catch (e) {
+                    get().logout();
+                    return null;
+                }
+            },
 
             // ── Route ────────────────────────────────────────────────
             todayRoute: null,
@@ -51,6 +95,7 @@ const useStore = create(
             storage: createJSONStorage(() => AsyncStorage),
             partialize: (state) => ({
                 token: state.token,
+                refreshToken: state.refreshToken,
                 user: state.user,
             }),
         }

@@ -16,6 +16,7 @@ export const login = async (email, password) => {
 
     return {
         access_token: authResponse.data.access_token,
+        refresh_token: authResponse.data.refresh_token,
         user: userResponse.data
     };
 };

@@ -16,4 +16,5 @@ python-dotenv
 aiofiles
 openpyxl
 httpx
-boto3
+alembic
+cloudinary==1.36.0

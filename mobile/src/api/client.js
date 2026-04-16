@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useStore from '../store';
 
-const BASE_URL = 'https://smartwaste-ai-f0i9.onrender.com/api';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
 
 const client = axios.create({
     baseURL: BASE_URL,
@@ -27,13 +27,29 @@ client.interceptors.request.use(async (config) => {
     return config;
 });
 
-// Response interceptor: handle 401
+// Response interceptor: handle 401 and refresh
 client.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response?.status === 401) {
-            await AsyncStorage.removeItem('auth_token');
-            await AsyncStorage.removeItem('auth_user');
+        const originalRequest = error.config;
+        
+        // Let's avoid looping on the refresh endpoint itself
+        if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url.includes('/auth/refresh')) {
+            originalRequest._retry = true;
+            try {
+                const newToken = await useStore.getState().refreshAccessToken();
+                if (newToken) {
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                    return client(originalRequest);
+                }
+                // If it resolves to null, the store's logout logic kicks in
+            } catch (err) {
+                // Ignore, it will gracefully reject
+            }
+        }
+        
+        // If not 401, or already retried, or refresh failed, manually clean and propagate
+        if (error.response?.status === 401 && originalRequest.url.includes('/auth/refresh')) {
             useStore.getState().logout();
         }
         return Promise.reject(error);

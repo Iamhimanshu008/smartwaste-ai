@@ -52,7 +52,7 @@ def get_assigned_bins(
 
 
 @router.post("/bins/{bin_id}/report")
-def submit_shg_report(
+async def submit_shg_report(
     bin_id: int,
     fill_level: int = Form(...),
     notes: Optional[str] = Form(None),
@@ -73,7 +73,7 @@ def submit_shg_report(
         filename = f"{uuid.uuid4().hex}{file_ext}"
         file_bytes = image.file.read()
         try:
-            image_url = upload_image(file_bytes, filename, image.content_type)
+            image_url = await upload_image(file_bytes, filename, image.content_type)
         except Exception as exc:
             raise HTTPException(status_code=500, detail=f"Failed to upload image: {exc}") from exc
 

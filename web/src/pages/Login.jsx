@@ -16,7 +16,7 @@ export default function Login() {
         setLoading(true);
         try {
             const data = await authApi.login(String(credentials.username), String(credentials.password));
-            login(data.user, data.access_token);
+            login(data.user, data.access_token, data.refresh_token);
             toast.success(`Welcome back, ${data.user.full_name || 'User'}! 🌿`);
             
             navigate(`/${data.user.role.replace('_', '')}`);

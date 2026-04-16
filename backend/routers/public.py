@@ -32,7 +32,7 @@ def get_public_bins(db: Session = Depends(get_db)):
 
 
 @router.post("/report")
-def submit_public_report(
+async def submit_public_report(
     bin_id: int = Form(...),
     image: UploadFile | None = File(None),
     photo: UploadFile | None = File(None),
@@ -69,7 +69,7 @@ def submit_public_report(
     file_bytes = upload.file.read()
 
     try:
-        minio_url = upload_image(file_bytes, filename, upload.content_type)
+        image_url = await upload_image(file_bytes, filename, upload.content_type)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Failed to save uploaded image: {exc}") from exc
 
@@ -81,7 +81,7 @@ def submit_public_report(
 
     report = BinReport(
         bin_id=bin_id,
-        image_url=minio_url,
+        image_url=image_url,
         fill_level=analysis["fill_level"],
         waste_type=analysis["waste_type"],
         urgency=analysis["urgency"],

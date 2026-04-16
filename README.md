@@ -75,15 +75,38 @@ smartwaste-ai/
 
 ---
 
-## ⚙️ Environment Variables
+## Environment Setup
+Copy `.env.example` to `.env` and fill in your values.
+Never commit `.env` to version control.
 
-Copy `.env.example` to `.env` and fill in your values:
+Required variables:
+- DATABASE_URL
+- SECRET_KEY
+- GOOGLE_API_KEY
+- CLOUDINARY_CLOUD_NAME
+- CLOUDINARY_API_KEY
+- CLOUDINARY_API_SECRET
 
-```bash
-cp .env.example .env
-```
+---
 
-See `.env.example` for all required variables including `DATABASE_URL`, `SECRET_KEY`, and `GOOGLE_API_KEY`.
+## 🗄️ Database Migrations
+
+This project uses **Alembic** to manage database schema migrations statically, fully replacing the old dynamic sync mechanism.
+
+- **Automatically Run:** Migrations run automatically on `docker compose up` before the API boots via `alembic upgrade head && uvicorn`.
+- **Create a New Migration:** (Make sure the DB is running locally or bound):
+  ```bash
+  cd backend
+  alembic revision --autogenerate -m "add_new_feature"
+  ```
+- **Run Migrations Manually:**
+  ```bash
+  cd backend
+  alembic upgrade head
+  ```
+
+---
+
 
 ### 📱 Mobile App Setup (WiFi IP)
 

@@ -13,7 +13,9 @@ from sqlalchemy import text
 from config import settings
 from database import engine, Base, SessionLocal
 from models import Zone, User, Bin, BinReport, SHGReport, Route, RouteStop, Collection, Recycler, RecyclerBid, Notification
-from services.schema_sync import sync_database_schema
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -45,10 +47,9 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️ PostGIS extension note: {e}")
 
-    # Create all tables
-    Base.metadata.create_all(bind=engine)
-    sync_database_schema(engine)
-    print("✓ Tables created successfully!")
+    # Schema is now managed by Alembic
+    logger.info("Schema managed by Alembic migrations")
+    print("✓ Schema ready (managed by Alembic)")
 
     # Seed data — run exactly once (tracked via seed_metadata table)
     with engine.connect() as conn:
@@ -90,21 +91,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "")
-ALLOWED_ORIGINS = [origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()]
-
-# Always include these origins (local dev + deployed frontends)
-ALLOWED_ORIGINS += [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://smartwaste-ai-omega.vercel.app",
-]
-# Deduplicate
-ALLOWED_ORIGINS = list(set(ALLOWED_ORIGINS))
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins (mobile app + web + Vercel)
+    allow_origins=[
+        "https://smartwaste-ai-omega.vercel.app",
+        "https://smartwaste-ai-f0i9.onrender.com",
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://localhost:19006",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
