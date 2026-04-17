@@ -2,7 +2,7 @@
   "expo": {
     "name": "SmartWaste AI",
     "slug": "smartwaste-ai",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "sdkVersion": "54.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -10,29 +10,32 @@
       "supportsTablet": false
     },
     "android": {
+      "package": "com.smartwaste.ai",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#16a34a"
+      },
       "permissions": [
-        "CAMERA",
-        "ACCESS_FINE_LOCATION",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
-      ],
-      "package": "com.himanshushekhar.smartwaste"
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
       [
-        "expo-camera",
+        "expo-location",
         {
-          "cameraPermission": "Allow SmartWaste AI to access camera."
+          "locationAlwaysAndWhenInUsePermission": "SmartWaste needs location to optimize collection routes."
         }
       ],
       [
-        "expo-location",
+        "expo-camera",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow SmartWaste AI to use your location."
+          "cameraPermission": "SmartWaste needs camera to photograph waste bins."
         }
       ],
       [

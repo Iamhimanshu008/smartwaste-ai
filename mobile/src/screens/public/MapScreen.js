@@ -23,7 +23,7 @@ class MapErrorBoundary extends React.Component {
 }
 
 // Lazy-load react-native-maps to prevent crash if native module is broken
-let MapView, Marker, Callout, UrlTile;
+let MapView, Marker, Callout, UrlTile, PROVIDER_GOOGLE;
 let mapsAvailable = false;
 try {
     const maps = require('react-native-maps');
@@ -31,6 +31,7 @@ try {
     Marker = maps.Marker;
     Callout = maps.Callout;
     UrlTile = maps.UrlTile;
+    PROVIDER_GOOGLE = maps.PROVIDER_GOOGLE;
     mapsAvailable = true;
 } catch (e) {
     console.log('react-native-maps failed to load:', e);
@@ -143,6 +144,7 @@ export default function PublicMapScreen({ navigation }) {
                 </View>
             }>
             <MapView
+                provider={PROVIDER_GOOGLE}
                 style={[styles.map, !mapReady && { opacity: 0 }]}
                 initialRegion={RAIPUR_COORDS}
                 showsUserLocation={locationGranted}
@@ -252,7 +254,7 @@ export default function PublicMapScreen({ navigation }) {
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    map: { flex: 1 },
+    map: { flex: 1, width: '100%', height: '100%' },
     mapPlaceholder: { ...StyleSheet.absoluteFillObject, backgroundColor: COLORS.dark, justifyContent: 'center', alignItems: 'center', zIndex: 1 },
     mapPlaceholderText: { color: COLORS.accent, fontSize: 14, marginTop: 12, fontWeight: '600' },
     header: { position: 'absolute', top: 52, left: 16, right: 16 },

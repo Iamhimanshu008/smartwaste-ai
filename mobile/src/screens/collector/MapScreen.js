@@ -3,7 +3,7 @@ import {
     View, Text, StyleSheet, TouchableOpacity,
     Linking, ActivityIndicator, Alert, Modal, TextInput, Platform,
 } from 'react-native';
-import MapView, { Marker, Polyline, Circle, UrlTile } from 'react-native-maps';
+import MapView, { Marker, Polyline, Circle, UrlTile, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
 import useStore from '../../store';
@@ -128,7 +128,24 @@ export default function MapScreen({ navigation }) {
         );
     }
 
-    const polylineCoords = stops.map(s => ({ latitude: s.latitude, longitude: s.longitude }));
+    const routeCoords = stops
+        .sort((a, b) => (a.stop_order ?? a.sequence_order) - (b.stop_order ?? b.sequence_order))
+        .map(s => ({
+            latitude: s.bin_lat ?? s.latitude,
+            longitude: s.bin_lng ?? s.longitude,
+            ...s
+        }));
+
+    const initialRegion = routeCoords.length > 0 ? {
+        latitude: routeCoords[0].latitude,
+        longitude: routeCoords[0].longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+    } : {
+        ...RAIPUR_COORDS,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1,
+    };
 
     return (
         <View style={styles.container}>
@@ -145,8 +162,9 @@ export default function MapScreen({ navigation }) {
             {/* Map */}
             <MapView
                 ref={mapRef}
+                provider={PROVIDER_GOOGLE}
                 style={styles.map}
-                initialRegion={RAIPUR_COORDS}
+                initialRegion={initialRegion}
                 showsUserLocation={false}
                 showsMyLocationButton={false}
                 mapType={Platform.OS === 'android' ? 'none' : 'standard'}
@@ -159,17 +177,20 @@ export default function MapScreen({ navigation }) {
                 />
 
                 {/* Route Polyline */}
-                <Polyline coordinates={polylineCoords} strokeColor={COLORS.mid} strokeWidth={3} lineDashPattern={[10, 5]} />
+                {routeCoords.length > 1 && (
+                    <Polyline coordinates={routeCoords} strokeColor="#00AA44" strokeWidth={3} />
+                )}
 
                 {/* Stop Markers */}
-                {stops.map((stop, idx) => {
+                {routeCoords.map((stop, idx) => {
                     const isCollected = stop.status === 'collected';
                     const color = getMarkerColor(stop);
                     return (
                         <Marker
-                            key={stop.bin_id}
+                            key={stop.bin_id || idx}
                             coordinate={{ latitude: stop.latitude, longitude: stop.longitude }}
                             onPress={() => setSelectedStop(stop)}
+                            pinColor={idx === 0 ? 'green' : idx === routeCoords.length - 1 ? 'red' : 'orange'}
                         >
                             <View style={[styles.markerContainer, { backgroundColor: color, opacity: isCollected ? 0.6 : 1 }]}>
                                 <Text style={styles.markerText}>{isCollected ? '✓' : stop.stop_order ?? stop.sequence_order ?? idx + 1}</Text>
@@ -272,7 +293,7 @@ const styles = StyleSheet.create({
     backArrow: { padding: 8 },
     backArrowText: { color: COLORS.white, fontSize: 15, fontWeight: '600' },
     headerTitle: { color: COLORS.accent, fontSize: 15, fontWeight: '700' },
-    map: { flex: 1 },
+    map: { flex: 1, width: '100%', height: '100%' },
     markerContainer: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#fff' },
     markerText: { color: '#fff', fontSize: 12, fontWeight: '800' },
     locationDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#3B82F6', borderWidth: 2.5, borderColor: '#fff' },
