@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Platform,
+    View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator,
 } from 'react-native';
 import * as Location from 'expo-location';
 import { getBins, getLiveStatus } from '../../api/publicApi';
@@ -23,14 +23,13 @@ class MapErrorBoundary extends React.Component {
 }
 
 // Lazy-load react-native-maps to prevent crash if native module is broken
-let MapView, Marker, Callout, UrlTile, PROVIDER_GOOGLE;
+let MapView, Marker, Callout, PROVIDER_GOOGLE;
 let mapsAvailable = false;
 try {
     const maps = require('react-native-maps');
     MapView = maps.default;
     Marker = maps.Marker;
     Callout = maps.Callout;
-    UrlTile = maps.UrlTile;
     PROVIDER_GOOGLE = maps.PROVIDER_GOOGLE;
     mapsAvailable = true;
 } catch (e) {
@@ -149,19 +148,13 @@ export default function PublicMapScreen({ navigation }) {
                 initialRegion={RAIPUR_COORDS}
                 showsUserLocation={locationGranted}
                 showsMyLocationButton={locationGranted}
-                mapType={Platform.OS === 'android' ? 'none' : 'standard'}
+                mapType="standard"
                 onMapReady={() => setMapReady(true)}
                 onError={(e) => {
                     console.log('MapView error:', e.nativeEvent);
                     setMapError(true);
                 }}
             >
-                {/* OpenStreetMap Tiles (free, no API key) */}
-                <UrlTile
-                    urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    maximumZ={19}
-                    flipY={false}
-                />
                 {(bins || []).map((bin) => (
                     <Marker
                         key={bin.id}

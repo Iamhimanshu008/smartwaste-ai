@@ -141,7 +141,7 @@ export default function ReportScreen({ route, navigation }) {
             formData.append('image', {
                 uri: photo.uri,
                 type: photo.mimeType || 'image/jpeg',
-                name: photo.fileName || 'report.jpg',
+                name: photo.fileName || `report_${Date.now()}.jpg`,
             });
             formData.append('latitude', String(location.latitude));
             formData.append('longitude', String(location.longitude));

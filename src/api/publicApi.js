@@ -1,5 +1,4 @@
 import client from './client';
-import { API_BASE_URL } from '../config';
 
 export const getBins = async () => {
     const res = await client.get('/public/bins');
@@ -7,14 +6,32 @@ export const getBins = async () => {
 };
 
 export const submitPublicReport = async (formData) => {
-  const response = await client.post('/public/report', formData, {
-    headers: {
-      'Content-Type': undefined,  // Let axios auto-set with boundary
-    },
-    timeout: 90000,  // Image uploads need more time
-    transformRequest: (data) => data,  // Prevent axios from re-serializing FormData
-  });
-  return response.data;
+  try {
+    const response = await client.post('/public/report', formData, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+      transformRequest: (data, headers) => {
+        // Remove Content-Type so axios sets it with correct boundary
+        delete headers['Content-Type'];
+        return data;
+      },
+      timeout: 120000,
+    });
+    return response.data;
+  } catch (error) {
+    console.log('Upload error details:', JSON.stringify(error));
+    if (error.response) {
+      console.log('Server response:', error.response.status, error.response.data);
+      throw new Error(error.response?.data?.detail || 'Server rejected the upload');
+    } else if (error.request) {
+      console.log('No response received:', error.request);
+      throw new Error('No response from server — check internet connection');
+    } else {
+      throw new Error(error.message || 'Network Error');
+    }
+  }
 };
 
 export const getReportStatus = async (id) => {

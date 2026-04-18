@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
     View, Text, StyleSheet, TouchableOpacity,
-    Linking, ActivityIndicator, Alert, Modal, TextInput, Platform,
+    Linking, ActivityIndicator, Alert, Modal, TextInput,
 } from 'react-native';
-import MapView, { Marker, Polyline, Circle, UrlTile, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
 import useStore from '../../store';
@@ -167,15 +167,8 @@ export default function MapScreen({ navigation }) {
                 initialRegion={initialRegion}
                 showsUserLocation={false}
                 showsMyLocationButton={false}
-                mapType={Platform.OS === 'android' ? 'none' : 'standard'}
+                mapType="standard"
             >
-                {/* OpenStreetMap Tiles (free, no API key) */}
-                <UrlTile
-                    urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    maximumZ={19}
-                    flipY={false}
-                />
-
                 {/* Route Polyline */}
                 {routeCoords.length > 1 && (
                     <Polyline coordinates={routeCoords} strokeColor="#00AA44" strokeWidth={3} />
