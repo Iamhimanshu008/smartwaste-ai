@@ -2,7 +2,7 @@
   "expo": {
     "name": "SmartWaste AI",
     "slug": "smartwaste-ai",
-    "version": "2.0.0",
+    "version": "2.0.2",
     "sdkVersion": "54.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -11,18 +11,23 @@
     },
     "android": {
       "package": "com.smartwaste.ai",
-      "versionCode": 2,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#16a34a"
       },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBrvNYJrHWj-5ADr8c4QAbLobo-wssQLlU"
+        }
+      },
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.WRITE_EXTERNAL_STORAGE"
       ]
     },
     "plugins": [
@@ -39,12 +44,13 @@
         }
       ],
       [
-        "expo-notifications",
+        "expo-image-picker",
         {
-          "icon": "./assets/icon.png",
-          "color": "#2D6A4F"
+          "photosPermission": "SmartWaste needs photo access to attach images to waste reports.",
+          "cameraPermission": "SmartWaste needs camera to capture waste bin photos."
         }
-      ]
+      ],
+      "expo-notifications"
     ],
     "extra": {
       "eas": {

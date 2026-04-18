@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { getBins, submitPublicReport } from '../../api/publicApi';
-import { haversineDistance, isWithinRadius } from '../../utils/geofence';
+import { haversineDistance } from '../../utils/geofence';
 import { COLORS } from '../../config';
 
 export default function ReportScreen({ route, navigation }) {
