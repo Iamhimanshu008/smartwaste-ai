@@ -252,7 +252,9 @@ export default function AdminDashboard() {
         const [search, setSearch] = useState('');
         const [showAdd, setShowAdd] = useState(false);
         const [editBin, setEditBin] = useState(null);
+        const [editForm, setEditForm] = useState({ label: '', address: '', zone_id: 1, capacity_kg: 50 });
         const [loading, setLoading] = useState(true);
+        const [saving, setSaving] = useState(false);
         const [form, setForm] = useState({ label: '', latitude: '', longitude: '', address: '', zone_id: 1, capacity_kg: 50 });
 
         useEffect(() => { loadBins(); }, []);
@@ -272,11 +274,40 @@ export default function AdminDashboard() {
             } catch (e) { toast.error('Failed to add bin'); }
         };
 
+        const handleEditOpen = (bin) => {
+            setEditBin(bin);
+            setEditForm({
+                label: bin.label || '',
+                address: bin.address || '',
+                zone_id: bin.zone_id || 1,
+                capacity_kg: bin.capacity_kg || 50,
+            });
+        };
+
+        const handleSaveEdit = async () => {
+            if (!editBin) return;
+            setSaving(true);
+            try {
+                await adminApi.updateBin(editBin.id, editForm);
+                toast.success('Bin updated successfully!');
+                setEditBin(null);
+                loadBins();
+            } catch (e) {
+                console.error('Edit error:', e);
+                toast.error(e.response?.data?.detail || 'Failed to update bin');
+            }
+            setSaving(false);
+        };
+
         const handleDelete = async (id) => {
-            if (confirm('Delete this bin?')) {
+            if (!confirm('Delete this bin? This action cannot be undone.')) return;
+            try {
                 await adminApi.deleteBin(id);
                 toast.success('Bin deleted');
                 loadBins();
+            } catch (e) {
+                console.error('Delete error:', e);
+                toast.error(e.response?.data?.detail || 'Failed to delete bin');
             }
         };
 
@@ -322,7 +353,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </td>
                                     <td className="px-4 py-3 flex gap-2">
-                                        <button onClick={() => setEditBin(bin)} className="text-green-600 hover:text-green-700 hover:bg-green-100 p-1.5 rounded-md transition-colors" title="Edit Bin">
+                                        <button onClick={() => handleEditOpen(bin)} className="text-green-600 hover:text-green-700 hover:bg-green-100 p-1.5 rounded-md transition-colors" title="Edit Bin">
                                             <Pencil className="w-4 h-4" />
                                         </button>
                                         <button onClick={() => handleDelete(bin.id)} className="text-red-500 hover:text-red-700 hover:bg-red-100 p-1.5 rounded-md transition-colors" title="Delete Bin">
@@ -373,49 +404,43 @@ export default function AdminDashboard() {
                 {/* Edit Bin Modal */}
                 {editBin && (
                     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-2xl animate-slide-up">
+                        <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-slide-up">
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="font-bold text-xl text-sw-dark">Edit Bin Details: #{editBin.id}</h3>
+                                <h3 className="font-bold text-xl text-sw-dark">Edit Bin: #{editBin.id}</h3>
                                 <button onClick={() => setEditBin(null)} className="p-1 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Column 1 */}
-                                <div className="space-y-4">
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Bin Name</label>
+                                    <input value={editForm.label} onChange={(e) => setEditForm({ ...editForm, label: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                    <input value={editForm.address} onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Bin Location Name</label>
-                                        <input defaultValue={editBin.label} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Zone</label>
-                                        <select defaultValue={editBin.zone_id} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Zone</label>
+                                        <select value={editForm.zone_id} onChange={(e) => setEditForm({ ...editForm, zone_id: parseInt(e.target.value) })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none">
                                             {zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Sensor Serial Number</label>
-                                        <input defaultValue={`SN-${editBin.id * 1024}`} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Capacity (kg)</label>
+                                        <input type="number" value={editForm.capacity_kg} onChange={(e) => setEditForm({ ...editForm, capacity_kg: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
                                     </div>
                                 </div>
-                                {/* Column 2 */}
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Fill % Alert Threshold</label>
-                                        <input type="range" min="0" max="100" defaultValue="80" className="w-full accent-sw-mid" />
-                                        <div className="text-right text-xs text-gray-500 mt-1">Currently 80%</div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Collection Date</label>
-                                        <input type="date" defaultValue={new Date().toISOString().split('T')[0]} readOnly className="w-full px-3 py-2 border border-gray-200 bg-gray-50 text-gray-500 rounded-xl text-sm outline-none" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Maintenance Notes</label>
-                                        <textarea rows={2} placeholder="Any repairs needed?" className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none resize-none"></textarea>
-                                    </div>
+                                <div className="bg-gray-50 rounded-xl p-3 text-xs text-gray-500">
+                                    <p>📍 Lat: {editBin.latitude}, Lng: {editBin.longitude}</p>
+                                    <p>📊 Fill: {editBin.fill_level}% • Status: {editBin.status}</p>
                                 </div>
                             </div>
-                            <div className="flex justify-end gap-3 mt-8">
+                            <div className="flex justify-end gap-3 mt-6">
                                 <button onClick={() => setEditBin(null)} className="px-5 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-                                <button onClick={() => { toast.success('Bin updated successfully!'); setEditBin(null); loadBins(); }} className="px-6 py-2 bg-sw-mid text-white text-sm font-bold rounded-xl hover:bg-sw-dark transition-colors">Save Changes</button>
+                                <button onClick={handleSaveEdit} disabled={saving} className="flex items-center gap-2 px-6 py-2 bg-sw-mid text-white text-sm font-bold rounded-xl hover:bg-sw-dark disabled:opacity-50 transition-colors">
+                                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                    Save Changes
+                                </button>
                             </div>
                         </div>
                     </div>
