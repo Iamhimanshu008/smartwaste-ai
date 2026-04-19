@@ -735,14 +735,23 @@ export default function AdminDashboard() {
         const [zoneForm, setZoneForm] = useState({ name: '', description: '', depot_lat: '', depot_lng: '', depot_address: '' });
         const [zoneSaving, setZoneSaving] = useState(false);
 
+        const [isLoadingZones, setIsLoadingZones] = useState(false);
+
         useEffect(() => { loadLocalZones(); }, []);
 
         const loadLocalZones = async () => {
+            if (isLoadingZones) return;
+            setIsLoadingZones(true);
             try {
                 const data = await adminApi.getZones();
                 setLocalZones(data);
-                setZones(data); // keep parent state in sync
-            } catch (e) { console.error(e); }
+                // Safe update to prevent infinite re-render loop
+                setZones(prev => JSON.stringify(prev) !== JSON.stringify(data) ? data : prev);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setIsLoadingZones(false);
+            }
         };
 
         const handleGenerate = async (zoneId) => {
