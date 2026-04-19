@@ -23,9 +23,9 @@ def is_cloudinary_configured() -> bool:
         settings.CLOUDINARY_API_SECRET
     ])
 
-async def upload_image(file_bytes: bytes, filename: str, content_type: str = "image/jpeg") -> str:
+def upload_image_sync(file_bytes: bytes, filename: str, content_type: str = "image/jpeg") -> str:
     """
-    Upload image to Cloudinary (production) or local /uploads (fallback).
+    Synchronous image upload to Cloudinary (production) or local /uploads (fallback).
     Returns the public URL of the uploaded image.
     """
     if is_cloudinary_configured():
@@ -53,6 +53,13 @@ async def upload_image(file_bytes: bytes, filename: str, content_type: str = "im
         with open(file_path, "wb") as f:
             f.write(file_bytes)
         return f"/uploads/{filename}"
+
+
+async def upload_image(file_bytes: bytes, filename: str, content_type: str = "image/jpeg") -> str:
+    """
+    Async wrapper around upload_image_sync for backward compatibility.
+    """
+    return upload_image_sync(file_bytes, filename, content_type)
 
 def delete_image(public_url: str) -> bool:
     """Delete image from Cloudinary by URL."""

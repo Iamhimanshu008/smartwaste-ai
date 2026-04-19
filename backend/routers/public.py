@@ -1,8 +1,11 @@
 """
 Public router: unauthenticated endpoints for bin viewing and guest reporting.
 """
+import asyncio
+import logging
 import os
 import uuid
+from datetime import datetime, date, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
@@ -20,7 +23,9 @@ from models.collector_location import CollectorLocation
 from models.user import User, UserRole
 from models.route import Route, RouteStop
 from services.notification_service import save_and_send_notification
-from services.storage_service import upload_image
+from services.storage_service import upload_image, upload_image_sync
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/public", tags=["Public"])
 
@@ -68,15 +73,24 @@ async def submit_public_report(
     filename = f"{uuid.uuid4().hex}{file_ext}"
     file_bytes = upload.file.read()
 
+    # Upload image with timeout — don't let Cloudinary hangs kill the request
+    image_url = ""
     try:
-        image_url = await upload_image(file_bytes, filename, upload.content_type)
+        image_url = await asyncio.wait_for(
+            asyncio.to_thread(upload_image_sync, file_bytes, filename, upload.content_type),
+            timeout=30.0,
+        )
+    except asyncio.TimeoutError:
+        logger.warning("⏱️ Image upload timed out after 30s — saving report without image")
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Failed to save uploaded image: {exc}") from exc
+        logger.warning(f"⚠️ Image upload failed: {exc} — saving report without image")
 
+    # AI analysis — never block report submission
     analysis = DEFAULT_ANALYSIS.copy()
     try:
         analysis = analyze_bin_image(file_bytes, upload.content_type)
-    except Exception:
+    except Exception as exc:
+        logger.warning(f"⚠️ AI analysis failed: {exc} — using defaults")
         analysis = DEFAULT_ANALYSIS.copy()
 
     report = BinReport(
@@ -139,6 +153,7 @@ async def submit_public_report(
         "urgency": report.urgency,
         "ai_confidence": report.ai_confidence,
         "ai_observations": report.ai_observations,
+        "image_uploaded": bool(image_url),
         "message": "Report submitted successfully! AI analysis complete.",
     }
 
@@ -158,8 +173,6 @@ def get_report_status(report_id: int, db: Session = Depends(get_db)):
         "ai_fill_level": report.fill_level,
         "created_at": report.created_at,
     }
-
-from datetime import datetime, date, timezone
 
 @router.get("/live-status")
 def get_live_collection_status(db: Session = Depends(get_db)):
