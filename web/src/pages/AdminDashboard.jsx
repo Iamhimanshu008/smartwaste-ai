@@ -690,9 +690,24 @@ export default function AdminDashboard() {
         const handleSave = async () => {
             setSaving(true);
             try {
-                await adminApi.updateSettings(settings);
-                toast.success('Settings saved!');
-            } catch (e) { toast.error('Save failed'); }
+                // Ensure exact numeric types before pushing
+                const payload = {
+                    geofence_radius_meters: Number(settings.geofence_radius_meters),
+                    ai_confidence_threshold: Number(settings.ai_confidence_threshold),
+                    bin_collection_threshold_percent: Number(settings.bin_collection_threshold_percent),
+                    spam_window_minutes: Number(settings.spam_window_minutes),
+                    default_truck_capacity_kg: Number(settings.default_truck_capacity_kg),
+                };
+                await adminApi.updateSettings(payload);
+                toast.success('Settings saved successfully!');
+                
+                // Re-fetch to confirm
+                const refreshed = await adminApi.getSettings();
+                setSettings(refreshed);
+            } catch (e) { 
+                console.error('Settings save error:', e.response?.data);
+                toast.error(e.response?.data?.detail || 'Failed to save settings');
+            }
             setSaving(false);
         };
 
