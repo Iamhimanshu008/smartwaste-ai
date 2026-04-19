@@ -505,19 +505,63 @@ def delete_zone(
         raise HTTPException(status_code=404, detail="Zone not found")
     
     try:
-        # Unassign bins from this zone
-        db.query(Bin).filter(Bin.zone_id == zone_id).update({"zone_id": None}, synchronize_session=False)
-        # Unassign users from this zone
-        db.query(User).filter(User.zone_id == zone_id).update({"zone_id": None}, synchronize_session=False)
-        # Delete related routes
-        db.query(Route).filter(Route.zone_id == zone_id).delete(synchronize_session=False)
+        # Check if bins are assigned to this zone
+        bins_in_zone = db.query(Bin).filter(
+            Bin.zone_id == zone_id
+        ).count()
         
+        other_zone = None
+        if bins_in_zone > 0:
+            # Find another zone to reassign bins to
+            other_zone = db.query(Zone).filter(
+                Zone.id != zone_id
+            ).first()
+            
+            if other_zone:
+                # Reassign bins to another zone
+                db.query(Bin).filter(
+                    Bin.zone_id == zone_id
+                ).update(
+                    {"zone_id": other_zone.id},
+                    synchronize_session=False
+                )
+            else:
+                # No other zone exists — block deletion
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Cannot delete: {bins_in_zone} bins assigned to this zone. Create another zone first or reassign bins."
+                )
+        
+        # Unassign users (users.zone_id is nullable)
+        db.query(User).filter(
+            User.zone_id == zone_id
+        ).update(
+            {"zone_id": None},
+            synchronize_session=False
+        )
+        
+        # Delete related routes for this zone
+        db.query(Route).filter(
+            Route.zone_id == zone_id
+        ).delete(synchronize_session=False)
+        
+        # Now safe to delete zone
         db.delete(zone)
         db.commit()
-        return {"message": "Zone deleted successfully"}
+        
+        msg = "Zone deleted successfully"
+        if bins_in_zone > 0 and other_zone:
+            msg += f" ({bins_in_zone} bins reassigned to {other_zone.name})"
+        return {"message": msg}
+        
+    except HTTPException:
+        raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to delete zone: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to delete zone: {str(e)}"
+        )
 
 
 # User Management
