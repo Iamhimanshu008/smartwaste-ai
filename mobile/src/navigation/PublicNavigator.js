@@ -1,3 +1,4 @@
+import { TouchableOpacity, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PublicMapScreen from '../screens/public/MapScreen';
 import ReportScreen from '../screens/public/ReportScreen';
@@ -19,7 +20,18 @@ export default function PublicNavigator() {
             <Stack.Screen
                 name="PublicMap"
                 component={PublicMapScreen}
-                options={{ headerShown: false }}
+                options={({ navigation }) => ({
+                    title: 'SmartWaste - Public',
+                    headerLeft: () => (
+                        <TouchableOpacity 
+                            onPress={() => navigation.navigate('Landing')}
+                            style={{ marginLeft: 8 }}
+                        >
+                            <Text style={{ color: COLORS.white, fontSize: 16 }}>← Home</Text>
+                        </TouchableOpacity>
+                    ),
+                    headerShown: true
+                })}
             />
             <Stack.Screen
                 name="Report"

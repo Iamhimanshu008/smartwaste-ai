@@ -65,6 +65,16 @@ const LandingScreen = ({ navigation }) => {
         >
           <Text style={styles.primaryBtnText}>🚀 Get Started</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.secondaryBtn}
+          onPress={() => navigation.navigate('PublicStack')}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.secondaryBtnText}>
+            📸 Report a Bin (No Login Required)
+          </Text>
+        </TouchableOpacity>
         
         <Text style={styles.footerNote}>
           For authorized staff only • SmartWaste AI V2
@@ -201,6 +211,20 @@ const styles = StyleSheet.create({
     color: '#4ade80',
     opacity: 0.7,
     textAlign: 'center',
+  },
+  secondaryBtn: {
+    borderWidth: 1.5,
+    borderColor: '#4ade80',
+    paddingVertical: 13,
+    borderRadius: 14,
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  secondaryBtnText: {
+    color: '#4ade80',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 
