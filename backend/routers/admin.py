@@ -648,6 +648,7 @@ def create_user(
         hashed_password=hash_password(data.password),
         role=data.role,
         zone_id=data.zone_id,
+        phone_number=data.phone_number,
     )
     db.add(user)
     db.commit()
@@ -670,6 +671,8 @@ def update_user(
         user.full_name = data.full_name
     if data.phone is not None:
         user.phone = data.phone
+    if data.phone_number is not None:
+        user.phone_number = data.phone_number
     if data.is_active is not None:
         user.is_active = data.is_active
     if data.zone_id is not None:

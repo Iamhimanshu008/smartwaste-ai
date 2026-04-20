@@ -20,6 +20,7 @@ class User(Base):
     full_name = Column(String(100), nullable=False)
     hashed_password = Column(String(255), nullable=False)
     phone = Column(String(20), nullable=True)
+    phone_number = Column(String, nullable=True, unique=True, index=True)
     role = Column(Enum(UserRole), nullable=False, default=UserRole.shg)
     zone_id = Column(Integer, ForeignKey("zones.id"), nullable=True)
     is_active = Column(Boolean, default=True)

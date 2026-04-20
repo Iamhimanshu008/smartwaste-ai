@@ -8,10 +8,12 @@ class UserCreate(BaseModel):
     password: str
     role: str = "shg"
     zone_id: Optional[int] = None
+    phone_number: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     phone: Optional[str] = None
+    phone_number: Optional[str] = None
     is_active: Optional[bool] = None
     zone_id: Optional[int] = None

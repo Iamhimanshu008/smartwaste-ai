@@ -114,3 +114,94 @@ async def forgot_password(
 
     # Always return success — prevents email enumeration attacks
     return {"message": "If this email is registered, a reset link has been sent."}
+
+from services.otp_service import create_otp, verify_otp, send_otp_sms
+from models.otp import OTPRecord
+
+# Send OTP endpoint
+@router.post("/send-otp")
+async def send_otp(
+    data: dict,
+    db: Session = Depends(get_db)
+):
+    phone_number = data.get("phone_number", "").strip()
+    if not phone_number:
+        raise HTTPException(status_code=400, detail="Phone number required")
+    
+    # Normalize phone number (add +91 if not present)
+    if not phone_number.startswith('+'):
+        phone_number = '+91' + phone_number.lstrip('0')
+    
+    # Check if user exists with this phone number
+    user = db.query(User).filter(
+        User.phone_number == phone_number
+    ).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="No account found with this phone number. Contact admin."
+        )
+    
+    otp = create_otp(db, phone_number)
+    send_otp_sms(phone_number, otp)
+    
+    # For development — return OTP in response
+    # REMOVE in production
+    return {
+        "message": f"OTP sent to {phone_number}",
+        "dev_otp": otp,  # REMOVE IN PRODUCTION
+        "expires_in_minutes": 10
+    }
+
+# Verify OTP + Login endpoint
+@router.post("/login-otp")
+async def login_with_otp(
+    data: dict,
+    db: Session = Depends(get_db)
+):
+    phone_number = data.get("phone_number", "").strip()
+    otp_code = data.get("otp", "").strip()
+    
+    if not phone_number or not otp_code:
+        raise HTTPException(
+            status_code=400, 
+            detail="Phone number and OTP required"
+        )
+    
+    # Normalize
+    if not phone_number.startswith('+'):
+        phone_number = '+91' + phone_number.lstrip('0')
+    
+    # Verify OTP
+    is_valid = verify_otp(db, phone_number, otp_code)
+    if not is_valid:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired OTP"
+        )
+    
+    # Get user
+    user = db.query(User).filter(
+        User.phone_number == phone_number
+    ).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Generate JWT tokens (same as email login)
+    from services.auth_service import create_access_token, create_refresh_token
+    access_token = create_access_token({"sub": str(user.id), "role": user.role})
+    refresh_token = create_refresh_token(user.id)
+    
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "role": user.role,
+        }
+    }
