@@ -456,7 +456,7 @@ export default function AdminDashboard() {
         const [showAdd, setShowAdd] = useState(false);
         const [editUser, setEditUser] = useState(null);
         const [loading, setLoading] = useState(true);
-        const [form, setForm] = useState({ name: '', email: '', password: '', role: 'shg', zone_id: 1 });
+        const [form, setForm] = useState({ name: '', email: '', password: '', role: 'shg', zone_id: 1, phone_number: '' });
 
         useEffect(() => { loadUsers(); }, []);
 
@@ -467,9 +467,9 @@ export default function AdminDashboard() {
 
         const handleAdd = async () => {
             try {
-                await adminApi.createUser(form);
+                await adminApi.createUser({ ...form, phone_number: form.phone_number || null });
                 setShowAdd(false);
-                setForm({ name: '', email: '', password: '', role: 'shg', zone_id: 1 });
+                setForm({ name: '', email: '', password: '', role: 'shg', zone_id: 1, phone_number: '' });
                 toast.success('User created!');
                 loadUsers();
             } catch (e) { toast.error('Failed to create user'); }
@@ -559,6 +559,10 @@ export default function AdminDashboard() {
                                 <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Full Name" className="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
                                 <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" type="email" className="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
                                 <input value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Password" type="password" className="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
+                                <div>
+                                    <input type="tel" value={form.phone_number} onChange={(e) => setForm({ ...form, phone_number: e.target.value })} placeholder="Phone Number (10 digits, optional)" className="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" maxLength={10} />
+                                    <p className="text-xs text-gray-400 mt-1">Used for OTP login. Format: 10 digits without +91</p>
+                                </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="px-3 py-2 border rounded-xl text-sm">
                                         <option value="admin">Admin</option>
@@ -615,10 +619,15 @@ export default function AdminDashboard() {
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Reset Password</label>
                                     <input placeholder="Enter new password to reset" type="password" className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number (for OTP login)</label>
+                                    <input type="tel" placeholder="10-digit phone number" value={editUser.phone_number || ''} onChange={(e) => setEditUser({ ...editUser, phone_number: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" maxLength={10} />
+                                    <p className="text-xs text-gray-400 mt-1">Staff can use this number to login via OTP</p>
+                                </div>
                             </div>
                             <div className="flex justify-end gap-3 mt-8">
                                 <button onClick={() => setEditUser(null)} className="px-5 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-                                <button onClick={() => { toast.success('User updated successfully!'); setEditUser(null); loadUsers(); }} className="px-6 py-2 bg-sw-mid text-white text-sm font-bold rounded-xl hover:bg-sw-dark transition-colors">Save Changes</button>
+                                <button onClick={async () => { try { await adminApi.updateUser(editUser.id, { full_name: editUser.full_name, phone_number: editUser.phone_number || null }); toast.success('User updated successfully!'); setEditUser(null); loadUsers(); } catch(e) { toast.error('Failed to update user'); } }} className="px-6 py-2 bg-sw-mid text-white text-sm font-bold rounded-xl hover:bg-sw-dark transition-colors">Save Changes</button>
                             </div>
                         </div>
                     </div>
