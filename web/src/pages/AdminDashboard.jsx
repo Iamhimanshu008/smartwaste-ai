@@ -457,8 +457,20 @@ export default function AdminDashboard() {
         const [editUser, setEditUser] = useState(null);
         const [loading, setLoading] = useState(true);
         const [form, setForm] = useState({ name: '', email: '', password: '', role: 'shg', zone_id: 1, phone_number: '' });
+        const [availableZones, setAvailableZones] = useState([]);
 
         useEffect(() => { loadUsers(); }, []);
+
+        useEffect(() => {
+            if (showAdd || editUser) {
+                adminApi.getZones().then(res => {
+                    setAvailableZones(res);
+                    if (res.length > 0 && form.zone_id === 1) {
+                        setForm(prev => ({ ...prev, zone_id: res[0].id }));
+                    }
+                }).catch(e => console.error(e));
+            }
+        }, [showAdd, editUser]);
 
         const loadUsers = async () => {
             try { setUsers(await adminApi.getUsers()); } catch (e) { console.error(e); }
@@ -466,13 +478,29 @@ export default function AdminDashboard() {
         };
 
         const handleAdd = async () => {
+            if (!form.phone_number || form.phone_number.length !== 10) {
+                toast.error('Phone number is required (10 digits)');
+                return;
+            }
+            if (!form.zone_id) {
+                toast.error('Please select a valid zone');
+                return;
+            }
             try {
-                await adminApi.createUser({ ...form, phone_number: form.phone_number || null });
+                const payload = {
+                    name: form.name?.trim(),
+                    email: form.email?.trim(),
+                    password: form.password,
+                    role: form.role,
+                    zone_id: Number(form.zone_id),
+                    phone_number: form.phone_number?.trim()
+                };
+                await adminApi.createUser(payload);
                 setShowAdd(false);
                 setForm({ name: '', email: '', password: '', role: 'shg', zone_id: 1, phone_number: '' });
                 toast.success('User created!');
                 loadUsers();
-            } catch (e) { toast.error('Failed to create user'); }
+            } catch (e) { toast.error(e.response?.data?.detail || 'Failed to create user'); }
         };
 
         const handleDelete = async (id) => {
@@ -560,8 +588,8 @@ export default function AdminDashboard() {
                                 <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" type="email" className="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
                                 <input value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Password" type="password" className="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
                                 <div>
-                                    <input type="tel" value={form.phone_number} onChange={(e) => setForm({ ...form, phone_number: e.target.value })} placeholder="Phone Number (10 digits, optional)" className="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" maxLength={10} />
-                                    <p className="text-xs text-gray-400 mt-1">Used for OTP login. Format: 10 digits without +91</p>
+                                    <input required type="tel" value={form.phone_number} onChange={(e) => setForm({ ...form, phone_number: e.target.value.replace(/\D/g, '').slice(0, 10) })} placeholder="Phone Number (10 digits) *" className="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" maxLength={10} />
+                                    <p className="text-xs text-gray-400 mt-1">Required for OTP login. 10 digits only.</p>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="px-3 py-2 border rounded-xl text-sm">
@@ -570,8 +598,9 @@ export default function AdminDashboard() {
                                         <option value="shg">SHG</option>
                                         <option value="collector">Collector</option>
                                     </select>
-                                    <select value={form.zone_id} onChange={(e) => setForm({ ...form, zone_id: parseInt(e.target.value) })} className="px-3 py-2 border rounded-xl text-sm">
-                                        {zones.map((z) => (
+                                    <select value={form.zone_id || ''} onChange={(e) => setForm({ ...form, zone_id: parseInt(e.target.value) })} className="px-3 py-2 border rounded-xl text-sm" required>
+                                        <option value="">-- Select Zone --</option>
+                                        {availableZones.map((z) => (
                                             <option key={z.id} value={z.id}>{z.name}</option>
                                         ))}
                                     </select>
@@ -611,8 +640,9 @@ export default function AdminDashboard() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Zone</label>
-                                    <select defaultValue={editUser.zone_id} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none">
-                                        {zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
+                                    <select defaultValue={editUser.zone_id || ''} onChange={(e) => setEditUser({ ...editUser, zone_id: parseInt(e.target.value) })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" required>
+                                        <option value="">-- Select Zone --</option>
+                                        {availableZones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
                                     </select>
                                 </div>
                                 <div className="pt-2">
@@ -620,14 +650,17 @@ export default function AdminDashboard() {
                                     <input placeholder="Enter new password to reset" type="password" className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number (for OTP login)</label>
-                                    <input type="tel" placeholder="10-digit phone number" value={editUser.phone_number || ''} onChange={(e) => setEditUser({ ...editUser, phone_number: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" maxLength={10} />
-                                    <p className="text-xs text-gray-400 mt-1">Staff can use this number to login via OTP</p>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number (for OTP login) *</label>
+                                    <input required type="tel" placeholder="10-digit phone number" value={editUser.phone_number || ''} onChange={(e) => setEditUser({ ...editUser, phone_number: e.target.value.replace(/\D/g, '').slice(0, 10) })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sw-light outline-none" maxLength={10} />
+                                    <p className="text-xs text-gray-400 mt-1">Staff can use this number to login via OTP. 10 digits.</p>
                                 </div>
                             </div>
                             <div className="flex justify-end gap-3 mt-8">
                                 <button onClick={() => setEditUser(null)} className="px-5 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-                                <button onClick={async () => { try { await adminApi.updateUser(editUser.id, { full_name: editUser.full_name, phone_number: editUser.phone_number || null }); toast.success('User updated successfully!'); setEditUser(null); loadUsers(); } catch(e) { toast.error('Failed to update user'); } }} className="px-6 py-2 bg-sw-mid text-white text-sm font-bold rounded-xl hover:bg-sw-dark transition-colors">Save Changes</button>
+                                <button onClick={async () => {
+                                    if (!editUser.phone_number || editUser.phone_number.length !== 10) { toast.error('Phone number is required (10 digits)'); return; }
+                                    try { await adminApi.updateUser(editUser.id, { full_name: editUser.full_name?.trim(), phone_number: editUser.phone_number?.trim() || null, zone_id: Number(editUser.zone_id) }); toast.success('User updated successfully!'); setEditUser(null); loadUsers(); } catch(e) { toast.error('Failed to update user'); }
+                                }} className="px-6 py-2 bg-sw-mid text-white text-sm font-bold rounded-xl hover:bg-sw-dark transition-colors">Save Changes</button>
                             </div>
                         </div>
                     </div>

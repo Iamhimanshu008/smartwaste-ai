@@ -642,6 +642,15 @@ def create_user(
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    # Validate zone exists
+    if data.zone_id:
+        zone = db.query(Zone).filter(Zone.id == data.zone_id).first()
+        if not zone:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Zone with id {data.zone_id} not found. Please select a valid zone."
+            )
+
     user = User(
         full_name=data.name,
         email=data.email,
@@ -1188,3 +1197,22 @@ def get_admin_routes(db: Session = Depends(get_db), current_user: User = Depends
         }
         for r in routes
     ]
+
+@router.post("/reseed-zones")
+async def reseed_zones(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(["admin"]))
+):
+    existing = db.query(Zone).count()
+    if existing > 0:
+        return {"message": f"zones already exist"}
+    
+    zones = [
+        Zone(name="Zone 1 (North)", description="Northern collection area"),
+        Zone(name="Zone 2 (South)", description="Southern collection area"),
+        Zone(name="Zone 3 (East)", description="Eastern collection area"),
+        Zone(name="Zone 4 (West)", description="Western collection area"),
+    ]
+    db.add_all(zones)
+    db.commit()
+    return {"message": "4 zones created successfully"}
