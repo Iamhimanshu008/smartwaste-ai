@@ -46,7 +46,7 @@ const LandingScreen = ({ navigation }) => {
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={styles.statNum}>4</Text>
+          <Text style={styles.statNum}>Multiple</Text>
           <Text style={styles.statLabel}>Zones</Text>
         </View>
         <View style={styles.statDivider} />
@@ -77,7 +77,7 @@ const LandingScreen = ({ navigation }) => {
         </TouchableOpacity>
         
         <Text style={styles.footerNote}>
-          For authorized staff only • SmartWaste AI V2
+          For authorized staff only • SmartWaste AI
         </Text>
       </View>
     </View>
