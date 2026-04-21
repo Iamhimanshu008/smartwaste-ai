@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str = "http://localhost:5173"
     GOOGLE_API_KEY: str = ""
     UPLOAD_DIR: str = "uploads"
+    FAST2SMS_API_KEY: str = os.getenv("FAST2SMS_API_KEY", "")
     
     # Storage
     CLOUDINARY_CLOUD_NAME: str = ""

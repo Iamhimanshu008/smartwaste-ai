@@ -49,17 +49,38 @@ def verify_otp(db: Session, phone_number: str, otp_code: str) -> bool:
     return True
 
 def send_otp_sms(phone_number: str, otp: str) -> bool:
-    """
-    Send OTP via SMS.
-    For now logs to console (replace with Twilio/MSG91 later).
-    """
-    logger.info(f"[SMS] Sending OTP {otp} to {phone_number}")
-    # TODO: integrate Twilio or MSG91
-    # from twilio.rest import Client
-    # client = Client(settings.TWILIO_SID, settings.TWILIO_TOKEN)
-    # client.messages.create(
-    #     body=f"Your SmartWaste OTP is: {otp}. Valid for 10 minutes.",
-    #     from_=settings.TWILIO_FROM,
-    #     to=phone_number
-    # )
-    return True
+    import requests
+    import os
+    api_key = os.getenv("FAST2SMS_API_KEY")
+    if not api_key:
+        print("WARNING: FAST2SMS_API_KEY not set")
+        return False
+    
+    # Clean phone number to 10 digits
+    digits = phone_number.replace('+91', '').replace('+', '').strip()
+    if digits.startswith('91') and len(digits) == 12:
+        digits = digits[2:]
+    
+    url = "https://www.fast2sms.com/dev/bulkV2"
+    payload = {
+        "route": "otp",
+        "variables_values": otp,
+        "numbers": digits,
+    }
+    headers = {
+        "authorization": api_key,
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        result = response.json()
+        print(f"Fast2SMS response: {result}")
+        if result.get("return") == True:
+            return True
+        else:
+            print(f"Fast2SMS error: {result.get('message')}")
+            return False
+    except Exception as e:
+        print(f"SMS send failed: {e}")
+        return False

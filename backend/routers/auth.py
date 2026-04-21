@@ -165,12 +165,27 @@ async def send_otp(
         )
     
     otp = create_otp(db, phone_number)
-    send_otp_sms(phone_number, otp)
+    sms_sent = send_otp_sms(phone_number, otp)
     
-    return {
-        "message": f"OTP sent to {phone_number}",
+    if not sms_sent:
+        print(f"WARNING: SMS not delivered to {phone_number}")
+
+    import os
+    debug_mode = os.getenv("SMS_DEBUG", "false").lower() == "true"
+    
+    digits = phone_number.replace('+91', '').replace('+', '').strip()
+    if digits.startswith('91') and len(digits) == 12:
+        digits = digits[2:]
+        
+    response_data = {
+        "message": f"OTP sent to +91{digits}",
         "expires_in_minutes": 10
     }
+    
+    if debug_mode:
+        response_data["dev_otp"] = otp
+
+    return response_data
 
 # Verify OTP + Login endpoint
 @router.post("/login-otp")
