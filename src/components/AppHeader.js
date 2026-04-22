@@ -6,7 +6,7 @@ import {
 import { useTranslation } from '../i18n';
 import LanguagePickerModal from './LanguagePickerModal';
 
-const AppHeader = ({ title, onMenuPress, notificationCount = 0 }) => {
+const AppHeader = ({ title, onMenuPress, notificationCount = 0, navigation }) => {
   const [showLangPicker, setShowLangPicker] = useState(false);
   const { t } = useTranslation();
 
@@ -37,7 +37,10 @@ const AppHeader = ({ title, onMenuPress, notificationCount = 0 }) => {
             <Text style={styles.langIcon}>🌐</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.iconBtn}>
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => navigation?.navigate('Notifications')}
+          >
             <Text style={styles.bellIcon}>🔔</Text>
             {notificationCount > 0 && (
               <View style={styles.badge}>

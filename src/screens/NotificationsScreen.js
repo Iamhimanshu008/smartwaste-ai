@@ -8,6 +8,7 @@ import useStore from '../store';
 import { getNotifications, markAsRead, markAllAsRead, getUnreadCount } from '../api/notificationApi';
 import { useFocusEffect } from '@react-navigation/native';
 import { COLORS } from '../config';
+import { useTranslation } from '../i18n';
 
 const NOTIFICATION_ICONS = {
     critical_bin: '🚨',
@@ -33,6 +34,7 @@ function timeAgo(dateStr) {
 
 export default function NotificationsScreen({ navigation }) {
     const { notifications, setNotifications, setUnreadCount } = useStore();
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
 
@@ -126,7 +128,7 @@ export default function NotificationsScreen({ navigation }) {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <Text style={styles.backText}>← Back</Text>
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Notifications</Text>
+                <Text style={styles.headerTitle}>{t('notifications')}</Text>
                 {unreadExists && (
                     <TouchableOpacity onPress={handleMarkAllRead} style={styles.markAllBtn}>
                         <Text style={styles.markAllText}>Read All</Text>
@@ -139,7 +141,7 @@ export default function NotificationsScreen({ navigation }) {
             ) : notifications.length === 0 ? (
                 <View style={styles.emptyContainer}>
                     <Text style={styles.emptyEmoji}>🔕</Text>
-                    <Text style={styles.emptyTitle}>No notifications yet</Text>
+                    <Text style={styles.emptyTitle}>{t('no_notifications')}</Text>
                     <Text style={styles.emptyText}>
                         You'll receive alerts for routes, bin reports, and collection updates.
                     </Text>

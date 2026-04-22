@@ -6,7 +6,6 @@ import BinDetailScreen from '../screens/collector/BinDetailScreen';
 import HistoryScreen from '../screens/collector/HistoryScreen';
 import StatsScreen from '../screens/collector/StatsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
-import NotificationBell from '../components/NotificationBell';
 import { COLORS } from '../config';
 
 // Inline SVG-style icon component using unicode
@@ -18,8 +17,17 @@ const TabIcon = ({ emoji, focused }) => (
 );
 
 const Tab = createBottomTabNavigator();
+const HomeStack = createNativeStackNavigator();
 const MapStack = createNativeStackNavigator();
-const AlertsStack = createNativeStackNavigator();
+
+function HomeStackNavigator() {
+    return (
+        <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+            <HomeStack.Screen name="HomeMain" component={HomeScreen} />
+            <HomeStack.Screen name="Notifications" component={NotificationsScreen} />
+        </HomeStack.Navigator>
+    );
+}
 
 function MapStackNavigator() {
     return (
@@ -44,14 +52,6 @@ function MapStackNavigator() {
     );
 }
 
-function AlertsStackNavigator() {
-    return (
-        <AlertsStack.Navigator screenOptions={{ headerShown: false }}>
-            <AlertsStack.Screen name="Notifications" component={NotificationsScreen} />
-        </AlertsStack.Navigator>
-    );
-}
-
 export default function CollectorNavigator() {
     return (
         <Tab.Navigator
@@ -71,21 +71,13 @@ export default function CollectorNavigator() {
         >
             <Tab.Screen
                 name="Home"
-                component={HomeScreen}
+                component={HomeStackNavigator}
                 options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />, tabBarLabel: 'Home' }}
             />
             <Tab.Screen
                 name="Map"
                 component={MapStackNavigator}
                 options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="🗺️" focused={focused} />, tabBarLabel: 'Map' }}
-            />
-            <Tab.Screen
-                name="Alerts"
-                component={AlertsStackNavigator}
-                options={{
-                    tabBarIcon: () => <NotificationBell />,
-                    tabBarLabel: 'Alerts',
-                }}
             />
             <Tab.Screen
                 name="History"

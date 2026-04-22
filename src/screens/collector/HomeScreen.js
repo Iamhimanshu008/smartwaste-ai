@@ -98,6 +98,7 @@ export default function HomeScreen({ navigation }) {
                 title={t('dashboard')}
                 onMenuPress={() => setDrawerOpen(true)}
                 notificationCount={2}
+                navigation={navigation}
             />
             <SideDrawer
                 visible={drawerOpen}
