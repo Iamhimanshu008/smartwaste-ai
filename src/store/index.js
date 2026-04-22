@@ -24,7 +24,16 @@ const useStore = create(
             },
 
             logout: async () => {
-                set({ user: null, token: null, refreshToken: null });
+                set({
+                    user: null,
+                    token: null,
+                    refreshToken: null,
+                    todayRoute: null,
+                    routeLoading: false,
+                    publicBins: [],
+                    unreadCount: 0,
+                    notifications: [],
+                });
                 try {
                     await AsyncStorage.removeItem('auth_token');
                     await AsyncStorage.removeItem('refresh_token');

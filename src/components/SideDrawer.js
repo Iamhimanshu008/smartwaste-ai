@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  Modal, Animated, Dimensions, ScrollView
+  Modal, Animated, Dimensions, ScrollView, Alert
 } from 'react-native';
 import { useTranslation } from '../i18n';
 import useStore from '../store';
@@ -81,10 +81,25 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
           {/* Logout */}
           <TouchableOpacity
             style={styles.logoutBtn}
-          onPress={() => {
-              onClose();
-              // Delay logout to let drawer animation finish before nav state changes
-              setTimeout(() => logout(), 300);
+            onPress={() => {
+              Alert.alert(
+                t('logout'),
+                'Are you sure you want to logout?',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: t('logout'),
+                    style: 'destructive',
+                    onPress: () => {
+                      // 1. Close the drawer Modal FIRST
+                      onClose();
+                      // 2. Wait for Modal slide animation to fully dismiss,
+                      //    THEN clear auth state so navigator can safely swap trees
+                      setTimeout(() => logout(), 500);
+                    },
+                  },
+                ]
+              );
             }}
           >
             <Text style={styles.logoutIcon}>🚪</Text>
