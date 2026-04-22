@@ -3,12 +3,12 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   Modal, Animated, Dimensions, ScrollView
 } from 'react-native';
-import { useLanguageStore } from '../i18n';
+import { useTranslation } from '../i18n';
 
 const { width } = Dimensions.get('window');
 
 const SideDrawer = ({ visible, onClose, user, navigation }) => {
-  const { t } = useLanguageStore();
+  const { t } = useTranslation();
 
   const menuItems = [
     { icon: '🏠', key: 'dashboard', screen: 'Home' },

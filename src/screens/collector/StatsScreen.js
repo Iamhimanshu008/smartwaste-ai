@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { getStats } from '../../api/collectorApi';
 import { COLORS } from '../../config';
+import { useTranslation } from '../../i18n';
 
 const StatCard = ({ emoji, label, value, accent, flex = 1 }) => (
     <View style={[styles.card, { flex }]}>
@@ -17,6 +18,7 @@ const StatCard = ({ emoji, label, value, accent, flex = 1 }) => (
 );
 
 export default function StatsScreen() {
+    const { t } = useTranslation();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -65,7 +67,7 @@ export default function StatsScreen() {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.light} />}
             >
                 {/* Header */}
-                <Text style={styles.header}>My Performance 📊</Text>
+                <Text style={styles.header}>{t('stats')} 📊</Text>
                 <Text style={styles.subtitle}>Track your collection impact</Text>
 
                 {/* THIS MONTH */}
@@ -73,14 +75,14 @@ export default function StatsScreen() {
                 <View style={styles.row}>
                     <StatCard
                         emoji="🗑️"
-                        label="Collections"
+                        label={t('bins_collected')}
                         value={stats?.collections_this_month ?? 0}
                         accent={COLORS.light}
                     />
                     <View style={styles.gap} />
                     <StatCard
                         emoji="⚖️"
-                        label="Kg Collected"
+                        label={t('total_weight')}
                         value={`${stats?.kg_this_month ?? 0} kg`}
                         accent={COLORS.light}
                     />
@@ -91,14 +93,14 @@ export default function StatsScreen() {
                 <View style={styles.row}>
                     <StatCard
                         emoji="🏆"
-                        label="Total Collections"
+                        label={t('bins_collected')}
                         value={stats?.total_collections_all_time ?? 0}
                         accent={COLORS.mid}
                     />
                     <View style={styles.gap} />
                     <StatCard
                         emoji="♻️"
-                        label="Total Kg"
+                        label={t('total_weight')}
                         value={`${stats?.total_kg_all_time ?? 0} kg`}
                         accent={COLORS.mid}
                     />

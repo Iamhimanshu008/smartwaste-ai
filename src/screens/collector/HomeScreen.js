@@ -13,12 +13,12 @@ import StatusBadge from '../../components/StatusBadge';
 import { COLORS } from '../../config';
 import AppHeader from '../../components/AppHeader';
 import SideDrawer from '../../components/SideDrawer';
-import { useLanguageStore } from '../../i18n';
+import { useTranslation } from '../../i18n';
 
 export default function HomeScreen({ navigation }) {
     const { user, todayRoute, setTodayRoute, logout } = useStore();
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const { t } = useLanguageStore();
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
@@ -122,7 +122,7 @@ export default function HomeScreen({ navigation }) {
                 ) : error === 'no_route' ? (
                     <View style={styles.emptyCard}>
                         <Text style={styles.emptyEmoji}>🎉</Text>
-                        <Text style={styles.emptyTitle}>No route assigned today</Text>
+                        <Text style={styles.emptyTitle}>{t('no_route_today')}</Text>
                         <Text style={styles.emptyText}>Check back later or contact your zone manager.</Text>
                     </View>
                 ) : todayRoute ? (
@@ -138,31 +138,31 @@ export default function HomeScreen({ navigation }) {
 
                         {/* Priority Breakdown */}
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Priority Breakdown</Text>
+                            <Text style={styles.sectionTitle}>{t('priority_breakdown')}</Text>
                             <View style={styles.priorityRow}>
                                 <View style={[styles.priorityChip, { backgroundColor: '#FEE2E2' }]}>
                                     <View style={[styles.dot, { backgroundColor: '#EF4444' }]} />
                                     <Text style={[styles.priorityCount, { color: '#DC2626' }]}>{urgentCount}</Text>
-                                    <Text style={styles.priorityLabel}>Urgent</Text>
+                                    <Text style={styles.priorityLabel}>{t('urgent')}</Text>
                                 </View>
                                 <View style={[styles.priorityChip, { backgroundColor: '#FFEDD5' }]}>
                                     <View style={[styles.dot, { backgroundColor: '#F97316' }]} />
                                     <Text style={[styles.priorityCount, { color: '#EA580C' }]}>{highCount}</Text>
-                                    <Text style={styles.priorityLabel}>High</Text>
+                                    <Text style={styles.priorityLabel}>{t('high')}</Text>
                                 </View>
                                 <View style={[styles.priorityChip, { backgroundColor: '#DCFCE7' }]}>
                                     <View style={[styles.dot, { backgroundColor: '#22C55E' }]} />
                                     <Text style={[styles.priorityCount, { color: '#16A34A' }]}>{normalCount}</Text>
-                                    <Text style={styles.priorityLabel}>Normal</Text>
+                                    <Text style={styles.priorityLabel}>{t('normal')}</Text>
                                 </View>
                             </View>
                         </View>
 
                         {/* Progress */}
                         <View style={styles.card}>
-                            <Text style={styles.cardLabel}>Today's Progress</Text>
+                            <Text style={styles.cardLabel}>{t('progress')}</Text>
                             <View style={styles.progressRow}>
-                                <Text style={styles.progressText}>{todayRoute.collected_stops} / {todayRoute.total_stops} bins collected</Text>
+                                <Text style={styles.progressText}>{todayRoute.collected_stops} / {todayRoute.total_stops} {t('bins_collected_today')}</Text>
                                 <StatusBadge status={todayRoute.collected_stops === todayRoute.total_stops ? 'completed' : 'in_progress'} />
                             </View>
                             <View style={styles.progressBar}>

@@ -4,13 +4,13 @@ import {
   Image, StatusBar, Dimensions
 } from 'react-native';
 import LanguagePickerModal from '../components/LanguagePickerModal';
-import { useLanguageStore } from '../i18n';
+import { useTranslation } from '../i18n';
 
 const { width, height } = Dimensions.get('window');
 
 const LandingScreen = ({ navigation }) => {
   const [showLangPicker, setShowLangPicker] = useState(false);
-  const { t } = useLanguageStore();
+  const { t } = useTranslation();
 
   return (
     <View style={styles.container}>

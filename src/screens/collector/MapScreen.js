@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import useStore from '../../store';
 import { getTodayRoute, collectBin } from '../../api/collectorApi';
 import { COLORS, RAIPUR_COORDS } from '../../config';
+import { useTranslation } from '../../i18n';
 
 function getMarkerColor(stop) {
     if (stop.status === 'collected') return '#9CA3AF';
@@ -20,6 +21,7 @@ function getMarkerColor(stop) {
 
 export default function MapScreen({ navigation }) {
     const { todayRoute, setTodayRoute, markStopCollected } = useStore();
+    const { t } = useTranslation();
     const [location, setLocation] = useState(null);
     const [loading, setLoading] = useState(!todayRoute);
     const [collecting, setCollecting] = useState(false);
@@ -155,7 +157,7 @@ export default function MapScreen({ navigation }) {
                     <Text style={styles.backArrowText}>← Back</Text>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>
-                    Route {todayRoute.collected_stops}/{todayRoute.total_stops}
+                    {t('my_route')} {todayRoute.collected_stops}/{todayRoute.total_stops}
                 </Text>
             </View>
 
@@ -232,7 +234,7 @@ export default function MapScreen({ navigation }) {
                                 onPress={() => handleCollectPress(selected)}
                                 disabled={collecting}
                             >
-                                <Text style={styles.collectBtnText}>✓  Mark Collected</Text>
+                                <Text style={styles.collectBtnText}>✓  {t('mark_collected')}</Text>
                             </TouchableOpacity>
                         ) : null}
                     </View>
@@ -243,7 +245,7 @@ export default function MapScreen({ navigation }) {
             <Modal visible={!!collectModal} transparent animationType="slide">
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Mark Collected</Text>
+                        <Text style={styles.modalTitle}>{t('mark_collected')}</Text>
                         <Text style={styles.modalSub}>Enter kg collected for {collectModal?.bin_label}</Text>
                         <TextInput
                             style={styles.modalInput}

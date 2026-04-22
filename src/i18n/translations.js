@@ -45,6 +45,22 @@ export const translations = {
     good_morning: "Good morning,",
     good_afternoon: "Good afternoon,",
     good_evening: "Good evening,",
+
+    // Dashboard extras
+    today_route: "Today's Route",
+    priority_breakdown: "Priority Breakdown",
+    urgent: "Urgent",
+    high: "High",
+    normal: "Normal",
+    stops: "Stops",
+    progress: "Progress",
+    view_route_map: "View Route on Map",
+    bins_collected_today: "bins collected",
+    in_progress: "IN PROGRESS",
+    active: "Active",
+    sharing_location: "Sharing location",
+    alerts: "Alerts",
+    no_route_today: "No route assigned today",
     
     // Map & Route
     optimized_route: "Optimized Route",
@@ -132,6 +148,22 @@ export const translations = {
     good_morning: "सुप्रभात,",
     good_afternoon: "नमस्कार,",
     good_evening: "शुभ संध्या,",
+
+    // Dashboard extras
+    today_route: "आज का रूट",
+    priority_breakdown: "प्राथमिकता विवरण",
+    urgent: "अत्यावश्यक",
+    high: "उच्च",
+    normal: "सामान्य",
+    stops: "पड़ाव",
+    progress: "प्रगति",
+    view_route_map: "नक्शे पर रूट देखें",
+    bins_collected_today: "डब्बे संग्रहित",
+    in_progress: "जारी है",
+    active: "सक्रिय",
+    sharing_location: "स्थान साझा हो रहा है",
+    alerts: "अलर्ट",
+    no_route_today: "आज कोई रूट नहीं",
     
     // Map & Route
     optimized_route: "अनुकूलित रूट",
@@ -219,6 +251,22 @@ export const translations = {
     good_morning: "राम राम,",
     good_afternoon: "जय जोहार,",
     good_evening: "जय जोहार,",
+
+    // Dashboard extras
+    today_route: "आज के रस्ता",
+    priority_breakdown: "जरूरी काम",
+    urgent: "बहुत जरूरी",
+    high: "जरूरी",
+    normal: "सामान्य",
+    stops: "रुके के जगह",
+    progress: "काम के हाल",
+    view_route_map: "नक्सा म रस्ता देखव",
+    bins_collected_today: "डब्बा उठाए गे",
+    in_progress: "होवत हे",
+    active: "चालू हे",
+    sharing_location: "जगह बताए जावत हे",
+    alerts: "सूचना",
+    no_route_today: "आज कोनो रस्ता नइ हे",
     
     // Map & Route
     optimized_route: "बढ़िया रस्ता",

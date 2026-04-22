@@ -3,12 +3,12 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView
 } from 'react-native';
-import { useLanguageStore } from '../i18n';
+import { useTranslation } from '../i18n';
 import LanguagePickerModal from './LanguagePickerModal';
 
 const AppHeader = ({ title, onMenuPress, notificationCount = 0 }) => {
   const [showLangPicker, setShowLangPicker] = useState(false);
-  const { t } = useLanguageStore();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={styles.safeArea}>

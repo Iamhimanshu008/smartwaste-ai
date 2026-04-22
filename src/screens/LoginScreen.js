@@ -7,7 +7,7 @@ import {
 import { login as loginApi, getMe } from '../api/authApi';
 import client from '../api/client';
 import useStore from '../store';
-import { useLanguageStore } from '../i18n';
+import { useTranslation } from '../i18n';
 
 const LoginScreen = ({ navigation }) => {
   const [mode, setMode] = useState('email'); // 'email' | 'phone'
@@ -26,7 +26,7 @@ const LoginScreen = ({ navigation }) => {
   const [otpLoading, setOtpLoading] = useState(false);
 
   const { login } = useStore();
-  const { t } = useLanguageStore();
+  const { t } = useTranslation();
 
   // Email login
   const handleEmailLogin = async () => {

@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Modal, View, Text, TouchableOpacity, StyleSheet
 } from 'react-native';
-import { useLanguageStore } from '../i18n';
+import { useLanguageStore, useTranslation } from '../i18n';
 
 const LANGUAGES = [
   { code: 'en', label: 'English', native: 'English' },
@@ -11,7 +11,8 @@ const LANGUAGES = [
 ];
 
 const LanguagePickerModal = ({ visible, onClose }) => {
-  const { lang, setLang, t } = useLanguageStore();
+  const { lang, setLang } = useLanguageStore();
+  const { t } = useTranslation();
 
   return (
     <Modal visible={visible} transparent animationType="slide">

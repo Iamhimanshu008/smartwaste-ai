@@ -8,10 +8,6 @@ export const useLanguageStore = create(
     (set, get) => ({
       lang: 'en',
       setLang: (lang) => set({ lang }),
-      t: (key) => {
-        const lang = get().lang;
-        return translations[lang]?.[key] || translations['en']?.[key] || key;
-      },
     }),
     {
       name: 'smartwaste-lang',
@@ -19,3 +15,13 @@ export const useLanguageStore = create(
     }
   )
 );
+
+// Reactive translation hook — re-renders when lang changes
+export const useTranslation = () => {
+  const lang = useLanguageStore(state => state.lang);
+  return {
+    t: (key) => translations[lang]?.[key] || translations['en']?.[key] || key,
+    lang,
+    setLang: useLanguageStore.getState().setLang,
+  };
+};

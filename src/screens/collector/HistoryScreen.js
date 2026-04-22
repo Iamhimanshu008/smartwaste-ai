@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getHistory } from '../../api/collectorApi';
 import { COLORS } from '../../config';
+import { useTranslation } from '../../i18n';
 
 function formatDate(dateStr) {
     if (!dateStr) return '';
@@ -20,6 +21,7 @@ function formatTime(dt) {
 }
 
 export default function HistoryScreen() {
+    const { t } = useTranslation();
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -71,7 +73,7 @@ export default function HistoryScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.topBar}>
-                <Text style={styles.title}>Collection History</Text>
+                <Text style={styles.title}>{t('history')}</Text>
             </View>
             <SectionList
                 sections={sections}

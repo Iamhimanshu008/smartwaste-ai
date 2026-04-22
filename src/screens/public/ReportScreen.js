@@ -10,8 +10,10 @@ import { getBins, submitPublicReport } from '../../api/publicApi';
 import client from '../../api/client';
 import { haversineDistance } from '../../utils/geofence';
 import { COLORS } from '../../config';
+import { useTranslation } from '../../i18n';
 
 export default function ReportScreen({ route, navigation }) {
+    const { t } = useTranslation();
     const { preselectedBin } = route.params || {};
 
     const [bins, setBins] = useState([]);
@@ -152,7 +154,7 @@ export default function ReportScreen({ route, navigation }) {
             // Wake up Render server (free tier spins down after inactivity)
             await wakeUpServer();
 
-            setSubmitStatus('Uploading photo...');
+            setSubmitStatus(t('uploading'));
             const formData = new FormData();
             formData.append('bin_id', selectedBin.id);
             formData.append('image', {
@@ -172,8 +174,8 @@ export default function ReportScreen({ route, navigation }) {
             const detail = err.response?.data?.detail;
             const msg = typeof detail === 'object'
                 ? (detail.rejection_reason || JSON.stringify(detail))
-                : (detail || err.message || 'Submission failed. Please try again.');
-            Alert.alert('Submission Failed', msg);
+                : (detail || err.message || t('report_failed'));
+            Alert.alert(t('report_failed'), msg);
         }
         setSubmitting(false);
         setSubmitStatus('');
@@ -186,7 +188,7 @@ export default function ReportScreen({ route, navigation }) {
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.content}>
                     <View style={styles.resultCard}>
-                        <Text style={styles.resultTitle}>✅ Report Submitted!</Text>
+                        <Text style={styles.resultTitle}>✅ {t('report_success')}</Text>
                         <View style={styles.resultRow}>
                             <Text style={styles.resultLabel}>📊 Fill Level:</Text>
                             <Text style={styles.resultValue}>{result.fill_level}%</Text>
@@ -222,7 +224,7 @@ export default function ReportScreen({ route, navigation }) {
 
                 {/* Step 1 — Select Bin */}
                 <View style={styles.stepCard}>
-                    <Text style={styles.stepHeader}>Step 1 — Select Bin</Text>
+                    <Text style={styles.stepHeader}>Step 1 — {t('select_bin')}</Text>
                     <TouchableOpacity
                         style={styles.picker}
                         onPress={() => setShowBinPicker(true)}
@@ -243,12 +245,12 @@ export default function ReportScreen({ route, navigation }) {
 
                 {/* Step 2 — Photo */}
                 <View style={styles.stepCard}>
-                    <Text style={styles.stepHeader}>Step 2 — Take Photo</Text>
+                    <Text style={styles.stepHeader}>Step 2 — {t('take_photo')}</Text>
                     {photo ? (
                         <View style={styles.photoPreviewContainer}>
                             <Image source={{ uri: photo.uri }} style={styles.photoPreview} />
                             <TouchableOpacity style={styles.retakeBtn} onPress={() => setPhoto(null)}>
-                                <Text style={styles.retakeBtnText}>Retake ✕</Text>
+                                <Text style={styles.retakeBtnText}>{t('retake')} ✕</Text>
                             </TouchableOpacity>
                         </View>
                     ) : (
@@ -281,7 +283,7 @@ export default function ReportScreen({ route, navigation }) {
 
                 {/* Step 3 — Location */}
                 <View style={styles.stepCard}>
-                    <Text style={styles.stepHeader}>Step 3 — Location</Text>
+                    <Text style={styles.stepHeader}>Step 3 — {t('location')}</Text>
                     <View style={[styles.locRow, {
                         backgroundColor: locStatus === 'found' ? '#DCFCE7' : locStatus === 'detecting' ? '#EFF6FF' : '#FEE2E2'
                     }]}>
@@ -307,10 +309,10 @@ export default function ReportScreen({ route, navigation }) {
                     {submitting ? (
                         <>
                             <ActivityIndicator color="#fff" size="small" />
-                            <Text style={[styles.submitBtnText, { marginLeft: 8, fontSize: 14 }]}>{submitStatus || 'Please wait...'}</Text>
+                            <Text style={[styles.submitBtnText, { marginLeft: 8, fontSize: 14 }]}>{submitStatus || t('loading')}</Text>
                         </>
                     ) : (
-                        <Text style={styles.submitBtnText}>🚀  Submit Report</Text>
+                        <Text style={styles.submitBtnText}>🚀  {t('submit_report')}</Text>
                     )}
                 </TouchableOpacity>
 
@@ -332,7 +334,7 @@ export default function ReportScreen({ route, navigation }) {
             <Modal visible={showBinPicker} animationType="slide" presentationStyle="pageSheet">
                 <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.bg }}>
                     <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Select a Bin</Text>
+                        <Text style={styles.modalTitle}>{t('select_bin')}</Text>
                         <TouchableOpacity onPress={() => setShowBinPicker(false)}>
                             <Text style={styles.modalClose}>✕ Close</Text>
                         </TouchableOpacity>
