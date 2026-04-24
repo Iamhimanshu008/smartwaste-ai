@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 
 const APK_URL = import.meta.env.VITE_APK_DOWNLOAD_URL || 
-  "https://github.com/Iamhimanshu008/smartwaste-ai/releases/download/v2.2.3/SmartWasteAI-v2.2.3.apk";
+  "https://github.com/Iamhimanshu008/smartwaste-ai/releases/download/v2.2.4/SmartWasteAI-v2.2.4.apk";
 const APK_DOWNLOAD_URL = APK_URL;
 
 /* ──────────── Reusable Glass Card ──────────── */
@@ -144,7 +144,7 @@ export default function LandingPage() {
                                   Download Android App
                                 </a>
                                 <p style={{fontSize:'11px', color:'#9ca3af', marginTop:'4px', textAlign:'center'}}>
-                                  v2.2.3 • Free • Android 8.0+
+                                  v2.2.4 • Free • Android 8.0+
                                 </p>
                             </div>
                             <Link
