@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import AutoText from '../../components/AutoText';
 import {
     View, Text, SectionList, StyleSheet,
     RefreshControl, ActivityIndicator, Alert,
@@ -92,8 +93,8 @@ export default function HistoryScreen() {
                 ListEmptyComponent={
                     <View style={styles.empty}>
                         <Text style={styles.emptyEmoji}>📋</Text>
-                        <Text style={styles.emptyTitle}>No collections yet</Text>
-                        <Text style={styles.emptyText}>Completed collections will appear here.</Text>
+                        <AutoText style={styles.emptyTitle}>No collections yet</AutoText>
+                        <AutoText style={styles.emptyText}>Completed collections will appear here.</AutoText>
                     </View>
                 }
             />

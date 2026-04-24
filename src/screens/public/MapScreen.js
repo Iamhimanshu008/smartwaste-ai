@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator,
 } from 'react-native';
+import AutoText from '../../components/AutoText';
 import * as Location from 'expo-location';
 import { getBins, getLiveStatus } from '../../api/publicApi';
 import BinPin from '../../components/BinPin';
@@ -85,10 +86,10 @@ export default function PublicMapScreen({ navigation }) {
             <View style={styles.container}>
                 <View style={styles.errorContainer}>
                     <Text style={styles.errorEmoji}>🗺️</Text>
-                    <Text style={styles.errorTitle}>Map Unavailable</Text>
-                    <Text style={styles.errorSub}>
+                    <AutoText style={styles.errorTitle}>Map Unavailable</AutoText>
+                    <AutoText style={styles.errorSub}>
                         Map could not load. Please check your internet connection and try again.
-                    </Text>
+                    </AutoText>
                     <TouchableOpacity
                         style={styles.retryBtn}
                         onPress={() => setMapError(false)}
@@ -103,7 +104,7 @@ export default function PublicMapScreen({ navigation }) {
                         style={[styles.loginLink, { backgroundColor: '#F3E8FF', marginBottom: 8, width: '100%', alignItems: 'center' }]}
                         onPress={() => navigation.navigate('Recyclers')}
                     >
-                        <Text style={[styles.loginLinkText, { color: '#7E22CE' }]}>🏭 Sell Waste to Recyclers</Text>
+                        <AutoText style={[styles.loginLinkText, { color: '#7E22CE' }]}>🏭 Sell Waste to Recyclers</AutoText>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -111,14 +112,14 @@ export default function PublicMapScreen({ navigation }) {
                         onPress={() => navigation.navigate('Report', {})}
                         activeOpacity={0.85}
                     >
-                        <Text style={styles.fabText}>📸  Report Full Bin</Text>
+                        <AutoText style={styles.fabText}>📸  Report Full Bin</AutoText>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={styles.loginLink}
                         onPress={() => navigation.navigate('Login')}
                     >
-                        <Text style={styles.loginLinkText}>Collector? Sign In →</Text>
+                        <AutoText style={styles.loginLinkText}>Collector? Sign In →</AutoText>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -138,8 +139,8 @@ export default function PublicMapScreen({ navigation }) {
             <MapErrorBoundary fallback={
                 <View style={styles.errorContainer}>
                     <Text style={styles.errorEmoji}>🗺️</Text>
-                    <Text style={styles.errorTitle}>Map Crashed</Text>
-                    <Text style={styles.errorSub}>The map component encountered an error. You can still report bins below.</Text>
+                    <AutoText style={styles.errorTitle}>Map Crashed</AutoText>
+                    <AutoText style={styles.errorSub}>The map component encountered an error. You can still report bins below.</AutoText>
                 </View>
             }>
             <MapView
@@ -206,8 +207,8 @@ export default function PublicMapScreen({ navigation }) {
                 <View style={styles.headerCard}>
                     <Text style={styles.headerEmoji}>♻️</Text>
                     <View>
-                        <Text style={styles.headerTitle}>SmartWaste AI</Text>
-                        <Text style={styles.headerSub}>{bins.length} bins tracked in Raipur</Text>
+                        <AutoText style={styles.headerTitle}>SmartWaste AI</AutoText>
+                        <AutoText style={styles.headerSub}>{bins.length} bins tracked in Raipur</AutoText>
                     </View>
                 </View>
             </View>
@@ -223,7 +224,7 @@ export default function PublicMapScreen({ navigation }) {
                     style={[styles.loginLink, { backgroundColor: '#F3E8FF', marginBottom: 8, width: '100%', alignItems: 'center' }]}
                     onPress={() => navigation.navigate('Recyclers')}
                 >
-                    <Text style={[styles.loginLinkText, { color: '#7E22CE' }]}>🏭 Sell Waste to Recyclers</Text>
+                    <AutoText style={[styles.loginLinkText, { color: '#7E22CE' }]}>🏭 Sell Waste to Recyclers</AutoText>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -231,14 +232,14 @@ export default function PublicMapScreen({ navigation }) {
                     onPress={() => navigation.navigate('Report', {})}
                     activeOpacity={0.85}
                 >
-                    <Text style={styles.fabText}>📸  Report Full Bin</Text>
+                    <AutoText style={styles.fabText}>📸  Report Full Bin</AutoText>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={styles.loginLink}
                     onPress={() => navigation.navigate('Login')}
                 >
-                    <Text style={styles.loginLinkText}>Collector? Sign In →</Text>
+                    <AutoText style={styles.loginLinkText}>Collector? Sign In →</AutoText>
                 </TouchableOpacity>
             </View>
         </View>

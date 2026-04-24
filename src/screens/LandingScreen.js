@@ -3,6 +3,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   Image, StatusBar, Dimensions
 } from 'react-native';
+import AutoText from '../components/AutoText';
 import LanguagePickerModal from '../components/LanguagePickerModal';
 import { useTranslation } from '../i18n';
 
@@ -38,21 +39,21 @@ const LandingScreen = ({ navigation }) => {
         <View style={styles.logoContainer}>
           <Text style={styles.logoEmoji}>♻️</Text>
         </View>
-        <Text style={styles.appName}>SmartWaste AI</Text>
-        <Text style={styles.tagline}>
+        <AutoText style={styles.appName}>SmartWaste AI</AutoText>
+        <AutoText style={styles.tagline}>
           Revolutionizing Rural{'\n'}Waste Management
-        </Text>
-        <Text style={styles.subtitle}>
+        </AutoText>
+        <AutoText style={styles.subtitle}>
           AI-powered collection routes • Real-time bin tracking{'\n'}
           Community reporting • Recycler marketplace
-        </Text>
+        </AutoText>
       </View>
       
       {/* Feature Pills */}
       <View style={styles.pillsRow}>
         {['🤖 AI Vision', '🗺️ GPS Routes', '📊 Analytics'].map((f, i) => (
           <View key={i} style={styles.pill}>
-            <Text style={styles.pillText}>{f}</Text>
+            <AutoText style={styles.pillText}>{f}</AutoText>
           </View>
         ))}
       </View>
@@ -61,17 +62,17 @@ const LandingScreen = ({ navigation }) => {
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <Text style={styles.statNum}>100+</Text>
-          <Text style={styles.statLabel}>Bins Tracked</Text>
+          <AutoText style={styles.statLabel}>Bins Tracked</AutoText>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
           <Text style={styles.statNum}>Multiple</Text>
-          <Text style={styles.statLabel}>Zones</Text>
+          <AutoText style={styles.statLabel}>Zones</AutoText>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
           <Text style={styles.statNum}>AI</Text>
-          <Text style={styles.statLabel}>Powered</Text>
+          <AutoText style={styles.statLabel}>Powered</AutoText>
         </View>
       </View>
 

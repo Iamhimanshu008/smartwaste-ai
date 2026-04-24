@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import AutoText from '../../components/AutoText';
 import {
     View, Text, StyleSheet, TouchableOpacity,
     Linking, ActivityIndicator, Alert, Modal, TextInput,
@@ -122,9 +123,9 @@ export default function MapScreen({ navigation }) {
     if (!todayRoute || stops.length === 0) {
         return (
             <View style={styles.center}>
-                <Text style={styles.noRoute}>No route for today</Text>
+                <AutoText style={styles.noRoute}>No route for today</AutoText>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                    <Text style={styles.backBtnText}>Go Back</Text>
+                    <AutoText style={styles.backBtnText}>Go Back</AutoText>
                 </TouchableOpacity>
             </View>
         );
@@ -154,7 +155,7 @@ export default function MapScreen({ navigation }) {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backArrow}>
-                    <Text style={styles.backArrowText}>← Back</Text>
+                    <AutoText style={styles.backArrowText}>← Back</AutoText>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>
                     {t('my_route')} {todayRoute.collected_stops}/{todayRoute.total_stops}
@@ -209,12 +210,12 @@ export default function MapScreen({ navigation }) {
             {stops.length > 0 && stops.every(s => s.status === 'collected') ? (
                 <View style={styles.bottomSheet}>
                     <Text style={styles.doneEmoji}>🎉</Text>
-                    <Text style={styles.doneText}>All bins collected! Route complete.</Text>
+                    <AutoText style={styles.doneText}>All bins collected! Route complete.</AutoText>
                 </View>
             ) : selected ? (
                 <View style={styles.bottomSheet}>
                     <View style={styles.bottomHandle} />
-                    <Text style={styles.nextLabel}>{selected.status === 'collected' ? 'COLLECTED' : 'BIN DETAILS'}</Text>
+                    <AutoText style={styles.nextLabel}>{selected.status === 'collected' ? 'COLLECTED' : 'BIN DETAILS'}</AutoText>
                     <Text style={styles.binName}>{selected.bin_label}</Text>
                     {selected.address ? <Text style={styles.addressText} numberOfLines={2}>{selected.address}</Text> : null}
                     <View style={styles.fillRow}>
@@ -226,7 +227,7 @@ export default function MapScreen({ navigation }) {
                     </View>
                     <View style={styles.btnRow}>
                         <TouchableOpacity style={styles.navBtn} onPress={handleNavigate}>
-                            <Text style={styles.navBtnText}>🗺️  Navigate</Text>
+                            <AutoText style={styles.navBtnText}>🗺️  Navigate</AutoText>
                         </TouchableOpacity>
                         {selected.status !== 'collected' ? (
                             <TouchableOpacity
@@ -246,7 +247,7 @@ export default function MapScreen({ navigation }) {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>{t('mark_collected')}</Text>
-                        <Text style={styles.modalSub}>Enter kg collected for {collectModal?.bin_label}</Text>
+                        <AutoText style={styles.modalSub}>Enter kg collected for {collectModal?.bin_label}</AutoText>
                         <TextInput
                             style={styles.modalInput}
                             placeholder="kg collected (e.g. 5)"
@@ -264,14 +265,14 @@ export default function MapScreen({ navigation }) {
                         />
                         <View style={styles.modalBtnRow}>
                             <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setCollectModal(null)}>
-                                <Text style={styles.modalCancelText}>Cancel</Text>
+                                <AutoText style={styles.modalCancelText}>Cancel</AutoText>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.modalSubmitBtn, collecting && { opacity: 0.6 }]}
                                 onPress={handleCollectSubmit}
                                 disabled={collecting}
                             >
-                                {collecting ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.modalSubmitText}>Submit</Text>}
+                                {collecting ? <ActivityIndicator color="#fff" size="small" /> : <AutoText style={styles.modalSubmitText}>Submit</AutoText>}
                             </TouchableOpacity>
                         </View>
                     </View>

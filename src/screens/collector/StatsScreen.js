@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import AutoText from '../../components/AutoText';
 import {
     View, Text, ScrollView, StyleSheet,
     ActivityIndicator, TouchableOpacity, RefreshControl,
@@ -52,9 +53,9 @@ export default function StatsScreen() {
         return (
             <SafeAreaView style={styles.center}>
                 <Text style={styles.errorEmoji}>⚠️</Text>
-                <Text style={styles.errorText}>Failed to load stats</Text>
+                <AutoText style={styles.errorText}>Failed to load stats</AutoText>
                 <TouchableOpacity style={styles.retryBtn} onPress={loadStats}>
-                    <Text style={styles.retryText}>Try Again</Text>
+                    <AutoText style={styles.retryText}>Try Again</AutoText>
                 </TouchableOpacity>
             </SafeAreaView>
         );
@@ -68,10 +69,10 @@ export default function StatsScreen() {
             >
                 {/* Header */}
                 <Text style={styles.header}>{t('stats')} 📊</Text>
-                <Text style={styles.subtitle}>Track your collection impact</Text>
+                <AutoText style={styles.subtitle}>Track your collection impact</AutoText>
 
                 {/* THIS MONTH */}
-                <Text style={styles.sectionTitle}>THIS MONTH</Text>
+                <AutoText style={styles.sectionTitle}>THIS MONTH</AutoText>
                 <View style={styles.row}>
                     <StatCard
                         emoji="🗑️"
@@ -89,7 +90,7 @@ export default function StatsScreen() {
                 </View>
 
                 {/* ALL TIME */}
-                <Text style={styles.sectionTitle}>ALL TIME</Text>
+                <AutoText style={styles.sectionTitle}>ALL TIME</AutoText>
                 <View style={styles.row}>
                     <StatCard
                         emoji="🏆"

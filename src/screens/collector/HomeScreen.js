@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import AutoText from '../../components/AutoText';
 import {
     View, Text, ScrollView, TouchableOpacity,
     StyleSheet, RefreshControl, ActivityIndicator, Alert,
@@ -124,7 +125,7 @@ export default function HomeScreen({ navigation }) {
                     <View style={styles.emptyCard}>
                         <Text style={styles.emptyEmoji}>🎉</Text>
                         <Text style={styles.emptyTitle}>{t('no_route_today')}</Text>
-                        <Text style={styles.emptyText}>Check back later or contact your zone manager.</Text>
+                        <AutoText style={styles.emptyText}>Check back later or contact your zone manager.</AutoText>
                     </View>
                 ) : todayRoute ? (
                     <>

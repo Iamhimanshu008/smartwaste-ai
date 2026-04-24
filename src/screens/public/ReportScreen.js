@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import AutoText from '../../components/AutoText';
 import {
     View, Text, StyleSheet, TouchableOpacity, ScrollView,
     Image, Alert, ActivityIndicator, Modal, FlatList, TextInput,
@@ -190,28 +191,28 @@ export default function ReportScreen({ route, navigation }) {
                     <View style={styles.resultCard}>
                         <Text style={styles.resultTitle}>✅ {t('report_success')}</Text>
                         <View style={styles.resultRow}>
-                            <Text style={styles.resultLabel}>📊 Fill Level:</Text>
+                            <AutoText style={styles.resultLabel}>📊 Fill Level:</AutoText>
                             <Text style={styles.resultValue}>{result.fill_level}%</Text>
                         </View>
                         <View style={styles.resultRow}>
-                            <Text style={styles.resultLabel}>🗑️ Waste Type:</Text>
+                            <AutoText style={styles.resultLabel}>🗑️ Waste Type:</AutoText>
                             <Text style={styles.resultValue}>{result.waste_type || '—'}</Text>
                         </View>
                         <View style={styles.resultRow}>
-                            <Text style={styles.resultLabel}>⚠️ Urgency:</Text>
+                            <AutoText style={styles.resultLabel}>⚠️ Urgency:</AutoText>
                             <Text style={styles.resultValue}>{result.urgency || '—'}</Text>
                         </View>
                         <View style={styles.resultRow}>
-                            <Text style={styles.resultLabel}>🎯 AI Confidence:</Text>
+                            <AutoText style={styles.resultLabel}>🎯 AI Confidence:</AutoText>
                             <Text style={styles.resultValue}>{result.ai_confidence}%</Text>
                         </View>
                         {result.ai_observations ? (
                             <View style={styles.observationsBox}>
-                                <Text style={styles.resultLabel}>💬 Observations:</Text>
+                                <AutoText style={styles.resultLabel}>💬 Observations:</AutoText>
                                 <Text style={styles.observationsText}>{result.ai_observations}</Text>
                             </View>
                         ) : null}
-                        <Text style={styles.resultFooter}>Your report is now under review.</Text>
+                        <AutoText style={styles.resultFooter}>Your report is now under review.</AutoText>
                     </View>
                 </ScrollView>
             </SafeAreaView>
@@ -257,11 +258,11 @@ export default function ReportScreen({ route, navigation }) {
                         <View style={styles.photoButtons}>
                             <TouchableOpacity style={styles.cameraBtn} onPress={takePhoto}>
                                 <Text style={styles.cameraBtnEmoji}>📷</Text>
-                                <Text style={styles.cameraBtnText}>Camera</Text>
+                                <AutoText style={styles.cameraBtnText}>Camera</AutoText>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.galleryBtn} onPress={pickPhoto}>
                                 <Text style={styles.cameraBtnEmoji}>🖼️</Text>
-                                <Text style={styles.galleryBtnText}>Gallery</Text>
+                                <AutoText style={styles.galleryBtnText}>Gallery</AutoText>
                             </TouchableOpacity>
                         </View>
                     )}
@@ -269,7 +270,7 @@ export default function ReportScreen({ route, navigation }) {
 
                 {/* Description */}
                 <View style={styles.stepCard}>
-                    <Text style={styles.stepHeader}>Description (optional)</Text>
+                    <AutoText style={styles.stepHeader}>Description (optional)</AutoText>
                     <TextInput
                         style={styles.descInput}
                         placeholder="Add any notes..."
@@ -336,7 +337,7 @@ export default function ReportScreen({ route, navigation }) {
                     <View style={styles.modalHeader}>
                         <Text style={styles.modalTitle}>{t('select_bin')}</Text>
                         <TouchableOpacity onPress={() => setShowBinPicker(false)}>
-                            <Text style={styles.modalClose}>✕ Close</Text>
+                            <AutoText style={styles.modalClose}>✕ Close</AutoText>
                         </TouchableOpacity>
                     </View>
                     <FlatList
@@ -345,7 +346,7 @@ export default function ReportScreen({ route, navigation }) {
                         contentContainerStyle={{ padding: 16 }}
                         ListEmptyComponent={
                             <View style={styles.emptyBins}>
-                                <Text style={styles.emptyBinsText}>No bins available</Text>
+                                <AutoText style={styles.emptyBinsText}>No bins available</AutoText>
                             </View>
                         }
                         renderItem={({ item }) => (
