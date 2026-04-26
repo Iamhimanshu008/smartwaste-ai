@@ -21,6 +21,15 @@ def get_news(
     ).order_by(NewsFeed.created_at.desc()).offset(skip).limit(limit).all()
 
 # Admin only endpoints
+@router.get("/admin/all", response_model=List[NewsFeedRead])
+def get_all_news_admin(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(["admin", "subadmin"]))
+):
+    return db.query(NewsFeed).order_by(
+        NewsFeed.created_at.desc()
+    ).all()
+
 @router.post("/", response_model=NewsFeedRead)
 def create_news(
     data: NewsFeedCreate,

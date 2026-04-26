@@ -3,7 +3,7 @@ import useStore from '../store';
 import {
     LayoutDashboard, Users, Trash2, MapPin, FileText,
     Settings, LogOut, Menu, ChevronLeft, Truck,
-    ClipboardCheck, BarChart3, Calendar, Recycle, Building
+    ClipboardCheck, BarChart3, Calendar, Recycle, Building, Newspaper
 } from 'lucide-react';
 
 const roleNavItems = {
@@ -14,6 +14,7 @@ const roleNavItems = {
         { to: '/admin/routes', icon: MapPin, label: 'Routes' },
         { to: '/admin/recyclers', icon: Building, label: 'Recyclers' },
         { to: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
+        { to: '/news', icon: Newspaper, label: 'News Feed' },
         { to: '/admin/settings', icon: Settings, label: 'Settings' },
     ],
     sub_admin: [

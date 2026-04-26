@@ -9,6 +9,7 @@ import SHGDashboard from './pages/SHGDashboard';
 import CollectorDashboard from './pages/CollectorDashboard';
 import RecyclerDashboard from './pages/RecyclerDashboard';
 import RecyclerPortal from './pages/RecyclerPortal';
+import NewsManagement from './pages/NewsManagement';
 
 export default function App() {
     return (
@@ -23,6 +24,15 @@ export default function App() {
                 element={
                     <ProtectedRoute allowedRoles={['admin']}>
                         <AdminDashboard />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/news"
+                element={
+                    <ProtectedRoute allowedRoles={['admin', 'sub_admin']}>
+                        <NewsManagement />
                     </ProtectedRoute>
                 }
             />
