@@ -156,7 +156,7 @@ export default function StatsScreen() {
                 {/* Footer */}
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>
-                        <AutoText>Aapka yogdan Raipur ko swachh bana raha hai!</AutoText> 🙏
+                        <AutoText>Your contribution makes Raipur cleaner!</AutoText> 🙏
                     </Text>
                 </View>
             </ScrollView>

@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 import { useTranslation } from '../i18n';
 import useStore from '../store';
+import { checkForUpdate } from '../utils/updateChecker';
+import appJson from '../../app.json';
 
 const { width } = Dimensions.get('window');
 
@@ -80,6 +82,17 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
           {/* Divider */}
           <View style={styles.divider} />
 
+          <TouchableOpacity
+            style={[styles.menuItem, { marginTop: 8 }]}
+            onPress={async () => {
+              onClose();
+              await checkForUpdate(appJson.expo.version, true);
+            }}
+          >
+            <Text style={styles.menuIcon}>🔄</Text>
+            <Text style={styles.menuLabel}>{t('check_for_updates') || 'Check for Updates'}</Text>
+          </TouchableOpacity>
+
           {/* Logout */}
           <TouchableOpacity
             style={styles.logoutBtn}
@@ -107,6 +120,15 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
             <Text style={styles.logoutIcon}>🚪</Text>
             <Text style={styles.logoutText}>{t('logout')}</Text>
           </TouchableOpacity>
+
+          <Text style={{ 
+            color: '#9ca3af', 
+            fontSize: 11, 
+            textAlign: 'center',
+            paddingBottom: 16 
+          }}>
+            SmartWaste AI v{appJson.expo.version}
+          </Text>
         </View>
       </View>
     </Modal>

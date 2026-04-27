@@ -50,14 +50,18 @@ export const useTranslation = () => {
   const isLoading = useLanguageStore(state => state.isLoading);
   const setLang = useLanguageStore(state => state.setLang);
 
-  const t = (key) => {
-    // Hindi: try API cache first, then JSON fallback
-    if (lang === 'hi' && apiCache?.hi?.[key]) {
-      return apiCache.hi[key];
-    }
-    // CG and fallback: always use JSON
-    return translations[lang]?.[key] || translations['en']?.[key] || key;
+  const t = (key, langOverride) => {
+    const currentLang = langOverride || lang;
+    if (!key) return '';
+    if (!currentLang || currentLang === 'en') return key;
+    return translations[currentLang]?.[key] || key;
   };
 
   return { t, lang, setLang, isLoading };
+};
+
+export const t = (key, lang) => {
+  if (!key) return '';
+  if (!lang || lang === 'en') return key;
+  return translations[lang]?.[key] || key;
 };

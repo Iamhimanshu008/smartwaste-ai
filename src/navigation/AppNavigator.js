@@ -13,6 +13,8 @@ import { registerForPushNotifications, setupNotificationListeners } from '../uti
 import { getUnreadCount } from '../api/notificationApi';
 
 import LandingScreen from '../screens/LandingScreen';
+import { checkForUpdate } from '../utils/updateChecker';
+import { expo } from '../../app.json';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +31,12 @@ export default function AppNavigator() {
         if (useStore.persist.hasHydrated()) {
             setLoading(false);
         }
+
+        // Check for updates silently on startup (no alert if up to date)
+        setTimeout(() => {
+            checkForUpdate(expo.version, false);
+        }, 3000); // 3 second delay after app loads
+
         return unsub;
     }, []);
 
