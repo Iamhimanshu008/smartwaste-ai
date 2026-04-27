@@ -10,7 +10,7 @@ export default function NewsFeedScreen({ navigation }) {
 
     const staticFallback = [
       { id: 1, title: 'SmartWaste AI launch in Nava Raipur', 
-        summary: 'SmartWaste AI ne waste collection 40% efficient banaya',
+        summary: 'SmartWaste AI has made waste collection 40% more efficient',
         emoji: '🏆', tag: 'Success Story', 
         tag_color: '#16a34a', created_at: new Date().toISOString() },
     ];

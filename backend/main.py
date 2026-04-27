@@ -51,32 +51,7 @@ async def lifespan(app: FastAPI):
     logger.info("Schema managed by Alembic migrations")
     print("✓ Schema ready (managed by Alembic)")
 
-    # Seed data — run exactly once (tracked via seed_metadata table)
-    with engine.connect() as conn:
-        conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS seed_metadata (
-                key VARCHAR(100) PRIMARY KEY,
-                seeded_at TIMESTAMP DEFAULT NOW()
-            );
-        """))
-        conn.commit()
-
-    db = SessionLocal()
-    try:
-        result = db.execute(text("SELECT key FROM seed_metadata WHERE key = 'initial_seed'")).fetchone()
-        if result is None:
-            from seed_data import seed_database
-            seed_database()
-            db.execute(text("INSERT INTO seed_metadata (key) VALUES ('initial_seed')"))
-            db.commit()
-            print("✓ Seed data loaded (first-time setup)!")
-        else:
-            print("✓ Seed already done — skipping.")
-    except Exception as e:
-        db.rollback()
-        print(f"  Seed data info: {e}")
-    finally:
-        db.close()
+    # Removed seed_data execution as per production requirements
 
     # Ensure upload directory exists
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)

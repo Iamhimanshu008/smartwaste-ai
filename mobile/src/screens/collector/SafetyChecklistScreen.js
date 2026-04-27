@@ -5,16 +5,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../../config';
 
 const CHECKLIST_ITEMS = [
-  { id: 1, icon: "🧤", text: "Gloves pehne hain", category: "PPE" },
-  { id: 2, icon: "😷", text: "Mask lagaya hai", category: "PPE" },
-  { id: 3, icon: "👢", text: "Safety boots hain", category: "PPE" },
-  { id: 4, icon: "🦺", text: "Reflective jacket pehni hai", category: "PPE" },
-  { id: 5, icon: "🚛", text: "Vehicle check kiya", category: "Vehicle" },
-  { id: 6, icon: "⛽", text: "Fuel check kiya", category: "Vehicle" },
-  { id: 7, icon: "📱", text: "App mein login ho gaya", category: "Digital" },
-  { id: 8, icon: "🗺️", text: "Aaj ka route dekha", category: "Digital" },
-  { id: 9, icon: "💧", text: "Paani ki bottle li", category: "Personal" },
-  { id: 10, icon: "📞", text: "Emergency contact save hai", category: "Personal" },
+  { id: 1, icon: "🧤", text: "Wearing gloves", category: "PPE" },
+  { id: 2, icon: "😷", text: "Wearing mask", category: "PPE" },
+  { id: 3, icon: "👢", text: "Safety boots on", category: "PPE" },
+  { id: 4, icon: "🦺", text: "Wearing reflective jacket", category: "PPE" },
+  { id: 5, icon: "🚛", text: "Vehicle checked", category: "Vehicle" },
+  { id: 6, icon: "⛽", text: "Fuel checked", category: "Vehicle" },
+  { id: 7, icon: "📱", text: "Logged into app", category: "Digital" },
+  { id: 8, icon: "🗺️", text: "Today's route reviewed", category: "Digital" },
+  { id: 9, icon: "💧", text: "Water bottle taken", category: "Personal" },
+  { id: 10, icon: "📞", text: "Emergency contact saved", category: "Personal" },
 ];
 
 export default function SafetyChecklistScreen({ navigation }) {
@@ -94,7 +94,7 @@ export default function SafetyChecklistScreen({ navigation }) {
             <ScrollView contentContainerStyle={styles.listContainer}>
                 {allChecked && (
                     <View style={styles.successMessage}>
-                        <Text style={styles.successText}>Aaj safe ho! ✅</Text>
+                        <Text style={styles.successText}>All safe for today! ✅</Text>
                     </View>
                 )}
 
@@ -126,7 +126,7 @@ export default function SafetyChecklistScreen({ navigation }) {
                     onPress={handleStart}
                     disabled={!allChecked}
                 >
-                    <Text style={styles.startBtnText}>Shuru Karein</Text>
+                    <Text style={styles.startBtnText}>Start Work</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
