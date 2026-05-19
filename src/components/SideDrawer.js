@@ -3,6 +3,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   Modal, Animated, Dimensions, ScrollView, Alert
 } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from '../i18n';
 import useStore from '../store';
 import { checkForUpdate } from '../utils/updateChecker';
@@ -15,12 +16,12 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
   const logout = useStore(state => state.logout);
 
   const menuItems = [
-    { icon: '🏠', key: 'Dashboard', screen: 'Home' },
-    { icon: '🗺️', key: 'My Route', screen: 'Map' },
-    { icon: '📊', key: 'Stats', screen: 'Stats' },
-    { icon: '📋', key: 'History', screen: 'History' },
-    { icon: '🦺', key: 'Safety Checklist', screen: 'SafetyChecklist' },
-    { icon: '📰', key: 'Swachhta Samachar', screen: 'NewsFeed' },
+    { icon: <Ionicons name="home-outline" size={22} color="#16a34a" />, key: 'Dashboard', screen: 'Home' },
+    { icon: <MaterialCommunityIcons name="map-marker-path" size={22} color="#16a34a" />, key: 'My Route', screen: 'Map' },
+    { icon: <Ionicons name="stats-chart-outline" size={22} color="#16a34a" />, key: 'Stats', screen: 'Stats' },
+    { icon: <MaterialCommunityIcons name="clipboard-list-outline" size={22} color="#16a34a" />, key: 'History', screen: 'History' },
+    { icon: <MaterialCommunityIcons name="shield-check-outline" size={22} color="#16a34a" />, key: 'Safety Checklist', screen: 'SafetyChecklist' },
+    { icon: <MaterialCommunityIcons name="newspaper-variant-outline" size={22} color="#16a34a" />, key: 'Swachhta Samachar', screen: 'NewsFeed' },
   ];
 
   const handleNavigate = (screen) => {
@@ -73,7 +74,7 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
                 style={styles.menuItem}
                 onPress={() => handleNavigate(item.screen)}
               >
-                <Text style={styles.menuIcon}>{item.icon}</Text>
+                <View style={styles.menuIconContainer}>{item.icon}</View>
                 <Text style={styles.menuLabel}>{t(item.key)}</Text>
               </TouchableOpacity>
             ))}
@@ -89,7 +90,9 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
               await checkForUpdate(appJson.expo.version, true);
             }}
           >
-            <Text style={styles.menuIcon}>🔄</Text>
+            <View style={styles.menuIconContainer}>
+              <Ionicons name="refresh-circle-outline" size={22} color="#6b7280" />
+            </View>
             <Text style={styles.menuLabel}>{t('Check for Updates') || 'Check for Updates'}</Text>
           </TouchableOpacity>
 
@@ -117,7 +120,9 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
               );
             }}
           >
-            <Text style={styles.logoutIcon}>🚪</Text>
+            <View style={styles.logoutIconContainer}>
+              <MaterialIcons name="logout" size={22} color="#dc2626" />
+            </View>
             <Text style={styles.logoutText}>{t('Logout')}</Text>
           </TouchableOpacity>
 
@@ -178,7 +183,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center',
     paddingVertical: 14, paddingHorizontal: 20, gap: 14,
   },
-  menuIcon: { fontSize: 20, width: 28 },
+  menuIconContainer: { width: 28, alignItems: 'center' },
   menuLabel: {
     color: '#e2e8f0', fontSize: 15, fontWeight: '500',
   },
@@ -189,7 +194,7 @@ const styles = StyleSheet.create({
     margin: 12, borderRadius: 12,
     borderWidth: 1, borderColor: 'rgba(220,38,38,0.3)',
   },
-  logoutIcon: { fontSize: 20 },
+  logoutIconContainer: { width: 28, alignItems: 'center' },
   logoutText: {
     color: '#ef4444', fontSize: 15, fontWeight: '700',
   },

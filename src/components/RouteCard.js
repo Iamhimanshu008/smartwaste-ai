@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../config';
 
 export default function RouteCard({ stops, collectedStops = 0, distance, duration, onStart }) {
@@ -9,7 +10,10 @@ export default function RouteCard({ stops, collectedStops = 0, distance, duratio
             {/* Title Row */}
             <View style={styles.titleRow}>
                 <Text style={styles.title}>Today's Route</Text>
-                <Text style={styles.badge}>🚛 Active</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5 }}>
+                    <MaterialCommunityIcons name="truck-delivery-outline" size={14} color={COLORS.accent} />
+                    <Text style={styles.badge}>Active</Text>
+                </View>
             </View>
 
             {/* Stats Grid */}
@@ -43,7 +47,10 @@ export default function RouteCard({ stops, collectedStops = 0, distance, duratio
 
             {/* Start Button */}
             <TouchableOpacity style={styles.startBtn} onPress={onStart} activeOpacity={0.85}>
-                <Text style={styles.startBtnText}>🗺️  View Route on Map</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <MaterialCommunityIcons name="map-marker-path" size={18} color={COLORS.dark} />
+                    <Text style={styles.startBtnText}>View Route on Map</Text>
+                </View>
             </TouchableOpacity>
         </View>
     );
@@ -53,7 +60,7 @@ const styles = StyleSheet.create({
     card: { backgroundColor: COLORS.dark, borderRadius: 24, padding: 22, shadowColor: COLORS.dark, shadowOpacity: 0.3, shadowRadius: 16, elevation: 6 },
     titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 },
     title: { fontSize: 18, fontWeight: '800', color: COLORS.white },
-    badge: { backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5, fontSize: 12, color: COLORS.accent, fontWeight: '600' },
+    badge: { fontSize: 12, color: COLORS.accent, fontWeight: '600' },
     statsGrid: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginBottom: 18, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 16, paddingVertical: 14 },
     stat: { alignItems: 'center', flex: 1 },
     statValue: { fontSize: 24, fontWeight: '800', color: COLORS.white },

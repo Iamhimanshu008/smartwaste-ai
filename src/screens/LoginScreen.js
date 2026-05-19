@@ -4,6 +4,7 @@ import {
   StyleSheet, Alert, KeyboardAvoidingView,
   Platform, ScrollView, ActivityIndicator
 } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import AutoText from '../components/AutoText';
 import { login as loginApi, getMe } from '../api/authApi';
 import client from '../api/client';
@@ -116,7 +117,9 @@ const LoginScreen = ({ navigation }) => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.logo}>♻️</Text>
+          <View style={styles.logoContainer}>
+            <MaterialCommunityIcons name="recycle" size={40} color="#ffffff" />
+          </View>
           <Text style={styles.title}>SmartWaste AI</Text>
           <AutoText style={styles.subtitle}>Staff Login</AutoText>
         </View>
@@ -127,19 +130,25 @@ const LoginScreen = ({ navigation }) => {
             style={[styles.toggleBtn, mode === 'email' && styles.toggleActive]}
             onPress={() => setMode('email')}
           >
-            <Text style={[
-              styles.toggleText,
-              mode === 'email' && styles.toggleTextActive
-            ]}>📧 Email</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <MaterialIcons name="email" size={16} color={mode === 'email' ? '#ffffff' : '#16a34a'} />
+              <Text style={[
+                styles.toggleText,
+                mode === 'email' && styles.toggleTextActive
+              ]}>Email</Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.toggleBtn, mode === 'phone' && styles.toggleActive]}
             onPress={() => setMode('phone')}
           >
-            <Text style={[
-              styles.toggleText,
-              mode === 'phone' && styles.toggleTextActive
-            ]}>📱 <AutoText>Phone OTP</AutoText></Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <MaterialIcons name="phone-iphone" size={16} color={mode === 'phone' ? '#ffffff' : '#16a34a'} />
+              <Text style={[
+                styles.toggleText,
+                mode === 'phone' && styles.toggleTextActive
+              ]}><AutoText>Phone OTP</AutoText></Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -183,7 +192,10 @@ const LoginScreen = ({ navigation }) => {
             <Text style={styles.label}>Phone Number</Text>
             <View style={styles.phoneRow}>
               <View style={styles.countryCode}>
-                <Text style={styles.countryCodeText}>🇮🇳 +91</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <MaterialIcons name="flag" size={16} color="#f97316" />
+                  <Text style={styles.countryCodeText}>+91</Text>
+                </View>
               </View>
               <TextInput
                 style={[styles.input, styles.phoneInput]}
@@ -230,7 +242,12 @@ const LoginScreen = ({ navigation }) => {
                 >
                   {loading
                     ? <ActivityIndicator color="#fff" />
-                    : <Text style={styles.loginBtnText}>Verify & Login →</Text>
+                    : (
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <Text style={styles.loginBtnText}>Verify & Login</Text>
+                        <Ionicons name="arrow-forward" size={18} color="#fff" />
+                      </View>
+                    )
                   }
                 </TouchableOpacity>
               </>
@@ -243,7 +260,10 @@ const LoginScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('Landing')}
           style={styles.backLink}
         >
-          <AutoText style={styles.backLinkText}>← Back</AutoText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Ionicons name="arrow-back" size={18} color="#16a34a" />
+            <AutoText style={styles.backLinkText}>Back</AutoText>
+          </View>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -257,7 +277,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center', minHeight: '100%'
   },
   header: { alignItems: 'center', marginBottom: 28 },
-  logo: { fontSize: 52 },
+  logoContainer: {
+    width: 80, height: 80, borderRadius: 40,
+    backgroundColor: '#16a34a',
+    justifyContent: 'center', alignItems: 'center',
+    marginBottom: 8,
+    shadowColor: '#16a34a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
   title: {
     fontSize: 26, fontWeight: '800',
     color: '#14532d', marginTop: 8

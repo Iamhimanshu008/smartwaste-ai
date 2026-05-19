@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet, Animated } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import useStore from '../store';
 import { getUnreadCount } from '../api/notificationApi';
@@ -64,7 +65,7 @@ export default function NotificationBell() {
             style={styles.container}
             activeOpacity={0.7}
         >
-            <Text style={styles.bellIcon}>🔔</Text>
+            <Ionicons name="notifications-outline" size={22} color="#2D6A4F" />
             {unreadCount > 0 && (
                 <Animated.View
                     style={[
@@ -91,9 +92,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'relative',
     },
-    bellIcon: {
-        fontSize: 22,
-    },
+
     badge: {
         position: 'absolute',
         top: 2,

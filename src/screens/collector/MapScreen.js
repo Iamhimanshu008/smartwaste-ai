@@ -4,6 +4,7 @@ import {
     View, Text, StyleSheet, TouchableOpacity,
     Linking, ActivityIndicator, Alert, Modal, TextInput,
 } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import MapView, { Marker, Polyline, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
@@ -155,7 +156,10 @@ export default function MapScreen({ navigation }) {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backArrow}>
-                    <AutoText style={styles.backArrowText}>← Back</AutoText>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                        <Ionicons name="arrow-back" size={18} color={COLORS.white} />
+                        <AutoText style={styles.backArrowText}>Back</AutoText>
+                    </View>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>
                     <AutoText>My Route</AutoText> {todayRoute.collected_stops}/{todayRoute.total_stops}
@@ -209,7 +213,7 @@ export default function MapScreen({ navigation }) {
             {/* Bottom Sheet */}
             {stops.length > 0 && stops.every(s => s.status === 'collected') ? (
                 <View style={styles.bottomSheet}>
-                    <Text style={styles.doneEmoji}>🎉</Text>
+                    <MaterialCommunityIcons name="party-popper" size={40} color="#16a34a" style={{ textAlign: 'center', marginBottom: 8 }} />
                     <AutoText style={styles.doneText}>All bins collected! Route complete.</AutoText>
                 </View>
             ) : selected ? (
@@ -227,7 +231,10 @@ export default function MapScreen({ navigation }) {
                     </View>
                     <View style={styles.btnRow}>
                         <TouchableOpacity style={styles.navBtn} onPress={handleNavigate}>
-                            <AutoText style={styles.navBtnText}>🗺️  Navigate</AutoText>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                <Ionicons name="navigate-outline" size={18} color={COLORS.mid} />
+                                <AutoText style={styles.navBtnText}>Navigate</AutoText>
+                            </View>
                         </TouchableOpacity>
                         {selected.status !== 'collected' ? (
                             <TouchableOpacity
@@ -235,7 +242,10 @@ export default function MapScreen({ navigation }) {
                                 onPress={() => handleCollectPress(selected)}
                                 disabled={collecting}
                             >
-                                <AutoText style={styles.collectBtnText}>✓  Mark as Collected</AutoText>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                    <Ionicons name="checkmark-circle" size={18} color="#fff" />
+                                    <AutoText style={styles.collectBtnText}>Mark as Collected</AutoText>
+                                </View>
                             </TouchableOpacity>
                         ) : null}
                     </View>
@@ -307,7 +317,7 @@ const styles = StyleSheet.create({
     navBtnText: { color: COLORS.mid, fontSize: 14, fontWeight: '700' },
     collectBtn: { flex: 1.5, height: 48, backgroundColor: '#22C55E', borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
     collectBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
-    doneEmoji: { fontSize: 40, textAlign: 'center', marginBottom: 8 },
+
     doneText: { fontSize: 16, fontWeight: '600', color: COLORS.dark, textAlign: 'center' },
     noRoute: { fontSize: 18, fontWeight: '700', color: '#333', marginBottom: 16 },
     backBtn: { backgroundColor: COLORS.mid, borderRadius: 12, paddingHorizontal: 24, paddingVertical: 12 },

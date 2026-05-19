@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import BinsScreen from '../screens/shg/BinsScreen';
 import ReportScreen from '../screens/shg/ReportScreen';
 import HistoryScreen from '../screens/shg/HistoryScreen';
@@ -8,12 +9,6 @@ import NotificationsScreen from '../screens/NotificationsScreen';
 import NotificationBell from '../components/NotificationBell';
 import { COLORS } from '../config';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-const TabIcon = ({ emoji, focused }) => (
-    <View style={{ alignItems: 'center' }}>
-        <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>
-    </View>
-);
 
 const Tab = createBottomTabNavigator();
 const AlertsStack = createNativeStackNavigator();
@@ -46,12 +41,12 @@ export default function SHGNavigator() {
             <Tab.Screen
                 name="MyBins"
                 component={BinsScreen}
-                options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />, tabBarLabel: 'My Bins' }}
+                options={{ tabBarIcon: ({ color }) => <MaterialCommunityIcons name="trash-can-outline" size={22} color={color} />, tabBarLabel: 'My Bins' }}
             />
             <Tab.Screen
                 name="Report"
                 component={ReportScreen}
-                options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="📝" focused={focused} />, tabBarLabel: 'Report' }}
+                options={{ tabBarIcon: ({ color }) => <MaterialCommunityIcons name="file-document-edit-outline" size={22} color={color} />, tabBarLabel: 'Report' }}
             />
             <Tab.Screen
                 name="Alerts"
@@ -64,14 +59,13 @@ export default function SHGNavigator() {
             <Tab.Screen
                 name="History"
                 component={HistoryScreen}
-                options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="🕐" focused={focused} />, tabBarLabel: 'History' }}
+                options={{ tabBarIcon: ({ color }) => <Ionicons name="time-outline" size={22} color={color} />, tabBarLabel: 'History' }}
             />
             <Tab.Screen
                 name="Schedule"
                 component={ScheduleScreen}
-                options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="📅" focused={focused} />, tabBarLabel: 'Schedule' }}
+                options={{ tabBarIcon: ({ color }) => <Ionicons name="calendar-outline" size={22} color={color} />, tabBarLabel: 'Schedule' }}
             />
         </Tab.Navigator>
     );
 }
-

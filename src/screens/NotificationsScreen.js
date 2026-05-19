@@ -4,6 +4,7 @@ import {
     StyleSheet, RefreshControl, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import useStore from '../store';
 import { getNotifications, markAsRead, markAllAsRead, getUnreadCount } from '../api/notificationApi';
 import { useFocusEffect } from '@react-navigation/native';
@@ -12,11 +13,20 @@ import { useTranslation } from '../i18n';
 import AutoText from '../components/AutoText';
 
 const NOTIFICATION_ICONS = {
-    critical_bin: '🚨',
-    route_assigned: '🚛',
-    report_verified: '✅',
-    route_complete: '🏁',
+    critical_bin: { name: 'alert-circle', family: 'Ionicons', color: '#dc2626' },
+    route_assigned: { name: 'truck-delivery-outline', family: 'MaterialCommunityIcons', color: '#16a34a' },
+    report_verified: { name: 'checkmark-circle', family: 'Ionicons', color: '#22c55e' },
+    route_complete: { name: 'flag-checkered', family: 'MaterialCommunityIcons', color: '#f59e0b' },
+    default: { name: 'notifications-outline', family: 'Ionicons', color: '#6b7280' },
 };
+
+function renderNotifIcon(type) {
+    const config = NOTIFICATION_ICONS[type] || NOTIFICATION_ICONS.default;
+    if (config.family === 'MaterialCommunityIcons') {
+        return <MaterialCommunityIcons name={config.name} size={22} color={config.color} />;
+    }
+    return <Ionicons name={config.name} size={22} color={config.color} />;
+}
 
 function timeAgo(dateStr) {
     if (!dateStr) return '';
@@ -93,7 +103,6 @@ export default function NotificationsScreen({ navigation }) {
 
     const renderItem = ({ item }) => {
         const type = getNotifType(item);
-        const icon = NOTIFICATION_ICONS[type] || '🔔';
 
         return (
             <TouchableOpacity
@@ -103,7 +112,7 @@ export default function NotificationsScreen({ navigation }) {
             >
                 <View style={styles.cardRow}>
                     <View style={[styles.iconCircle, !item.is_read && styles.iconCircleUnread]}>
-                        <Text style={styles.iconEmoji}>{icon}</Text>
+                        {renderNotifIcon(type)}
                     </View>
                     <View style={styles.cardContent}>
                         <View style={styles.cardHeader}>
@@ -127,7 +136,7 @@ export default function NotificationsScreen({ navigation }) {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                    <Text style={styles.backText}>← Back</Text>
+                    <Ionicons name="arrow-back" size={22} color={COLORS.mid} />
                 </TouchableOpacity>
                 <AutoText style={styles.headerTitle}>Notifications</AutoText>
                 {unreadExists && (
@@ -141,7 +150,7 @@ export default function NotificationsScreen({ navigation }) {
                 <ActivityIndicator size="large" color={COLORS.light} style={{ marginTop: 60 }} />
             ) : notifications.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyEmoji}>🔕</Text>
+                    <Ionicons name="notifications-off-outline" size={56} color="#d1d5db" />
                     <AutoText style={styles.emptyTitle}>No new notifications</AutoText>
                     <Text style={styles.emptyText}>
                         You'll receive alerts for routes, bin reports, and collection updates.
@@ -185,11 +194,6 @@ const styles = StyleSheet.create({
     backBtn: {
         paddingVertical: 4,
         paddingRight: 12,
-    },
-    backText: {
-        fontSize: 15,
-        color: COLORS.mid,
-        fontWeight: '600',
     },
     headerTitle: {
         fontSize: 18,
@@ -247,9 +251,6 @@ const styles = StyleSheet.create({
     iconCircleUnread: {
         backgroundColor: COLORS.accent + '50',
     },
-    iconEmoji: {
-        fontSize: 20,
-    },
     cardContent: {
         flex: 1,
     },
@@ -293,15 +294,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 40,
     },
-    emptyEmoji: {
-        fontSize: 56,
-        marginBottom: 16,
-    },
     emptyTitle: {
         fontSize: 18,
         fontWeight: '700',
         color: COLORS.dark,
         marginBottom: 8,
+        marginTop: 16,
     },
     emptyText: {
         fontSize: 14,

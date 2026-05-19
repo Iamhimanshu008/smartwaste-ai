@@ -3,6 +3,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   Image, StatusBar, Dimensions
 } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AutoText from '../components/AutoText';
 import LanguagePickerModal from '../components/LanguagePickerModal';
 import { useTranslation } from '../i18n';
@@ -25,7 +26,7 @@ const LandingScreen = ({ navigation }) => {
           style={styles.langBtn}
           onPress={() => setShowLangPicker(true)}
         >
-          <Text style={styles.langBtnText}>🌐</Text>
+          <Ionicons name="language-outline" size={22} color="#ffffff" />
         </TouchableOpacity>
       </View>
 
@@ -37,7 +38,7 @@ const LandingScreen = ({ navigation }) => {
       {/* Logo + Title */}
       <View style={styles.heroSection}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logoEmoji}>♻️</Text>
+          <MaterialCommunityIcons name="recycle" size={44} color="#ffffff" />
         </View>
         <AutoText style={styles.appName}>SmartWaste AI</AutoText>
         <AutoText style={styles.tagline}>
@@ -51,9 +52,16 @@ const LandingScreen = ({ navigation }) => {
       
       {/* Feature Pills */}
       <View style={styles.pillsRow}>
-        {['🤖 AI Vision', '🗺️ GPS Routes', '📊 Analytics'].map((f, i) => (
+        {[
+          { icon: <MaterialCommunityIcons name="robot-outline" size={14} color="#86efac" />, label: 'AI Vision' },
+          { icon: <MaterialCommunityIcons name="map-marker-path" size={14} color="#86efac" />, label: 'GPS Routes' },
+          { icon: <Ionicons name="stats-chart-outline" size={14} color="#86efac" />, label: 'Analytics' },
+        ].map((f, i) => (
           <View key={i} style={styles.pill}>
-            <AutoText style={styles.pillText}>{f}</AutoText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              {f.icon}
+              <AutoText style={styles.pillText}>{f.label}</AutoText>
+            </View>
           </View>
         ))}
       </View>
@@ -83,7 +91,10 @@ const LandingScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('Login')}
           activeOpacity={0.85}
         >
-          <AutoText style={styles.primaryBtnText}>🚀 Get Started</AutoText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Ionicons name="rocket-outline" size={20} color="#ffffff" />
+            <AutoText style={styles.primaryBtnText}>Get Started</AutoText>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -91,9 +102,12 @@ const LandingScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('PublicStack')}
           activeOpacity={0.8}
         >
-          <AutoText style={styles.secondaryBtnText}>
-            📸 Report Full Bin (No Login)
-          </AutoText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Ionicons name="camera-outline" size={20} color="#4ade80" />
+            <AutoText style={styles.secondaryBtnText}>
+              Report Full Bin (No Login)
+            </AutoText>
+          </View>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -101,7 +115,10 @@ const LandingScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('PublicStack', { screen: 'SegregationGuide' })}
           activeOpacity={0.8}
         >
-          <AutoText style={styles.guideBtnText}>♻️ Learn Waste Segregation</AutoText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <MaterialCommunityIcons name="recycle" size={20} color="#60a5fa" />
+            <AutoText style={styles.guideBtnText}>Learn Waste Segregation</AutoText>
+          </View>
         </TouchableOpacity>
         
         <AutoText style={styles.footerNote}>
@@ -138,7 +155,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center', alignItems: 'center',
   },
-  langBtnText: { fontSize: 22 },
   heroSection: {
     alignItems: 'center',
     marginTop: 20,
@@ -156,7 +172,6 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 12,
   },
-  logoEmoji: { fontSize: 44 },
   appName: {
     fontSize: 32,
     fontWeight: '800',

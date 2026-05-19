@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { getBins, reportBin } from '../../api/shgApi';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../config';
 
 const CustomSlider = ({ value, onValueChange }) => {
@@ -162,7 +163,7 @@ export default function ReportScreen() {
                         </View>
                     ) : (
                         <TouchableOpacity style={styles.photoBtn} onPress={takePhoto}>
-                            <Text style={styles.photoBtnEmoji}>📷</Text>
+                            <Ionicons name="camera-outline" size={24} color="#6B7280" style={{ marginBottom: 4 }} />
                             <Text style={styles.photoBtnText}>Take Photo</Text>
                         </TouchableOpacity>
                     )}
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     choiceText: { fontSize: 13, fontWeight: '600', color: '#6B7280' },
     choiceTextActive: { color: COLORS.dark },
     photoBtn: { backgroundColor: '#F3F4F6', borderRadius: 12, height: 80, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#E5E7EB', borderStyle: 'dashed', marginBottom: 16 },
-    photoBtnEmoji: { fontSize: 24, marginBottom: 4 },
+
     photoBtnText: { color: '#6B7280', fontSize: 13, fontWeight: '600' },
     photoPreviewContainer: { position: 'relative', marginBottom: 16 },
     photoPreview: { width: '100%', height: 160, borderRadius: 12, resizeMode: 'cover' },

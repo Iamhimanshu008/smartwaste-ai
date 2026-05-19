@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../../config';
 
 const CHECKLIST_ITEMS = [
-  { id: 1, icon: "🧤", text: "Wearing gloves", category: "PPE" },
-  { id: 2, icon: "😷", text: "Wearing mask", category: "PPE" },
-  { id: 3, icon: "👢", text: "Safety boots on", category: "PPE" },
-  { id: 4, icon: "🦺", text: "Wearing reflective jacket", category: "PPE" },
-  { id: 5, icon: "🚛", text: "Vehicle checked", category: "Vehicle" },
-  { id: 6, icon: "⛽", text: "Fuel checked", category: "Vehicle" },
-  { id: 7, icon: "📱", text: "Logged into app", category: "Digital" },
-  { id: 8, icon: "🗺️", text: "Today's route reviewed", category: "Digital" },
-  { id: 9, icon: "💧", text: "Water bottle taken", category: "Personal" },
-  { id: 10, icon: "📞", text: "Emergency contact saved", category: "Personal" },
+  { id: 1, icon: <MaterialCommunityIcons name="hand-extended-outline" size={24} color="#16a34a" />, text: "Wearing gloves", category: "PPE" },
+  { id: 2, icon: <MaterialCommunityIcons name="face-mask-outline" size={24} color="#16a34a" />, text: "Wearing mask", category: "PPE" },
+  { id: 3, icon: <MaterialCommunityIcons name="shoe-formal" size={24} color="#16a34a" />, text: "Safety boots on", category: "PPE" },
+  { id: 4, icon: <MaterialCommunityIcons name="safety-goggles" size={24} color="#16a34a" />, text: "Wearing reflective jacket", category: "PPE" },
+  { id: 5, icon: <MaterialCommunityIcons name="truck-check-outline" size={24} color="#16a34a" />, text: "Vehicle checked", category: "Vehicle" },
+  { id: 6, icon: <MaterialCommunityIcons name="gas-station-outline" size={24} color="#16a34a" />, text: "Fuel checked", category: "Vehicle" },
+  { id: 7, icon: <MaterialCommunityIcons name="cellphone-check" size={24} color="#16a34a" />, text: "Logged into app", category: "Digital" },
+  { id: 8, icon: <MaterialCommunityIcons name="map-check-outline" size={24} color="#16a34a" />, text: "Today's route reviewed", category: "Digital" },
+  { id: 9, icon: <MaterialCommunityIcons name="water-outline" size={24} color="#16a34a" />, text: "Water bottle taken", category: "Personal" },
+  { id: 10, icon: <MaterialCommunityIcons name="phone-check-outline" size={24} color="#16a34a" />, text: "Emergency contact saved", category: "Personal" },
 ];
 
 export default function SafetyChecklistScreen({ navigation }) {
@@ -76,7 +77,7 @@ export default function SafetyChecklistScreen({ navigation }) {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                    <Text style={styles.backIcon}>←</Text>
+                    <Ionicons name="arrow-back" size={24} color={COLORS.dark} />
                 </TouchableOpacity>
                 <Text style={styles.title}>Safety Checklist</Text>
             </View>
@@ -94,7 +95,10 @@ export default function SafetyChecklistScreen({ navigation }) {
             <ScrollView contentContainerStyle={styles.listContainer}>
                 {allChecked && (
                     <View style={styles.successMessage}>
-                        <Text style={styles.successText}>All safe for today! ✅</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                            <Ionicons name="checkmark-circle" size={24} color="#16a34a" />
+                            <Text style={styles.successText}>All safe for today!</Text>
+                        </View>
                     </View>
                 )}
 
@@ -107,14 +111,16 @@ export default function SafetyChecklistScreen({ navigation }) {
                             onPress={() => toggleItem(item.id)}
                         >
                             <View style={styles.itemIconContainer}>
-                                <Text style={styles.itemIcon}>{item.icon}</Text>
+                                {item.icon}
                             </View>
                             <Text style={[styles.itemText, isChecked && styles.itemTextChecked]}>
                                 {item.text}
                             </Text>
-                            <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
-                                {isChecked && <Text style={styles.checkmark}>✓</Text>}
-                            </View>
+                            {isChecked ? (
+                                <Ionicons name="checkmark-circle" size={24} color="#16a34a" />
+                            ) : (
+                                <Ionicons name="ellipse-outline" size={24} color="#d1d5db" />
+                            )}
                         </TouchableOpacity>
                     );
                 })}
@@ -126,7 +132,10 @@ export default function SafetyChecklistScreen({ navigation }) {
                     onPress={handleStart}
                     disabled={!allChecked}
                 >
-                    <Text style={styles.startBtnText}>Start Work</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <Ionicons name="play-circle-outline" size={20} color="#fff" />
+                        <Text style={styles.startBtnText}>Start Work</Text>
+                    </View>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -137,7 +146,6 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: COLORS.bg },
     header: { flexDirection: 'row', alignItems: 'center', padding: 20, paddingBottom: 10 },
     backBtn: { marginRight: 15 },
-    backIcon: { fontSize: 24, color: COLORS.dark },
     title: { fontSize: 22, fontWeight: '800', color: COLORS.dark },
     progressContainer: { paddingHorizontal: 20, marginBottom: 15 },
     progressHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
@@ -151,12 +159,8 @@ const styles = StyleSheet.create({
     itemCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 15, borderRadius: 12, marginBottom: 10, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
     itemCardChecked: { backgroundColor: '#f8fafc' },
     itemIconContainer: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
-    itemIcon: { fontSize: 20 },
     itemText: { flex: 1, fontSize: 15, fontWeight: '600', color: '#334155' },
     itemTextChecked: { color: '#94a3b8', textDecorationLine: 'line-through' },
-    checkbox: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: '#cbd5e1', justifyContent: 'center', alignItems: 'center' },
-    checkboxChecked: { backgroundColor: '#16a34a', borderColor: '#16a34a' },
-    checkmark: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
     footer: { padding: 20, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#f1f5f9' },
     startBtn: { backgroundColor: '#16a34a', paddingVertical: 15, borderRadius: 12, alignItems: 'center' },
     startBtnDisabled: { backgroundColor: '#cbd5e1' },

@@ -5,6 +5,7 @@ import {
     Image, Alert, ActivityIndicator, Modal, FlatList, TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { getBins, submitPublicReport } from '../../api/publicApi';
@@ -167,7 +168,7 @@ export default function ReportScreen({ route, navigation }) {
             formData.append('longitude', String(location.longitude));
             formData.append('description', description.trim());
 
-            setSubmitStatus('🤖 AI is analyzing your photo...');
+            setSubmitStatus('AI is analyzing your photo...');
             const res = await submitPublicReport(formData);
             setResult(res);
             resetTimerRef.current = setTimeout(resetForm, 4000);
@@ -189,26 +190,44 @@ export default function ReportScreen({ route, navigation }) {
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.content}>
                     <View style={styles.resultCard}>
-                        <AutoText style={styles.resultTitle}>✅ Report submitted successfully!</AutoText>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                            <Ionicons name="checkmark-circle" size={24} color="#22c55e" />
+                            <AutoText style={styles.resultTitle}>Report submitted successfully!</AutoText>
+                        </View>
                         <View style={styles.resultRow}>
-                            <AutoText style={styles.resultLabel}>📊 Fill Level:</AutoText>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                <Ionicons name="stats-chart" size={16} color="#666" />
+                                <AutoText style={styles.resultLabel}>Fill Level:</AutoText>
+                            </View>
                             <Text style={styles.resultValue}>{result.fill_level}%</Text>
                         </View>
                         <View style={styles.resultRow}>
-                            <AutoText style={styles.resultLabel}>🗑️ Waste Type:</AutoText>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                <MaterialCommunityIcons name="trash-can-outline" size={16} color="#666" />
+                                <AutoText style={styles.resultLabel}>Waste Type:</AutoText>
+                            </View>
                             <Text style={styles.resultValue}>{result.waste_type || '—'}</Text>
                         </View>
                         <View style={styles.resultRow}>
-                            <AutoText style={styles.resultLabel}>⚠️ Urgency:</AutoText>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                <Ionicons name="alert-circle" size={16} color="#666" />
+                                <AutoText style={styles.resultLabel}>Urgency:</AutoText>
+                            </View>
                             <Text style={styles.resultValue}>{result.urgency || '—'}</Text>
                         </View>
                         <View style={styles.resultRow}>
-                            <AutoText style={styles.resultLabel}>🎯 AI Confidence:</AutoText>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                <MaterialIcons name="gps-fixed" size={16} color="#666" />
+                                <AutoText style={styles.resultLabel}>AI Confidence:</AutoText>
+                            </View>
                             <Text style={styles.resultValue}>{result.ai_confidence}%</Text>
                         </View>
                         {result.ai_observations ? (
                             <View style={styles.observationsBox}>
-                                <AutoText style={styles.resultLabel}>💬 Observations:</AutoText>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                    <MaterialCommunityIcons name="comment-text-outline" size={16} color="#666" />
+                                    <AutoText style={styles.resultLabel}>Observations:</AutoText>
+                                </View>
                                 <Text style={styles.observationsText}>{result.ai_observations}</Text>
                             </View>
                         ) : null}
@@ -257,11 +276,11 @@ export default function ReportScreen({ route, navigation }) {
                     ) : (
                         <View style={styles.photoButtons}>
                             <TouchableOpacity style={styles.cameraBtn} onPress={takePhoto}>
-                                <Text style={styles.cameraBtnEmoji}>📷</Text>
+                                <Ionicons name="camera" size={32} color={COLORS.white} style={{ marginBottom: 6 }} />
                                 <AutoText style={styles.cameraBtnText}>Camera</AutoText>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.galleryBtn} onPress={pickPhoto}>
-                                <Text style={styles.cameraBtnEmoji}>🖼️</Text>
+                                <Ionicons name="images-outline" size={32} color={COLORS.dark} style={{ marginBottom: 6 }} />
                                 <AutoText style={styles.galleryBtnText}>Gallery</AutoText>
                             </TouchableOpacity>
                         </View>
@@ -289,8 +308,8 @@ export default function ReportScreen({ route, navigation }) {
                         backgroundColor: locStatus === 'found' ? '#DCFCE7' : locStatus === 'detecting' ? '#EFF6FF' : '#FEE2E2'
                     }]}>
                         {locStatus === 'detecting' && <ActivityIndicator size="small" color="#3B82F6" />}
-                        {locStatus === 'found' && <Text style={styles.locEmoji}>✅</Text>}
-                        {locStatus === 'failed' && <Text style={styles.locEmoji}>❌</Text>}
+                        {locStatus === 'found' && <Ionicons name="checkmark-circle" size={18} color="#15803D" />}
+                        {locStatus === 'failed' && <Ionicons name="close-circle" size={18} color="#DC2626" />}
                         <Text style={[styles.locText, {
                             color: locStatus === 'found' ? '#15803D' : locStatus === 'detecting' ? '#1D4ED8' : '#DC2626'
                         }]}>
@@ -313,7 +332,10 @@ export default function ReportScreen({ route, navigation }) {
                             <AutoText style={[styles.submitBtnText, { marginLeft: 8, fontSize: 14 }]}>{submitStatus || 'Loading...'}</AutoText>
                         </>
                     ) : (
-                        <AutoText style={styles.submitBtnText}>🚀  Submit Report</AutoText>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                            <Ionicons name="rocket-outline" size={18} color={COLORS.white} />
+                            <AutoText style={styles.submitBtnText}>Submit Report</AutoText>
+                        </View>
                     )}
                 </TouchableOpacity>
 
@@ -323,10 +345,10 @@ export default function ReportScreen({ route, navigation }) {
                         fontWeight: distanceToBin <= 50 ? '600' : 'bold'
                     }]}>
                         {distanceToBin === null 
-                            ? "📍 Fetching your location..." 
+                            ? "Fetching your location..." 
                             : distanceToBin <= 50 
-                                ? `✅ You are ${distanceToBin}m away — within range` 
-                                : `❌ You are ${distanceToBin}m away — move closer`}
+                                ? `You are ${distanceToBin}m away — within range` 
+                                : `You are ${distanceToBin}m away — move closer`}
                     </Text>
                 )}
             </ScrollView>
@@ -379,7 +401,7 @@ const styles = StyleSheet.create({
     photoButtons: { flexDirection: 'row', gap: 12 },
     cameraBtn: { flex: 1, backgroundColor: COLORS.mid, borderRadius: 14, padding: 20, alignItems: 'center' },
     galleryBtn: { flex: 1, backgroundColor: '#F3F4F6', borderRadius: 14, padding: 20, alignItems: 'center' },
-    cameraBtnEmoji: { fontSize: 32, marginBottom: 6 },
+
     cameraBtnText: { fontSize: 13, fontWeight: '700', color: COLORS.white },
     galleryBtnText: { fontSize: 13, fontWeight: '700', color: COLORS.dark },
     descInput: { borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, padding: 12, fontSize: 14, minHeight: 70, textAlignVertical: 'top' },
@@ -388,7 +410,7 @@ const styles = StyleSheet.create({
     retakeBtn: { position: 'absolute', top: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.55)', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5 },
     retakeBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
     locRow: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 12 },
-    locEmoji: { fontSize: 18 },
+
     locText: { fontSize: 13, fontWeight: '500', flex: 1 },
     submitBtn: { height: 56, backgroundColor: COLORS.mid, borderRadius: 18, justifyContent: 'center', alignItems: 'center', marginTop: 8, flexDirection: 'row', shadowColor: COLORS.mid, shadowOpacity: 0.3, shadowRadius: 10, elevation: 4 },
     submitBtnText: { color: COLORS.white, fontSize: 17, fontWeight: '800' },

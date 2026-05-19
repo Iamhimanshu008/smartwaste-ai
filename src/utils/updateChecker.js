@@ -20,7 +20,7 @@ export const checkForUpdate = async (currentVersion, showNoUpdateAlert = false) 
     
     if (updateAvailable) {
       Alert.alert(
-        '🚀 New Update Available!',
+        'New Update Available!',
         `Version ${latest_version} is available\n\n${release_notes}\n\nPlease update to get the latest features and fixes.`,
         [
           force_update ? null : { 
@@ -28,7 +28,7 @@ export const checkForUpdate = async (currentVersion, showNoUpdateAlert = false) 
             style: 'cancel' 
           },
           {
-            text: '⬇️ Download Update',
+            text: 'Download Update',
             onPress: () => Linking.openURL(apk_url),
           },
         ].filter(Boolean)
@@ -37,7 +37,7 @@ export const checkForUpdate = async (currentVersion, showNoUpdateAlert = false) 
     } else {
       if (showNoUpdateAlert) {
         Alert.alert(
-          '✅ App is Up to Date',
+          'App is Up to Date',
           `You are using the latest version (${currentVersion}). No updates available.`,
           [{ text: 'OK' }]
         );
@@ -47,7 +47,7 @@ export const checkForUpdate = async (currentVersion, showNoUpdateAlert = false) 
   } catch (err) {
     if (showNoUpdateAlert) {
       Alert.alert(
-        '⚠️ Check Failed',
+        'Check Failed',
         'Could not check for updates. Please check your internet connection.',
         [{ text: 'OK' }]
       );

@@ -4,6 +4,7 @@ import {
     ScrollView, TextInput, Alert, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { collectBin } from '../../api/collectorApi';
 import useStore from '../../store';
 import StatusBadge from '../../components/StatusBadge';
@@ -74,7 +75,12 @@ export default function BinDetailScreen({ route, navigation }) {
             <ScrollView contentContainerStyle={styles.content}>
                 {/* Status Banner */}
                 <View style={[styles.banner, { backgroundColor: collected ? '#DCFCE7' : stop?.fill_level >= 80 ? '#FEE2E2' : '#FFF7ED' }]}>
-                    <Text style={styles.bannerEmoji}>{collected ? '✅' : stop?.fill_level >= 80 ? '🚨' : '📦'}</Text>
+                    {collected 
+                        ? <Ionicons name="checkmark-circle" size={36} color="#22c55e" />
+                        : stop?.fill_level >= 80 
+                            ? <MaterialCommunityIcons name="alert-circle" size={36} color="#ef4444" />
+                            : <MaterialCommunityIcons name="package-variant" size={36} color="#f97316" />
+                    }
                     <View style={{ flex: 1, marginLeft: 12 }}>
                         <Text style={styles.bannerTitle}>{stop?.bin_label}</Text>
                         <StatusBadge status={collected ? 'collected' : stop?.fill_level >= 90 ? 'overflow' : stop?.fill_level >= 70 ? 'high' : 'medium'} />
@@ -129,7 +135,10 @@ export default function BinDetailScreen({ route, navigation }) {
                     >
                         {collecting
                             ? <ActivityIndicator color="#fff" />
-                            : <Text style={styles.collectBtnText}>✓  Mark as Collected</Text>
+                            : <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                <Ionicons name="checkmark-circle" size={20} color="#fff" />
+                                <Text style={styles.collectBtnText}>Mark as Collected</Text>
+                              </View>
                         }
                     </TouchableOpacity>
                 </View>
@@ -142,7 +151,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: COLORS.bg },
     content: { padding: 20, paddingBottom: 40 },
     banner: { flexDirection: 'row', alignItems: 'center', borderRadius: 20, padding: 18, marginBottom: 16 },
-    bannerEmoji: { fontSize: 36 },
+    bannerIconContainer: { width: 44, justifyContent: 'center', alignItems: 'center' },
     bannerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.dark, marginBottom: 6 },
     card: { backgroundColor: COLORS.white, borderRadius: 20, padding: 18, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, elevation: 2 },
     cardTitle: { fontSize: 14, fontWeight: '700', color: '#555', marginBottom: 12 },

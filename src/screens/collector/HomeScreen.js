@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import useStore from '../../store';
 import { getTodayRoute, updateLocation } from '../../api/collectorApi';
@@ -122,7 +123,7 @@ export default function HomeScreen({ navigation }) {
                     <ActivityIndicator size="large" color={COLORS.light} style={{ marginTop: 60 }} />
                 ) : error === 'no_route' ? (
                     <View style={styles.emptyCard}>
-                        <Text style={styles.emptyEmoji}>🎉</Text>
+                        <MaterialCommunityIcons name="calendar-check-outline" size={48} color="#d1d5db" />
                         <AutoText style={styles.emptyTitle}>No route assigned today</AutoText>
                         <AutoText style={styles.emptyText}>Check back later or contact your zone manager.</AutoText>
                     </View>
@@ -186,8 +187,7 @@ const styles = StyleSheet.create({
     greetingText: { fontSize: 16, color: '#6b7280' },
     userName: { fontSize: 28, fontWeight: '800', color: '#14532d' },
     emptyCard: { backgroundColor: COLORS.white, borderRadius: 20, padding: 32, alignItems: 'center', marginTop: 20 },
-    emptyEmoji: { fontSize: 48, marginBottom: 12 },
-    emptyTitle: { fontSize: 18, fontWeight: '700', color: COLORS.dark, textAlign: 'center', marginBottom: 8 },
+    emptyTitle: { fontSize: 18, fontWeight: '700', color: COLORS.dark, textAlign: 'center', marginBottom: 8, marginTop: 12 },
     emptyText: { fontSize: 14, color: '#777', textAlign: 'center', lineHeight: 20 },
     section: { marginTop: 20 },
     sectionTitle: { fontSize: 16, fontWeight: '700', color: COLORS.dark, marginBottom: 12 },
