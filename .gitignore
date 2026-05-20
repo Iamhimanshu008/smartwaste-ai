@@ -41,3 +41,8 @@ android/jdk17.zip
 # iOS build artifacts
 ios/Pods/
 ios/build/
+__pycache__/
+*.pyc
+*.pyo
+backend/uploads/*
+!backend/uploads/.gitkeep
