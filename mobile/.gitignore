@@ -1,1 +1,7 @@
 node_modules
+
+.expo/
+android/
+temp_assets/
+uploads/
+*.keystore
