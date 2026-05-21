@@ -11,6 +11,7 @@ import useStore from '../../store';
 import { getTodayRoute, collectBin } from '../../api/collectorApi';
 import { COLORS, RAIPUR_COORDS } from '../../config';
 import { useTranslation } from '../../i18n';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 function getMarkerColor(stop) {
     if (stop.status === 'collected') return '#9CA3AF';
@@ -209,7 +210,7 @@ export default function MapScreen({ navigation }) {
             {/* Bottom Sheet */}
             {stops.length > 0 && stops.every(s => s.status === 'collected') ? (
                 <View style={styles.bottomSheet}>
-                    <Text style={styles.doneEmoji}>🎉</Text>
+                    <MaterialCommunityIcons name="party-popper" size={40} color="#16a34a" style={{ alignSelf: 'center', marginBottom: 8 }} />
                     <AutoText style={styles.doneText}>All bins collected! Route complete.</AutoText>
                 </View>
             ) : selected ? (
@@ -227,7 +228,10 @@ export default function MapScreen({ navigation }) {
                     </View>
                     <View style={styles.btnRow}>
                         <TouchableOpacity style={styles.navBtn} onPress={handleNavigate}>
-                            <AutoText style={styles.navBtnText}>🗺️  Navigate</AutoText>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Ionicons name="navigate" size={16} color="#4b5563" />
+                                <AutoText style={[styles.navBtnText, { marginLeft: 6 }]}>Navigate</AutoText>
+                            </View>
                         </TouchableOpacity>
                         {selected.status !== 'collected' ? (
                             <TouchableOpacity
@@ -307,7 +311,6 @@ const styles = StyleSheet.create({
     navBtnText: { color: COLORS.mid, fontSize: 14, fontWeight: '700' },
     collectBtn: { flex: 1.5, height: 48, backgroundColor: '#22C55E', borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
     collectBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
-    doneEmoji: { fontSize: 40, textAlign: 'center', marginBottom: 8 },
     doneText: { fontSize: 16, fontWeight: '600', color: COLORS.dark, textAlign: 'center' },
     noRoute: { fontSize: 18, fontWeight: '700', color: '#333', marginBottom: 16 },
     backBtn: { backgroundColor: COLORS.mid, borderRadius: 12, paddingHorizontal: 24, paddingVertical: 12 },

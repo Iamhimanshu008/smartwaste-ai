@@ -6,6 +6,7 @@ import {
 import AutoText from '../components/AutoText';
 import LanguagePickerModal from '../components/LanguagePickerModal';
 import { useTranslation } from '../i18n';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,7 +26,7 @@ const LandingScreen = ({ navigation }) => {
           style={styles.langBtn}
           onPress={() => setShowLangPicker(true)}
         >
-          <Text style={styles.langBtnText}>🌐</Text>
+          <Ionicons name="language-outline" size={24} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -37,7 +38,7 @@ const LandingScreen = ({ navigation }) => {
       {/* Logo + Title */}
       <View style={styles.heroSection}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logoEmoji}>♻️</Text>
+          <MaterialCommunityIcons name="recycle" size={44} color="white" />
         </View>
         <AutoText style={styles.appName}>SmartWaste AI</AutoText>
         <AutoText style={styles.tagline}>
@@ -51,11 +52,24 @@ const LandingScreen = ({ navigation }) => {
       
       {/* Feature Pills */}
       <View style={styles.pillsRow}>
-        {['🤖 AI Vision', '🗺️ GPS Routes', '📊 Analytics'].map((f, i) => (
-          <View key={i} style={styles.pill}>
-            <AutoText style={styles.pillText}>{f}</AutoText>
+        <View style={styles.pill}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="eye-outline" size={14} color="#86efac" />
+            <AutoText style={[styles.pillText, { marginLeft: 4 }]}>AI Vision</AutoText>
           </View>
-        ))}
+        </View>
+        <View style={styles.pill}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialCommunityIcons name="map-marker-path" size={14} color="#86efac" />
+            <AutoText style={[styles.pillText, { marginLeft: 4 }]}>GPS Routes</AutoText>
+          </View>
+        </View>
+        <View style={styles.pill}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="stats-chart" size={14} color="#86efac" />
+            <AutoText style={[styles.pillText, { marginLeft: 4 }]}>Analytics</AutoText>
+          </View>
+        </View>
       </View>
 
       {/* Stats Row */}
@@ -83,7 +97,10 @@ const LandingScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('Login')}
           activeOpacity={0.85}
         >
-          <Text style={styles.primaryBtnText}>🚀 {t('get_started')}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="arrow-forward" size={20} color="white" />
+            <Text style={[styles.primaryBtnText, { marginLeft: 8 }]}>{t('get_started')}</Text>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -91,9 +108,12 @@ const LandingScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('PublicStack')}
           activeOpacity={0.8}
         >
-          <Text style={styles.secondaryBtnText}>
-            📸 {t('report_bin')}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="camera-outline" size={20} color="#4ade80" />
+            <Text style={[styles.secondaryBtnText, { marginLeft: 8 }]}>
+              {t('report_bin')}
+            </Text>
+          </View>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -101,7 +121,10 @@ const LandingScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('PublicStack', { screen: 'SegregationGuide' })}
           activeOpacity={0.8}
         >
-          <Text style={styles.guideBtnText}>♻️ Kachra Alag Karna Seekhein</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialCommunityIcons name="recycle" size={20} color="#60a5fa" />
+            <Text style={[styles.guideBtnText, { marginLeft: 8 }]}>Kachra Alag Karna Seekhein</Text>
+          </View>
         </TouchableOpacity>
         
         <Text style={styles.footerNote}>

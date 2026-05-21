@@ -8,6 +8,7 @@ import { login as loginApi, getMe } from '../api/authApi';
 import client from '../api/client';
 import useStore from '../store';
 import { useTranslation } from '../i18n';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const LoginScreen = ({ navigation }) => {
   const [mode, setMode] = useState('email'); // 'email' | 'phone'
@@ -115,7 +116,7 @@ const LoginScreen = ({ navigation }) => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.logo}>♻️</Text>
+          <MaterialCommunityIcons name="recycle" size={52} color="#16a34a" style={{ marginBottom: 8 }} />
           <Text style={styles.title}>SmartWaste AI</Text>
           <Text style={styles.subtitle}>{t('staff_login')}</Text>
         </View>
@@ -123,22 +124,26 @@ const LoginScreen = ({ navigation }) => {
         {/* Mode Toggle */}
         <View style={styles.toggleRow}>
           <TouchableOpacity
-            style={[styles.toggleBtn, mode === 'email' && styles.toggleActive]}
+            style={[styles.toggleBtn, mode === 'email' && styles.toggleActive, { flexDirection: 'row', justifyContent: 'center' }]}
             onPress={() => setMode('email')}
           >
+            <Ionicons name="mail-outline" size={16} color={mode === 'email' ? 'white' : '#16a34a'} />
             <Text style={[
               styles.toggleText,
+              { marginLeft: 6 },
               mode === 'email' && styles.toggleTextActive
-            ]}>📧 Email</Text>
+            ]}>Email</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.toggleBtn, mode === 'phone' && styles.toggleActive]}
+            style={[styles.toggleBtn, mode === 'phone' && styles.toggleActive, { flexDirection: 'row', justifyContent: 'center' }]}
             onPress={() => setMode('phone')}
           >
+            <Ionicons name="phone-portrait-outline" size={16} color={mode === 'phone' ? 'white' : '#16a34a'} />
             <Text style={[
               styles.toggleText,
+              { marginLeft: 6 },
               mode === 'phone' && styles.toggleTextActive
-            ]}>📱 {t('phone_otp')}</Text>
+            ]}>{t('phone_otp')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -182,7 +187,7 @@ const LoginScreen = ({ navigation }) => {
             <Text style={styles.label}>Phone Number</Text>
             <View style={styles.phoneRow}>
               <View style={styles.countryCode}>
-                <Text style={styles.countryCodeText}>🇮🇳 +91</Text>
+                <Text style={styles.countryCodeText}>IN +91</Text>
               </View>
               <TextInput
                 style={[styles.input, styles.phoneInput]}

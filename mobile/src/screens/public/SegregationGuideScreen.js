@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../config';
 
 const categories = [
@@ -7,7 +8,7 @@ const categories = [
     id: 1,
     color: "#22c55e",
     bgColor: "#dcfce7",
-    emoji: "🟢",
+    icon: <MaterialCommunityIcons name="leaf" size={32} color="#22c55e" />,
     title: "Wet Waste (Gila Kachra)",
     subtitle: "Green Dustbin mein daalein",
     examples: ["Sabzi ke chilke", "Khana bcha hua", "Chai patti", "Phool patte"],
@@ -17,7 +18,7 @@ const categories = [
     id: 2,
     color: "#3b82f6",
     bgColor: "#dbeafe", 
-    emoji: "🔵",
+    icon: <MaterialCommunityIcons name="recycle" size={32} color="#3b82f6" />,
     title: "Dry Waste (Sukha Kachra)",
     subtitle: "Blue Dustbin mein daalein",
     examples: ["Plastic bottles", "Paper", "Cardboard", "Metal cans"],
@@ -27,7 +28,7 @@ const categories = [
     id: 3,
     color: "#ef4444",
     bgColor: "#fee2e2",
-    emoji: "🔴",
+    icon: <MaterialCommunityIcons name="alert-circle-outline" size={32} color="#ef4444" />,
     title: "Hazardous Waste (Khatarnak)",
     subtitle: "Red Dustbin mein daalein",
     examples: ["Batteries", "Medicines", "Paint", "Chemicals"],
@@ -37,7 +38,7 @@ const categories = [
     id: 4,
     color: "#f59e0b",
     bgColor: "#fef3c7",
-    emoji: "🟡",
+    icon: <MaterialCommunityIcons name="monitor-cellphone" size={32} color="#f59e0b" />,
     title: "E-Waste (Electronic)",
     subtitle: "Special collection point",
     examples: ["Mobile phones", "Chargers", "Bulbs", "Remote"],
@@ -67,7 +68,7 @@ export default function SegregationGuideScreen() {
                         activeOpacity={0.8}
                     >
                         <View style={styles.cardHeader}>
-                            <Text style={styles.emoji}>{cat.emoji}</Text>
+                            <View style={{ marginRight: 15 }}>{cat.icon}</View>
                             <View style={styles.cardHeaderText}>
                                 <Text style={[styles.cardTitle, { color: cat.color }]}>{cat.title}</Text>
                                 <Text style={styles.cardSubtitle}>{cat.subtitle}</Text>
@@ -88,7 +89,9 @@ export default function SegregationGuideScreen() {
                                     ))}
                                 </View>
                                 <View style={[styles.tipBox, { backgroundColor: cat.color + '20' }]}>
-                                    <Text style={styles.tipIcon}>💡</Text>
+                                    <View style={{ marginRight: 8 }}>
+                                        <MaterialCommunityIcons name="lightbulb-on-outline" size={16} color={cat.color} />
+                                    </View>
                                     <Text style={[styles.tipText, { color: cat.color }]}>{cat.tip}</Text>
                                 </View>
                             </View>

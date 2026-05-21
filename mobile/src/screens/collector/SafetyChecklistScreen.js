@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../../config';
 
 const CHECKLIST_ITEMS = [
-  { id: 1, icon: "🧤", text: "Wearing gloves", category: "PPE" },
-  { id: 2, icon: "😷", text: "Wearing mask", category: "PPE" },
-  { id: 3, icon: "👢", text: "Safety boots on", category: "PPE" },
-  { id: 4, icon: "🦺", text: "Wearing reflective jacket", category: "PPE" },
-  { id: 5, icon: "🚛", text: "Vehicle checked", category: "Vehicle" },
-  { id: 6, icon: "⛽", text: "Fuel checked", category: "Vehicle" },
-  { id: 7, icon: "📱", text: "Logged into app", category: "Digital" },
-  { id: 8, icon: "🗺️", text: "Today's route reviewed", category: "Digital" },
-  { id: 9, icon: "💧", text: "Water bottle taken", category: "Personal" },
-  { id: 10, icon: "📞", text: "Emergency contact saved", category: "Personal" },
+  { id: 1, icon: <MaterialCommunityIcons name="hand-back-right-outline" size={20} color="#16a34a" />, text: "Wearing gloves", category: "PPE" },
+  { id: 2, icon: <MaterialCommunityIcons name="face-mask-outline" size={20} color="#16a34a" />, text: "Wearing mask", category: "PPE" },
+  { id: 3, icon: <MaterialCommunityIcons name="shoe-cleat" size={20} color="#16a34a" />, text: "Safety boots on", category: "PPE" },
+  { id: 4, icon: <MaterialCommunityIcons name="lifebuoy" size={20} color="#16a34a" />, text: "Wearing reflective jacket", category: "PPE" },
+  { id: 5, icon: <MaterialCommunityIcons name="truck-outline" size={20} color="#16a34a" />, text: "Vehicle checked", category: "Vehicle" },
+  { id: 6, icon: <MaterialCommunityIcons name="gas-station-outline" size={20} color="#16a34a" />, text: "Fuel checked", category: "Vehicle" },
+  { id: 7, icon: <MaterialIcons name="mobile-friendly" size={20} color="#16a34a" />, text: "Logged into app", category: "Digital" },
+  { id: 8, icon: <MaterialCommunityIcons name="map-marker-path" size={20} color="#16a34a" />, text: "Today's route reviewed", category: "Digital" },
+  { id: 9, icon: <Ionicons name="water-outline" size={20} color="#16a34a" />, text: "Water bottle taken", category: "Personal" },
+  { id: 10, icon: <Ionicons name="call-outline" size={20} color="#16a34a" />, text: "Emergency contact saved", category: "Personal" },
 ];
 
 export default function SafetyChecklistScreen({ navigation }) {
@@ -76,7 +77,7 @@ export default function SafetyChecklistScreen({ navigation }) {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                    <Text style={styles.backIcon}>←</Text>
+                    <Ionicons name="arrow-back" size={24} color={COLORS.dark} />
                 </TouchableOpacity>
                 <Text style={styles.title}>Safety Checklist</Text>
             </View>
@@ -94,7 +95,8 @@ export default function SafetyChecklistScreen({ navigation }) {
             <ScrollView contentContainerStyle={styles.listContainer}>
                 {allChecked && (
                     <View style={styles.successMessage}>
-                        <Text style={styles.successText}>All safe for today! ✅</Text>
+                        <Text style={styles.successText}>All safe for today! </Text>
+                        <MaterialCommunityIcons name="check-decagram" size={24} color="#16a34a" />
                     </View>
                 )}
 
@@ -107,7 +109,7 @@ export default function SafetyChecklistScreen({ navigation }) {
                             onPress={() => toggleItem(item.id)}
                         >
                             <View style={styles.itemIconContainer}>
-                                <Text style={styles.itemIcon}>{item.icon}</Text>
+                                {item.icon}
                             </View>
                             <Text style={[styles.itemText, isChecked && styles.itemTextChecked]}>
                                 {item.text}

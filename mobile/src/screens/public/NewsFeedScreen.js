@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../config';
 import { getNews } from '../../api/newsApi';
 
@@ -11,7 +12,7 @@ export default function NewsFeedScreen({ navigation }) {
     const staticFallback = [
       { id: 1, title: 'SmartWaste AI launch in Nava Raipur', 
         summary: 'SmartWaste AI has made waste collection 40% more efficient',
-        emoji: '🏆', tag: 'Success Story', 
+        icon: <MaterialCommunityIcons name="newspaper-variant-outline" size={40} color="#16a34a" />, tag: 'Success Story', 
         tag_color: '#16a34a', created_at: new Date().toISOString() },
     ];
 
@@ -48,7 +49,7 @@ export default function NewsFeedScreen({ navigation }) {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                    <Text style={styles.backIcon}>←</Text>
+                    <MaterialCommunityIcons name="arrow-left" size={24} color={COLORS.dark} />
                 </TouchableOpacity>
                 <Text style={styles.title}>Swachhta Samachar</Text>
             </View>
@@ -66,7 +67,9 @@ export default function NewsFeedScreen({ navigation }) {
                             <Text style={styles.date}>{formatDate(item.created_at)}</Text>
                         </View>
                         <View style={styles.cardBody}>
-                            <Text style={styles.emoji}>{item.emoji}</Text>
+                            <View style={{ marginRight: 15, marginTop: 5 }}>
+                                {item.icon || <MaterialCommunityIcons name="newspaper-variant-outline" size={40} color="#16a34a" />}
+                            </View>
                             <View style={styles.textContainer}>
                                 <Text style={styles.cardTitle}>{item.title}</Text>
                                 <Text style={styles.summary}>{item.summary}</Text>

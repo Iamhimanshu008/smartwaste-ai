@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  Modal, Animated, Dimensions, ScrollView, Alert
+  Modal, Dimensions, ScrollView, Alert
 } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from '../i18n';
 import useStore from '../store';
 
@@ -13,17 +14,35 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
   const logout = useStore(state => state.logout);
 
   const menuItems = [
-    { icon: '🏠', key: 'dashboard', screen: 'Home' },
-    { icon: '🗺️', key: 'my_route', screen: 'Map' },
-    { icon: '📊', key: 'stats', screen: 'Stats' },
-    { icon: '📋', key: 'history', screen: 'History' },
-    { icon: '🦺', key: 'Safety Checklist', screen: 'SafetyChecklist' },
-    { icon: '📰', key: 'Swachhta Samachar', screen: 'NewsFeed' },
+    { icon: <Ionicons name="home-outline" size={22} color="#16a34a" />, key: 'dashboard', screen: 'Home' },
+    { icon: <MaterialCommunityIcons name="map-marker-path" size={22} color="#16a34a" />, key: 'my_route', screen: 'Map' },
+    { icon: <Ionicons name="stats-chart-outline" size={22} color="#16a34a" />, key: 'stats', screen: 'Stats' },
+    { icon: <MaterialCommunityIcons name="clipboard-list-outline" size={22} color="#16a34a" />, key: 'history', screen: 'History' },
+    { icon: <MaterialCommunityIcons name="shield-check-outline" size={22} color="#16a34a" />, key: 'Safety Checklist', screen: 'SafetyChecklist' },
+    { icon: <MaterialCommunityIcons name="newspaper-variant-outline" size={22} color="#16a34a" />, key: 'Swachhta Samachar', screen: 'NewsFeed' },
   ];
 
   const handleNavigate = (screen) => {
     onClose();
     navigation.navigate(screen);
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      t('logout'),
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: t('logout'),
+          style: 'destructive',
+          onPress: () => {
+            onClose();
+            setTimeout(() => logout(), 500);
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -71,7 +90,7 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
                 style={styles.menuItem}
                 onPress={() => handleNavigate(item.screen)}
               >
-                <Text style={styles.menuIcon}>{item.icon}</Text>
+                <View style={{ width: 28, marginRight: 8, alignItems: 'center' }}>{item.icon}</View>
                 <Text style={styles.menuLabel}>{t(item.key)}</Text>
               </TouchableOpacity>
             ))}
@@ -81,32 +100,14 @@ const SideDrawer = ({ visible, onClose, user, navigation }) => {
           <View style={styles.divider} />
 
           {/* Logout */}
-          <TouchableOpacity
-            style={styles.logoutBtn}
-            onPress={() => {
-              Alert.alert(
-                t('logout'),
-                'Are you sure you want to logout?',
-                [
-                  { text: 'Cancel', style: 'cancel' },
-                  {
-                    text: t('logout'),
-                    style: 'destructive',
-                    onPress: () => {
-                      // 1. Close the drawer Modal FIRST
-                      onClose();
-                      // 2. Wait for Modal slide animation to fully dismiss,
-                      //    THEN clear auth state so navigator can safely swap trees
-                      setTimeout(() => logout(), 500);
-                    },
-                  },
-                ]
-              );
-            }}
-          >
-            <Text style={styles.logoutIcon}>🚪</Text>
-            <Text style={styles.logoutText}>{t('logout')}</Text>
-          </TouchableOpacity>
+          <View style={styles.footer}>
+            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+              <View style={{ marginRight: 8 }}>
+                <MaterialIcons name="logout" size={22} color="#dc2626" />
+              </View>
+              <Text style={styles.logoutText}>{t('logout') || 'Logout'}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>

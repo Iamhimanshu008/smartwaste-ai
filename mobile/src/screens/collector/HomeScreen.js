@@ -14,6 +14,7 @@ import StatusBadge from '../../components/StatusBadge';
 import { COLORS } from '../../config';
 import AppHeader from '../../components/AppHeader';
 import SideDrawer from '../../components/SideDrawer';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from '../../i18n';
 
 export default function HomeScreen({ navigation }) {
@@ -122,7 +123,7 @@ export default function HomeScreen({ navigation }) {
                     <ActivityIndicator size="large" color={COLORS.light} style={{ marginTop: 60 }} />
                 ) : error === 'no_route' ? (
                     <View style={styles.emptyCard}>
-                        <Text style={styles.emptyEmoji}>🎉</Text>
+                        <MaterialCommunityIcons name="party-popper" size={48} color="#16a34a" style={styles.emptyEmoji} />
                         <Text style={styles.emptyTitle}>{t('no_route_today')}</Text>
                         <AutoText style={styles.emptyText}>Check back later or contact your zone manager.</AutoText>
                     </View>

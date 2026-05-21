@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getHistory } from '../../api/collectorApi';
 import { COLORS } from '../../config';
 import { useTranslation } from '../../i18n';
+import { Ionicons } from '@expo/vector-icons';
 
 function formatDate(dateStr) {
     if (!dateStr) return '';
@@ -92,7 +93,7 @@ export default function HistoryScreen() {
                 }
                 ListEmptyComponent={
                     <View style={styles.empty}>
-                        <Text style={styles.emptyEmoji}>📋</Text>
+                        <Ionicons name="clipboard-outline" size={56} color="#9ca3af" style={{ marginBottom: 16 }} />
                         <AutoText style={styles.emptyTitle}>No collections yet</AutoText>
                         <AutoText style={styles.emptyText}>Completed collections will appear here.</AutoText>
                     </View>
@@ -131,7 +132,6 @@ const styles = StyleSheet.create({
     kgText: { fontSize: 15, fontWeight: '800', color: COLORS.dark },
     timeText: { fontSize: 12, color: '#888', marginTop: 2 },
     empty: { alignItems: 'center', paddingTop: 60 },
-    emptyEmoji: { fontSize: 56, marginBottom: 16 },
     emptyTitle: { fontSize: 20, fontWeight: '700', color: COLORS.dark, marginBottom: 8 },
     emptyText: { fontSize: 14, color: '#777', textAlign: 'center' },
 });

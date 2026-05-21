@@ -9,12 +9,13 @@ import { getNotifications, markAsRead, markAllAsRead, getUnreadCount } from '../
 import { useFocusEffect } from '@react-navigation/native';
 import { COLORS } from '../config';
 import { useTranslation } from '../i18n';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const NOTIFICATION_ICONS = {
-    critical_bin: '🚨',
-    route_assigned: '🚛',
-    report_verified: '✅',
-    route_complete: '🏁',
+    critical_bin: <MaterialCommunityIcons name="alert-circle" size={20} color="#dc2626" />,
+    route_assigned: <MaterialCommunityIcons name="truck" size={20} color="#3b82f6" />,
+    report_verified: <Ionicons name="checkmark-circle" size={20} color="#16a34a" />,
+    route_complete: <Ionicons name="flag" size={20} color="#16a34a" />,
 };
 
 function timeAgo(dateStr) {
@@ -92,7 +93,7 @@ export default function NotificationsScreen({ navigation }) {
 
     const renderItem = ({ item }) => {
         const type = getNotifType(item);
-        const icon = NOTIFICATION_ICONS[type] || '🔔';
+        const icon = NOTIFICATION_ICONS[type] || <Ionicons name="notifications" size={20} color="#6b7280" />;
 
         return (
             <TouchableOpacity
@@ -102,7 +103,7 @@ export default function NotificationsScreen({ navigation }) {
             >
                 <View style={styles.cardRow}>
                     <View style={[styles.iconCircle, !item.is_read && styles.iconCircleUnread]}>
-                        <Text style={styles.iconEmoji}>{icon}</Text>
+                        {icon}
                     </View>
                     <View style={styles.cardContent}>
                         <View style={styles.cardHeader}>
@@ -140,7 +141,7 @@ export default function NotificationsScreen({ navigation }) {
                 <ActivityIndicator size="large" color={COLORS.light} style={{ marginTop: 60 }} />
             ) : notifications.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyEmoji}>🔕</Text>
+                    <Ionicons name="notifications-off-outline" size={56} color="#9ca3af" style={{ marginBottom: 16 }} />
                     <Text style={styles.emptyTitle}>{t('no_notifications')}</Text>
                     <Text style={styles.emptyText}>
                         You'll receive alerts for routes, bin reports, and collection updates.
@@ -246,9 +247,6 @@ const styles = StyleSheet.create({
     iconCircleUnread: {
         backgroundColor: COLORS.accent + '50',
     },
-    iconEmoji: {
-        fontSize: 20,
-    },
     cardContent: {
         flex: 1,
     },
@@ -291,10 +289,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 40,
-    },
-    emptyEmoji: {
-        fontSize: 56,
-        marginBottom: 16,
     },
     emptyTitle: {
         fontSize: 18,

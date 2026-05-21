@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../config';
 
 export default function RouteCard({ stops, collectedStops = 0, distance, duration, onStart }) {
@@ -9,7 +10,19 @@ export default function RouteCard({ stops, collectedStops = 0, distance, duratio
             {/* Title Row */}
             <View style={styles.titleRow}>
                 <Text style={styles.title}>Today's Route</Text>
-                <Text style={styles.badge}>🚛 Active</Text>
+                <View style={[styles.badge, { flexDirection: 'row', alignItems: 'center' }]}>
+                    {collectedStops >= stops && stops > 0 ? (
+                        <>
+                            <Ionicons name="checkmark-circle" size={16} color="white" />
+                            <Text style={{ color: COLORS.accent, fontSize: 12, fontWeight: '600', marginLeft: 4 }}>Completed</Text>
+                        </>
+                    ) : (
+                        <>
+                            <MaterialCommunityIcons name="truck-check" size={16} color="white" />
+                            <Text style={{ color: COLORS.accent, fontSize: 12, fontWeight: '600', marginLeft: 4 }}>Active</Text>
+                        </>
+                    )}
+                </View>
             </View>
 
             {/* Stats Grid */}
@@ -43,7 +56,12 @@ export default function RouteCard({ stops, collectedStops = 0, distance, duratio
 
             {/* Start Button */}
             <TouchableOpacity style={styles.startBtn} onPress={onStart} activeOpacity={0.85}>
-                <Text style={styles.startBtnText}>🗺️  View Route on Map</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ marginRight: 8 }}>
+                        <MaterialCommunityIcons name="map-search-outline" size={18} color="#16a34a" />
+                    </View>
+                    <Text style={styles.startBtnText}>View Route on Map</Text>
+                </View>
             </TouchableOpacity>
         </View>
     );

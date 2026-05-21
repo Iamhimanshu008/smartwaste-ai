@@ -3,12 +3,15 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '../i18n';
 import LanguagePickerModal from './LanguagePickerModal';
+import useStore from '../store';
 
 const AppHeader = ({ title, onMenuPress, notificationCount = 0, navigation }) => {
   const [showLangPicker, setShowLangPicker] = useState(false);
   const { t } = useTranslation();
+  const { language } = useStore();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -18,9 +21,7 @@ const AppHeader = ({ title, onMenuPress, notificationCount = 0, navigation }) =>
           style={styles.iconBtn} 
           onPress={onMenuPress}
         >
-          <View style={styles.hamburgerLine} />
-          <View style={styles.hamburgerLine} />
-          <View style={styles.hamburgerLine} />
+          <Ionicons name="menu-outline" size={26} color="white" />
         </TouchableOpacity>
 
         {/* Center — Title */}
@@ -34,14 +35,14 @@ const AppHeader = ({ title, onMenuPress, notificationCount = 0, navigation }) =>
             style={styles.iconBtn}
             onPress={() => setShowLangPicker(true)}
           >
-            <Text style={styles.langIcon}>🌐</Text>
+            <Ionicons name="language-outline" size={24} color="white" />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.iconBtn}
             onPress={() => navigation?.navigate('Notifications')}
           >
-            <Text style={styles.bellIcon}>🔔</Text>
+            <Ionicons name="notifications-outline" size={24} color="white" />
             {notificationCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>

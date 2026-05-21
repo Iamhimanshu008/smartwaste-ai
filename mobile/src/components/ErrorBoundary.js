@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <View style={styles.container}>
-          <Text style={styles.emoji}>⚠️</Text>
+          <Ionicons name="warning-outline" size={48} color="#dc2626" style={{ marginBottom: 16 }} />
           <Text style={styles.title}>Something went wrong</Text>
           <Text style={styles.subtitle}>
             {this.state.error?.message || 'Unexpected error occurred'}
@@ -37,7 +38,6 @@ class ErrorBoundary extends React.Component {
 const styles = StyleSheet.create({
   container: { flex:1, justifyContent:'center', 
                alignItems:'center', padding:24, backgroundColor:'#fff' },
-  emoji: { fontSize: 48, marginBottom: 16 },
   title: { fontSize:20, fontWeight:'bold', 
            color:'#dc2626', marginBottom:8 },
   subtitle: { fontSize:14, color:'#6b7280', 
