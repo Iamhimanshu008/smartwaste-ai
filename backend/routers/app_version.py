@@ -13,9 +13,9 @@ class VersionInfo(BaseModel):
 @router.get("/version", response_model=VersionInfo)
 def get_latest_version():
     LATEST_VERSION = {
-        "latest_version": os.getenv("APP_LATEST_VERSION", "2.3.4"),
+        "latest_version": os.getenv("APP_LATEST_VERSION", "2.3.5"),
         "apk_url": os.getenv("APP_APK_URL", 
-            "https://github.com/Iamhimanshu008/smartwaste-ai/releases/download/v2.3.4/SmartWasteAI-v2.3.4.apk"),
+            "https://github.com/Iamhimanshu008/smartwaste-ai/releases/download/v2.3.5/SmartWasteAI-v2.3.5.apk"),
         "release_notes": os.getenv("APP_RELEASE_NOTES", 
             "Bug fixes and performance improvements"),
         "force_update": os.getenv("APP_FORCE_UPDATE", "false").lower() == "true"

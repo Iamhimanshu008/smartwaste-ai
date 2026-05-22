@@ -2,7 +2,7 @@
   "expo": {
     "name": "SmartWaste AI",
     "slug": "smartwaste-ai",
-    "version": "2.3.4",
+    "version": "2.3.5",
     "sdkVersion": "54.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -11,7 +11,7 @@
     },
     "android": {
       "package": "com.smartwaste.ai",
-      "versionCode": 8,
+      "versionCode": 9,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#16a34a"
