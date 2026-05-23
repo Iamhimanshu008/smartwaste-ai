@@ -1,13 +1,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
 import useStore from '../store';
 
-const BASE_URL = (
-    Constants.expoConfig?.extra?.apiUrl ||
-    process.env.EXPO_PUBLIC_API_URL ||
-    "https://smartwaste-ai-f0i9.onrender.com"
-) + "/api";
+const BASE_URL = "https://smartwaste-ai-f0i9.onrender.com/api";
 
 console.log('[SmartWaste] API BASE_URL:', BASE_URL);
 

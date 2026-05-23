@@ -3,7 +3,7 @@ import client from './client';
 export const login = async (email, password, role) => {
     const payload = { email, password, role: role || 'collector' };
     try {
-        const res = await client.post('/auth/login', payload);
+        const res = await client.post('/auth/login', payload, { timeout: 90000 });
         return res.data;
     } catch (err) {
         console.error('[SmartWaste] Login error:', err.code, err.message, err.config?.baseURL);

@@ -37,6 +37,12 @@ const LoginScreen = ({ navigation }) => {
     }
     setLoading(true);
     try {
+      try {
+        await fetch('https://smartwaste-ai-f0i9.onrender.com/');
+      } catch (e) {
+        throw new Error('Server unreachable, please check internet');
+      }
+
       const tokenData = await loginApi(email, password);
       const { access_token, refresh_token } = tokenData;
       await login(null, access_token, refresh_token);
@@ -84,6 +90,12 @@ const LoginScreen = ({ navigation }) => {
     }
     setLoading(true);
     try {
+      try {
+        await fetch('https://smartwaste-ai-f0i9.onrender.com/');
+      } catch (e) {
+        throw new Error('Server unreachable, please check internet');
+      }
+
       const res = await client.post('/auth/login-otp', {
         phone_number: phone,
         otp: otp
