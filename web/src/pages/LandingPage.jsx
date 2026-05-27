@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 const APK_URL = import.meta.env.VITE_APK_DOWNLOAD_URL ||
-  "https://github.com/Iamhimanshu008/smartwaste-ai/releases/download/v2.3.6/SmartWasteAI-v2.3.6.apk";
+  "https://github.com/Iamhimanshu008/smartwaste-ai/releases/download/v2.3.7/SmartWasteAI-v2.3.7.apk";
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -80,7 +80,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-slate-900 tracking-tight">SmartWaste AI</span>
                 <span className="bg-green-100 text-green-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded border border-green-200">
-                  v2.3.6
+                  v2.3.7
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 font-medium">Chhattisgarh Waste Management System</p>
@@ -206,7 +206,7 @@ export default function LandingPage() {
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#14532d] text-white font-bold px-8 py-4 rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
             >
               <Download className="w-5 h-5" />
-              Download App v2.3.6
+              Download App v2.3.7
             </a>
             <Link
               to="/login"
@@ -428,7 +428,7 @@ export default function LandingPage() {
             {/* LEFT - App Info */}
             <div className="flex flex-col items-start">
               <span className="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full border border-green-200 mb-4">
-                v2.3.6
+                v2.3.7
               </span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
                 Download SmartWaste AI App
@@ -448,7 +448,7 @@ export default function LandingPage() {
 
               {/* What's New List */}
               <div className="mb-8 w-full bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                <h4 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">What's new in v2.3.6:</h4>
+                <h4 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">What's new in v2.3.7:</h4>
                 <ul className="space-y-3 text-slate-600 text-sm">
                   <li className="flex items-start gap-2.5">
                     <span className="text-emerald-500">✅</span>
@@ -484,7 +484,7 @@ export default function LandingPage() {
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#14532d] text-white font-bold px-8 py-4 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 mb-2"
               >
                 <Download className="w-5 h-5" />
-                Download APK v2.3.6
+                Download APK v2.3.7
               </a>
               <span className="text-xs text-slate-400 font-medium">Direct APK download — no Play Store required</span>
             </div>
@@ -519,7 +519,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="text-xl font-bold text-white tracking-tight mb-1">SmartWaste AI</h3>
                   <span className="text-[10px] bg-green-500/10 text-green-400 px-2 py-0.5 rounded border border-green-500/20 font-bold mb-8">
-                    v2.3.6
+                    v2.3.7
                   </span>
 
                   {/* Tiny mock widgets */}
