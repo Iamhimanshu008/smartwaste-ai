@@ -82,7 +82,7 @@ def generate_bulk_pdf(
         
         # Save qr to bytes
         img_byte_arr = io.BytesIO()
-        img.save(img_byte_arr, format='PNG')
+        img.save(img_byte_arr)
         img_byte_arr.seek(0)
         
         # Calculate position
@@ -98,10 +98,10 @@ def generate_bulk_pdf(
         
         # Place text
         pdf.set_xy(x, y + 42)
-        pdf.cell(col_width, 5, txt=f"House ID: {citizen.house_id}", ln=1, align="C")
+        pdf.cell(w=col_width, h=5, text=f"House ID: {citizen.house_id}", align="C")
         pdf.set_xy(x, y + 47)
         name_str = citizen.full_name[:20] + "..." if len(citizen.full_name) > 20 else citizen.full_name
-        pdf.cell(col_width, 5, txt=name_str, ln=1, align="C")
+        pdf.cell(w=col_width, h=5, text=name_str, align="C")
 
         x += col_width
 
