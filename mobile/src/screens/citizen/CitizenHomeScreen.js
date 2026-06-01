@@ -92,9 +92,16 @@ export default function CitizenHomeScreen({ navigation }) {
 
         {/* POINTS CARD */}
         <View style={styles.pointsCard}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.pointsLabel}>TOTAL REWARDS</Text>
             <Text style={styles.pointsValue}>{balance.toLocaleString()} Points</Text>
+            <TouchableOpacity 
+              style={styles.redeemButton} 
+              onPress={() => navigation.navigate('CitizenOffers')}
+            >
+              <Text style={styles.redeemButtonText}>Redeem Rewards</Text>
+              <Ionicons name="arrow-forward" size={16} color={DARK_GREEN} />
+            </TouchableOpacity>
           </View>
           <View style={styles.coinIconWrapper}>
             <MaterialCommunityIcons name="currency-usd" size={32} color={DARK_GREEN} />
@@ -197,7 +204,12 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 4,
   },
   pointsLabel: { fontSize: 12, color: LIGHT_GREEN, fontWeight: '600', letterSpacing: 1, marginBottom: 8 },
-  pointsValue: { fontSize: 28, fontWeight: 'bold', color: WHITE },
+  pointsValue: { fontSize: 28, fontWeight: 'bold', color: WHITE, marginBottom: 12 },
+  redeemButton: {
+    flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start',
+    backgroundColor: LIGHT_GREEN, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20,
+  },
+  redeemButtonText: { fontSize: 14, fontWeight: 'bold', color: DARK_GREEN, marginRight: 4 },
   coinIconWrapper: {
     width: 56, height: 56, borderRadius: 28, backgroundColor: LIGHT_GREEN,
     justifyContent: 'center', alignItems: 'center',

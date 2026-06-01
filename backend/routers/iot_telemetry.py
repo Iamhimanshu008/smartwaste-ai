@@ -2,7 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
+import os
+from fastapi import Header
 from pydantic import BaseModel, Field
+
+from services.auth_service import require_role
+
+IOT_API_KEY = os.getenv("IOT_API_KEY", "smartwaste-iot-secret-2026")
+
+def verify_iot_key(x_iot_api_key: str = Header(...)):
+    if x_iot_api_key != IOT_API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid IoT device key")
+    return x_iot_api_key
 
 from database import get_db
 from models.iot_scale import IoTScale
@@ -43,7 +54,11 @@ class IoTScaleResponse(BaseModel):
         orm_mode = True
 
 @router.post("/admin/iot/register", response_model=IoTScaleResponse)
-def register_scale(scale_data: IoTScaleCreate, db: Session = Depends(get_db)):
+def register_scale(
+    scale_data: IoTScaleCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     """Register a new IoT scale"""
     # Check if serial number or mac address already exists
     existing_scale = db.query(IoTScale).filter(
@@ -65,7 +80,12 @@ def register_scale(scale_data: IoTScaleCreate, db: Session = Depends(get_db)):
     return new_scale
 
 @router.post("/admin/iot/{scale_id}/pair", response_model=IoTScaleResponse)
-def pair_scale(scale_id: int, pair_data: IoTScalePair, db: Session = Depends(get_db)):
+def pair_scale(
+    scale_id: int,
+    pair_data: IoTScalePair,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     """Pair scale with a specific collector"""
     scale = db.query(IoTScale).filter(IoTScale.id == scale_id).first()
     if not scale:
@@ -81,14 +101,21 @@ def pair_scale(scale_id: int, pair_data: IoTScalePair, db: Session = Depends(get
     return scale
 
 @router.get("/admin/iot/status", response_model=List[IoTScaleResponse])
-def get_scales_status(db: Session = Depends(get_db)):
+def get_scales_status(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     """Get a list of all IoT scales, their battery life, and tamper status"""
     scales = db.query(IoTScale).all()
     # Optional: Update is_online based on last_heartbeat here
     return scales
 
 @router.post("/iot/heartbeat")
-def heartbeat(data: IoTHeartbeat, db: Session = Depends(get_db)):
+def heartbeat(
+    data: IoTHeartbeat,
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_iot_key)
+):
     """Public/device endpoint for ESP32 heartbeat"""
     scale = db.query(IoTScale).filter(IoTScale.mac_address == data.mac_address).first()
     if not scale:

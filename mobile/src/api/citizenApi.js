@@ -9,4 +9,7 @@ export const citizenApi = {
     }),
   getLeaderboard: (ward_no) =>
     client.get('/points/leaderboard', { params: { ward_no } }),
+  fetchStoreItems: () => client.get('/admin/store/items'), // Assuming this is exposed or using same structure
+  redeemItem: (itemId, pointsToRedeem) => 
+    client.post('/points/redeem', { item_id: itemId, points_to_redeem: pointsToRedeem }),
 };

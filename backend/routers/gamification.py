@@ -4,11 +4,15 @@ from sqlalchemy import func, desc
 from database import get_db
 from models.wallet import GreenWallet
 from models.user import User
+from services.auth_service import require_role
 
 router = APIRouter()
 
 @router.get("/api/admin/gamification/leaderboard")
-def get_leaderboard(db: Session = Depends(get_db)):
+def get_leaderboard(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     # Join GreenWallet and User, order by total_earned desc, limit 10
     results = db.query(
         GreenWallet.total_earned,
@@ -32,7 +36,10 @@ def get_leaderboard(db: Session = Depends(get_db)):
     return leaderboard
 
 @router.get("/api/admin/gamification/stats")
-def get_gamification_stats(db: Session = Depends(get_db)):
+def get_gamification_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     # Sum of balances, total_earned, total_redeemed
     stats = db.query(
         func.sum(GreenWallet.balance).label("total_circulating"),
@@ -47,6 +54,9 @@ def get_gamification_stats(db: Session = Depends(get_db)):
     }
 
 @router.post("/api/admin/gamification/configure_multiplier")
-def configure_multiplier(config: dict):
+def configure_multiplier(
+    config: dict,
+    current_user: User = Depends(require_role("admin"))
+):
     # Mock endpoint
     return {"status": "success", "message": "Multiplier configuration updated", "config": config}

@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator, Alert, RefreshControl, Image } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import useStore from '../../store';
+import { citizenApi } from '../../api/citizenApi';
 
 const DARK_GREEN = '#1B5E20';
 const MED_GREEN = '#2E7D32';
@@ -10,41 +11,106 @@ const BG = '#F5F5F5';
 const WHITE = '#FFFFFF';
 
 export default function CitizenOffersScreen({ navigation }) {
-  const { citizenWallet } = useStore();
+  const { citizenWallet, setCitizenWallet } = useStore();
   const balance = citizenWallet?.balance ?? 0;
 
-  const offers = [
-    { id: 1, title: 'Mobile Recharge', desc: 'Get ₹50 off on your next top-up', xp: '500 XP', icon: 'cellphone' },
-    { id: 2, title: 'Kirana Discount', desc: '10% off at local partner stores', xp: '800 XP', icon: 'storefront-outline' },
-    { id: 3, title: 'Shopping Discount', desc: 'Extra ₹200 off on major e-commerce', xp: '1,200 XP', icon: 'shopping-outline' },
-    { id: 4, title: 'Electricity Bill Discount', desc: 'Flat ₹100 off on utility bill', xp: '1,000 XP', icon: 'lightning-bolt-outline' },
-    { id: 5, title: 'Groceries Discount', desc: 'Free delivery + ₹50 voucher', xp: '600 XP', icon: 'basket-outline' },
-  ];
+  const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [redeeming, setRedeeming] = useState(false);
+
+  const loadData = useCallback(async () => {
+    try {
+      const res = await citizenApi.fetchStoreItems();
+      setOffers(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  const onRefresh = () => { setRefreshing(true); loadData(); };
+
+  const handleRedeem = (item) => {
+    if (balance < item.point_cost) {
+      Alert.alert('Insufficient Points', `You need ${item.point_cost} points to redeem this item.`);
+      return;
+    }
+    
+    if (item.stock_quantity <= 0) {
+      Alert.alert('Out of Stock', 'This item is currently out of stock.');
+      return;
+    }
+
+    Alert.alert(
+      'Confirm Redemption',
+      `Are you sure you want to redeem "${item.name}" for ${item.point_cost} points?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Redeem', 
+          style: 'default',
+          onPress: () => doRedeem(item)
+        }
+      ]
+    );
+  };
+
+  const doRedeem = async (item) => {
+    setRedeeming(true);
+    try {
+      await citizenApi.redeemItem(item.id, item.point_cost);
+      
+      // Refresh wallet balance
+      try {
+        const walletRes = await citizenApi.getWallet();
+        if (walletRes.data) {
+          setCitizenWallet(walletRes.data);
+        }
+      } catch (e) {
+        // Fallback to local deduction if wallet fetch fails
+        setCitizenWallet({ ...citizenWallet, balance: balance - item.point_cost });
+      }
+
+      Alert.alert('Success', `You successfully redeemed ${item.name}! Check your reward history.`);
+      loadData(); // refresh stock
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Error', err?.response?.data?.detail || 'Failed to redeem item. Please try again.');
+    } finally {
+      setRedeeming(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer?.()}>
-          <Ionicons name="menu" size={28} color={DARK_GREEN} />
+        <TouchableOpacity onPress={() => navigation.openDrawer?.() || navigation.goBack()}>
+          <Ionicons name="arrow-back" size={28} color={DARK_GREEN} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>SmartWaste AI</Text>
+        <Text style={styles.headerTitle}>Store Rewards</Text>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={{ marginRight: 16 }}>
-            <Ionicons name="globe-outline" size={24} color={DARK_GREEN} />
-          </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('CitizenNotifications')}>
             <Ionicons name="notifications-outline" size={24} color={DARK_GREEN} />
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false} 
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[DARK_GREEN]} />}
+      >
         {/* Points Banner */}
         <View style={styles.pointsBanner}>
           <View>
             <Text style={styles.pointsBannerLabel}>Available Points</Text>
-            <Text style={styles.pointsBannerValue}>{balance.toLocaleString()} XP</Text>
+            <Text style={styles.pointsBannerValue}>{balance.toLocaleString()} Points</Text>
           </View>
           <View style={styles.pointsBannerIconBox}>
             <MaterialCommunityIcons name="star-four-points-outline" size={28} color={DARK_GREEN} />
@@ -56,33 +122,60 @@ export default function CitizenOffersScreen({ navigation }) {
           <Text style={styles.sectionSubtitle}>Redeem your points for exciting offers</Text>
         </View>
 
-        {/* Offer Cards */}
-        <View style={styles.offersList}>
-          {offers.map(offer => (
-            <TouchableOpacity key={offer.id} style={styles.offerCard}>
-              <View style={styles.offerIconBox}>
-                <MaterialCommunityIcons name={offer.icon} size={24} color={DARK_GREEN} />
-              </View>
-              <View style={styles.offerMiddle}>
-                <Text style={styles.offerTitle}>{offer.title}</Text>
-                <Text style={styles.offerDesc}>{offer.desc}</Text>
-              </View>
-              <View style={styles.offerRight}>
-                <Text style={styles.offerXp}>{offer.xp}</Text>
-                <Ionicons name="chevron-forward" size={16} color={DARK_GREEN} />
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Featured Banner */}
-        <View style={styles.featuredBanner}>
-          <View style={styles.featuredPill}>
-            <Text style={styles.featuredPillText}>LIMITED TIME</Text>
+        {/* Loading / Empty / List */}
+        {loading ? (
+          <ActivityIndicator size="large" color={DARK_GREEN} style={{ marginTop: 20 }} />
+        ) : offers.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <MaterialCommunityIcons name="storefront-outline" size={48} color="#CCCCCC" />
+            <Text style={styles.emptyText}>No rewards available right now.</Text>
           </View>
-          <Text style={styles.featuredTitle}>Eco-Warrior Pack</Text>
-          <Text style={styles.featuredSubtitle}>Exclusive sustainable living kit</Text>
-        </View>
+        ) : (
+          <View style={styles.offersList}>
+            {offers.filter(o => o.is_active !== false).map(offer => {
+              const canAfford = balance >= offer.point_cost;
+              const isOutOfStock = offer.stock_quantity <= 0;
+              
+              return (
+                <View key={offer.id} style={styles.offerCard}>
+                  <View style={styles.offerCardContent}>
+                    {offer.image_url ? (
+                      <Image source={{ uri: offer.image_url }} style={styles.offerImage} />
+                    ) : (
+                      <View style={styles.offerIconBox}>
+                        <MaterialCommunityIcons name="gift-outline" size={32} color={DARK_GREEN} />
+                      </View>
+                    )}
+                    
+                    <View style={styles.offerMiddle}>
+                      <Text style={styles.offerTitle}>{offer.name}</Text>
+                      <Text style={styles.offerDesc}>{offer.description || 'No description available.'}</Text>
+                      <Text style={styles.offerStock}>
+                        {isOutOfStock ? 'Out of Stock' : `${offer.stock_quantity} left`}
+                      </Text>
+                    </View>
+                  </View>
+                  
+                  <View style={styles.offerActionRow}>
+                    <Text style={styles.offerPoints}>{offer.point_cost.toLocaleString()} Points</Text>
+                    <TouchableOpacity 
+                      style={[
+                        styles.redeemBtn, 
+                        (!canAfford || isOutOfStock) && styles.redeemBtnDisabled
+                      ]}
+                      onPress={() => handleRedeem(offer)}
+                      disabled={!canAfford || isOutOfStock || redeeming}
+                    >
+                      <Text style={styles.redeemBtnText}>
+                        {redeeming ? 'Processing...' : (!canAfford ? 'Insufficient Points' : 'Redeem')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        )}
 
         {/* View Reward History Button */}
         <TouchableOpacity style={styles.historyBtn} onPress={() => navigation.navigate('CitizenHistory')}>
@@ -120,33 +213,43 @@ const styles = StyleSheet.create({
   sectionHeading: { fontSize: 22, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 4 },
   sectionSubtitle: { fontSize: 14, color: '#666666' },
 
+  emptyContainer: { alignItems: 'center', marginVertical: 40 },
+  emptyText: { fontSize: 16, color: '#999', marginTop: 12 },
+
   offersList: { marginBottom: 24 },
   offerCard: {
-    backgroundColor: WHITE, borderRadius: 16, padding: 16, marginBottom: 12,
-    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: WHITE, borderRadius: 16, padding: 16, marginBottom: 16,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
+  offerCardContent: {
+    flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16,
+  },
+  offerImage: {
+    width: 64, height: 64, borderRadius: 12, marginRight: 16, backgroundColor: '#E8F5E9'
+  },
   offerIconBox: {
-    width: 48, height: 48, borderRadius: 12, backgroundColor: '#E8F5E9',
+    width: 64, height: 64, borderRadius: 12, backgroundColor: '#E8F5E9',
     justifyContent: 'center', alignItems: 'center', marginRight: 16,
   },
-  offerMiddle: { flex: 1, marginRight: 8 },
+  offerMiddle: { flex: 1 },
   offerTitle: { fontSize: 16, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 4 },
-  offerDesc: { fontSize: 12, color: '#666666' },
-  offerRight: { flexDirection: 'row', alignItems: 'center' },
-  offerXp: { fontSize: 14, fontWeight: 'bold', color: DARK_GREEN, marginRight: 4 },
+  offerDesc: { fontSize: 13, color: '#666666', marginBottom: 8 },
+  offerStock: { fontSize: 12, color: MED_GREEN, fontWeight: '600' },
 
-  featuredBanner: {
-    backgroundColor: DARK_GREEN, borderRadius: 16, padding: 24, marginBottom: 24,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 4,
+  offerActionRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    borderTopWidth: 1, borderTopColor: '#EEEEEE', paddingTop: 16,
   },
-  featuredPill: {
-    backgroundColor: LIGHT_GREEN, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12,
-    alignSelf: 'flex-start', marginBottom: 12,
+  offerPoints: { fontSize: 16, fontWeight: 'bold', color: DARK_GREEN },
+  redeemBtn: {
+    backgroundColor: MED_GREEN, paddingVertical: 8, paddingHorizontal: 20, borderRadius: 20,
   },
-  featuredPillText: { fontSize: 10, fontWeight: 'bold', color: DARK_GREEN, letterSpacing: 0.5 },
-  featuredTitle: { fontSize: 20, fontWeight: 'bold', color: WHITE, marginBottom: 4 },
-  featuredSubtitle: { fontSize: 14, color: '#D1D5DB' },
+  redeemBtnDisabled: {
+    backgroundColor: '#CCCCCC'
+  },
+  redeemBtnText: {
+    color: WHITE, fontSize: 14, fontWeight: 'bold'
+  },
 
   historyBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',

@@ -6,11 +6,15 @@ from typing import List
 from database import get_db
 from models.ai_grading import AIGradingLog
 from models.user import User
+from services.auth_service import require_role
 
 router = APIRouter(tags=["AI Analytics"])
 
 @router.get("/admin/ai/stats")
-async def get_ai_stats(db: Session = Depends(get_db)):
+async def get_ai_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     logs = db.query(AIGradingLog).all()
     
     total = len(logs)
@@ -41,7 +45,11 @@ async def get_ai_stats(db: Session = Depends(get_db)):
     }
 
 @router.get("/admin/ai/recent_logs")
-async def get_recent_ai_logs(db: Session = Depends(get_db), limit: int = 50):
+async def get_recent_ai_logs(
+    limit: int = 50,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     logs = db.query(AIGradingLog).order_by(AIGradingLog.created_at.desc()).limit(limit).all()
     
     result = []

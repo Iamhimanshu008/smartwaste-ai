@@ -6,7 +6,7 @@ from typing import List, Optional
 from database import get_db
 from models.panchayat import Panchayat
 from models.user import User, UserRole
-from services.auth_service import get_current_user
+from services.auth_service import get_current_user, require_role
 import bcrypt
 
 router = APIRouter(prefix="/api/admin", tags=["Panchayat"])
@@ -43,7 +43,11 @@ class SubAdminCreateRequest(BaseModel):
     email: str
 
 @router.post("/panchayat/register", response_model=PanchayatResponse)
-def register_panchayat(req: PanchayatRegisterRequest, db: Session = Depends(get_db)):
+def register_panchayat(
+    req: PanchayatRegisterRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     # In a real scenario, we might verify if the user is a state admin. 
     # For now, it's open or we assume the frontend handles state admin logic.
     panchayat = Panchayat(**req.model_dump())
@@ -53,11 +57,18 @@ def register_panchayat(req: PanchayatRegisterRequest, db: Session = Depends(get_
     return panchayat
 
 @router.get("/panchayats", response_model=List[PanchayatResponse])
-def list_panchayats(db: Session = Depends(get_db)):
+def list_panchayats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin", "sub_admin"))
+):
     return db.query(Panchayat).all()
 
 @router.patch("/panchayat/{id}/approve")
-def approve_panchayat(id: int, db: Session = Depends(get_db)):
+def approve_panchayat(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     panchayat = db.query(Panchayat).filter(Panchayat.id == id).first()
     if not panchayat:
         raise HTTPException(status_code=404, detail="Panchayat not found")
@@ -67,7 +78,11 @@ def approve_panchayat(id: int, db: Session = Depends(get_db)):
     return {"status": "success", "message": "Panchayat approved successfully"}
 
 @router.get("/panchayat/{id}/vitals")
-def get_panchayat_vitals(id: int, db: Session = Depends(get_db)):
+def get_panchayat_vitals(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin", "sub_admin"))
+):
     panchayat = db.query(Panchayat).filter(Panchayat.id == id).first()
     if not panchayat:
         raise HTTPException(status_code=404, detail="Panchayat not found")
@@ -92,7 +107,12 @@ def get_panchayat_vitals(id: int, db: Session = Depends(get_db)):
     }
 
 @router.post("/panchayat/{id}/sub_admin")
-def create_sub_admin(id: int, req: SubAdminCreateRequest, db: Session = Depends(get_db)):
+def create_sub_admin(
+    id: int,
+    req: SubAdminCreateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     panchayat = db.query(Panchayat).filter(Panchayat.id == id).first()
     if not panchayat:
         raise HTTPException(status_code=404, detail="Panchayat not found")

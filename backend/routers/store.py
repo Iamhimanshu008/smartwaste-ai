@@ -3,15 +3,23 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models.store import RewardItem, Redemption
 from models.user import User
+from services.auth_service import require_role
 
 router = APIRouter()
 
 @router.get("/api/admin/store/items")
-def list_items(db: Session = Depends(get_db)):
+def list_items(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     return db.query(RewardItem).all()
 
 @router.post("/api/admin/store/items")
-def add_item(item_data: dict, db: Session = Depends(get_db)):
+def add_item(
+    item_data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     new_item = RewardItem(
         name=item_data.get("name"),
         description=item_data.get("description"),
@@ -25,7 +33,10 @@ def add_item(item_data: dict, db: Session = Depends(get_db)):
     return new_item
 
 @router.get("/api/admin/store/redemptions")
-def list_redemptions(db: Session = Depends(get_db)):
+def list_redemptions(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     redemptions = db.query(
         Redemption.id,
         Redemption.points_spent,
@@ -49,7 +60,11 @@ def list_redemptions(db: Session = Depends(get_db)):
     ]
 
 @router.post("/api/admin/store/redemptions/{redemption_id}/fulfill")
-def fulfill_redemption(redemption_id: int, db: Session = Depends(get_db)):
+def fulfill_redemption(
+    redemption_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
     redemption = db.query(Redemption).filter(Redemption.id == redemption_id).first()
     if not redemption:
         raise HTTPException(status_code=404, detail="Redemption not found")

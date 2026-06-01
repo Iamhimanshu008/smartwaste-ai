@@ -18,7 +18,7 @@ class QRStatusUpdate(BaseModel):
 @router.patch("/status")
 def update_qr_status(
     payload: QRStatusUpdate,
-    current_user: User = Depends(require_role(["admin", "sub_admin"])),
+    current_user: User = Depends(require_role("admin", "sub_admin")),
     db: Session = Depends(get_db)
 ):
     valid_statuses = ["active", "damaged", "stolen", "locked"]
@@ -36,7 +36,7 @@ def update_qr_status(
 @router.get("/citizens")
 def get_citizens_by_ward(
     ward_no: int = Query(...),
-    current_user: User = Depends(require_role(["admin", "sub_admin"])),
+    current_user: User = Depends(require_role("admin", "sub_admin")),
     db: Session = Depends(get_db)
 ):
     citizens = db.query(User).filter(User.ward_no == ward_no, User.is_citizen == True).all()
@@ -52,7 +52,7 @@ def get_citizens_by_ward(
 @router.get("/bulk_pdf")
 def generate_bulk_pdf(
     ward_no: int = Query(...),
-    current_user: User = Depends(require_role(["admin", "sub_admin"])),
+    current_user: User = Depends(require_role("admin", "sub_admin")),
     db: Session = Depends(get_db)
 ):
     citizens = db.query(User).filter(User.ward_no == ward_no, User.is_citizen == True).all()

@@ -26,7 +26,7 @@ export default function CollectionScreen({ navigation, route }) {
   // Weight state
   const [weightInput, setWeightInput] = useState('');
   const [isManualOverride, setIsManualOverride] = useState(false);
-  const [isBLEVerified] = useState(false); // BLE stub — always false for now
+  const [isBLEVerified, setIsBLEVerified] = useState(false);
 
   // Stats state
   const [todayStats, setTodayStats] = useState({ total_collections: 0, total_grams: 0, manual_count: 0 });
@@ -34,6 +34,17 @@ export default function CollectionScreen({ navigation, route }) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => { refreshStats(); }, []);
+
+  useEffect(() => {
+    if (route.params?.weight_grams) {
+      setWeightInput(String(route.params.weight_grams));
+      if (route.params.ble_verified) {
+        setIsBLEVerified(true);
+      }
+      // Reset params so it doesn't trigger again
+      navigation.setParams({ weight_grams: undefined, ble_verified: undefined, device_id: undefined });
+    }
+  }, [route.params?.weight_grams]);
 
   const refreshStats = async () => {
     const stats = await getTodayStats();
@@ -230,11 +241,17 @@ export default function CollectionScreen({ navigation, route }) {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Step 2 — Enter Weight</Text>
 
-          {/* BLE Stub Banner */}
-          <View style={styles.bleBanner}>
-            <MaterialCommunityIcons name="bluetooth-off" size={16} color="#6b7280" />
-            <Text style={styles.bleBannerText}>Smart scale BLE — Coming soon. Enter weight manually.</Text>
-          </View>
+          {/* BLE Button */}
+          <TouchableOpacity 
+            style={[styles.bleBanner, { backgroundColor: '#eff6ff', borderColor: '#bfdbfe' }]}
+            onPress={() => navigation.navigate('BleWeightScreen')}
+          >
+            <MaterialCommunityIcons name="bluetooth" size={20} color="#3b82f6" />
+            <Text style={[styles.bleBannerText, { color: '#1d4ed8', fontWeight: '600' }]}>
+              Weigh with Smart Scale (BLE)
+            </Text>
+            <Ionicons name="chevron-forward" size={16} color="#3b82f6" />
+          </TouchableOpacity>
 
           <View style={styles.weightInputRow}>
             <TextInput
