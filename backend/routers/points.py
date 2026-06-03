@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from typing import Optional
 from database import get_db
 from models.user import User, UserRole
 from models.redemption import Redemption
@@ -11,56 +12,46 @@ router = APIRouter(prefix="/api/points", tags=["Points"])
 POINT_TO_INR = 0.10  # 1 point = ₹0.10, 10 points = ₹1
 
 class RedeemRequest(BaseModel):
-    citizen_house_id: str
-    points_to_redeem: float
-    description: str
+    item_id: int
+    points_spent: float
 
-# POST /api/points/redeem — merchant redeems points for citizen
+# POST /api/points/redeem — user redeems points for a store item
 @router.post("/redeem")
 def redeem_points(
     request: RedeemRequest,
-    current_user: User = Depends(require_role("merchant")),
+    current_user: User = Depends(require_role("citizen")),
     db: Session = Depends(get_db)
 ):
-    citizen = db.query(User).filter(
-        User.house_id == request.citizen_house_id
-    ).first()
-    if not citizen:
-        raise HTTPException(status_code=404, detail="Citizen not found")
-    
-    if citizen.wallet_balance_points < request.points_to_redeem:
+    if current_user.wallet_balance_points < request.points_spent:
         raise HTTPException(
             status_code=400,
-            detail=f"Insufficient points. Balance: {citizen.wallet_balance_points}"
+            detail=f"Insufficient points. Balance: {current_user.wallet_balance_points}"
         )
-    
-    inr_value = round(request.points_to_redeem * POINT_TO_INR, 2)
-    
+
     # Deduct points
-    citizen.wallet_balance_points -= request.points_to_redeem
-    
+    current_user.wallet_balance_points -= request.points_spent  # type: ignore[assignment]
+
     # Record redemption
     redemption = Redemption(
-        citizen_house_id=request.citizen_house_id,
-        merchant_id=current_user.id,
-        points_deducted=request.points_to_redeem,
-        inr_value=inr_value,
-        description=request.description
+        user_id=current_user.id,
+        item_id=request.item_id,
+        points_spent=request.points_spent,
+        status="pending"
     )
     db.add(redemption)
     db.commit()
-    
+
     return {
         "success": True,
-        "points_deducted": request.points_to_redeem,
-        "inr_value": inr_value,
-        "new_balance": citizen.wallet_balance_points
+        "points_spent": request.points_spent,
+        "new_balance": current_user.wallet_balance_points,
+        "status": "pending"
     }
 
 # GET /api/points/leaderboard?ward_no=4
 @router.get("/leaderboard")
 def get_leaderboard(
-    ward_no: int = None,
+    ward_no: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
     query = db.query(User).filter(
@@ -102,13 +93,29 @@ def get_ward_summary(
         sqlfunc.sum(Transaction.points_awarded).label("total_points"),
         sqlfunc.sum(sqlfunc.cast(Transaction.is_manual_override, Integer)).label("manual_overrides")
     ).filter(Transaction.ward_no == ward_no).first()
-    
+
+    if stats is None:
+        return {
+            "ward_no": ward_no,
+            "total_transactions": 0,
+            "total_weight_grams": 0,
+            "total_weight_kg": 0.0,
+            "total_points_issued": 0,
+            "manual_overrides": 0,
+            "financials": {
+                "total_revenue_inr": 0.0,
+                "citizen_incentive_fund": 0.0,
+                "operations_fund": 0.0,
+                "panchayat_profit": 0.0
+            }
+        }
+
     total_kg = round((stats.total_grams or 0) / 1000, 2)
     revenue_inr = round(total_kg * 30, 2)
     citizen_fund = round(revenue_inr * 0.3333, 2)
     ops_fund = round(revenue_inr * 0.3333, 2)
     panchayat_profit = round(revenue_inr * 0.3334, 2)
-    
+
     return {
         "ward_no": ward_no,
         "total_transactions": stats.total_transactions or 0,

@@ -1,14 +1,18 @@
-import uuid
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, func
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from database import Base
+
 
 class Redemption(Base):
     __tablename__ = "redemptions"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    citizen_house_id = Column(String(20), ForeignKey("users.house_id"), nullable=False, index=True)
-    merchant_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    points_deducted = Column(Float, nullable=False)
-    inr_value = Column(Float, nullable=False)
-    description = Column(String(500), nullable=True)
-    redeemed_at = Column(DateTime(timezone=True), server_default=func.now())
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    item_id = Column(Integer, ForeignKey("reward_items.id"), nullable=False)
+    points_spent = Column(Float, nullable=False)
+    status = Column(String, default="pending")   # pending | approved | rejected
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User", back_populates="redemptions")
+    item = relationship("RewardItem", back_populates="redemptions")

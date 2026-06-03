@@ -13,85 +13,115 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = '0bfbb2495547'
-down_revision: Union[str, Sequence[str], None] = 'a86297312417'
+down_revision: Union[str, Sequence[str], None] = '0fd81454531f'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
     """Upgrade schema."""
+    # Safety: only add columns if they don't already exist
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    existing_tables = inspector.get_table_names()
+    
+    existing_users_cols = [col['name'] for col in inspector.get_columns('users')] if 'users' in existing_tables else []
+    existing_users_indexes = [idx['name'] for idx in inspector.get_indexes('users')] if 'users' in existing_tables else []
+    existing_users_constraints = [c['name'] for c in inspector.get_unique_constraints('users')] if 'users' in existing_tables else []
+
+    existing_zones_cols = [col['name'] for col in inspector.get_columns('zones')] if 'zones' in existing_tables else []
+    existing_zones_constraints = [c['name'] for c in inspector.get_unique_constraints('zones')] if 'zones' in existing_tables else []
+
     # 1. ADD COLUMNS & UNIQUE CONSTRAINTS FIRST (Taki Foreign Key inhe reference kar sake)
-    op.add_column('users', sa.Column('house_id', sa.String(length=20), nullable=True))
-    op.add_column('users', sa.Column('ward_no', sa.Integer(), nullable=True))
-    op.add_column('users', sa.Column('wallet_balance_points', sa.Float(), nullable=True))
-    op.add_column('users', sa.Column('qr_hash', sa.String(length=255), nullable=True))
-    op.add_column('users', sa.Column('is_citizen', sa.Boolean(), nullable=True))
-    op.create_index(op.f('ix_users_house_id'), 'users', ['house_id'], unique=True)
+    if 'house_id' not in existing_users_cols:
+        op.add_column('users', sa.Column('house_id', sa.String(length=20), nullable=True))
+    if 'ward_no' not in existing_users_cols:
+        op.add_column('users', sa.Column('ward_no', sa.Integer(), nullable=True))
+    if 'wallet_balance_points' not in existing_users_cols:
+        op.add_column('users', sa.Column('wallet_balance_points', sa.Float(), nullable=True))
+    if 'qr_hash' not in existing_users_cols:
+        op.add_column('users', sa.Column('qr_hash', sa.String(length=255), nullable=True))
+    if 'is_citizen' not in existing_users_cols:
+        op.add_column('users', sa.Column('is_citizen', sa.Boolean(), nullable=True))
+    
+    if 'ix_users_house_id' not in existing_users_indexes:
+        op.create_index(op.f('ix_users_house_id'), 'users', ['house_id'], unique=True)
     
     # Explicit unique constraints for PostgreSQL Foreign Keys
-    op.create_unique_constraint('uq_users_house_id', 'users', ['house_id'])
-    op.create_unique_constraint('uq_users_qr_hash', 'users', ['qr_hash'])
+    if 'uq_users_house_id' not in existing_users_constraints:
+        op.create_unique_constraint('uq_users_house_id', 'users', ['house_id'])
+    if 'uq_users_qr_hash' not in existing_users_constraints:
+        op.create_unique_constraint('uq_users_qr_hash', 'users', ['qr_hash'])
 
-    op.add_column('zones', sa.Column('ward_no', sa.Integer(), nullable=True))
-    op.add_column('zones', sa.Column('panchayat_name', sa.String(length=200), nullable=True))
-    op.add_column('zones', sa.Column('total_citizens', sa.Integer(), nullable=True))
-    op.create_unique_constraint('uq_zones_ward_no', 'zones', ['ward_no'])
+    if 'ward_no' not in existing_zones_cols:
+        op.add_column('zones', sa.Column('ward_no', sa.Integer(), nullable=True))
+    if 'panchayat_name' not in existing_zones_cols:
+        op.add_column('zones', sa.Column('panchayat_name', sa.String(length=200), nullable=True))
+    if 'total_citizens' not in existing_zones_cols:
+        op.add_column('zones', sa.Column('total_citizens', sa.Integer(), nullable=True))
+        
+    if 'uq_zones_ward_no' not in existing_zones_constraints:
+        op.create_unique_constraint('uq_zones_ward_no', 'zones', ['ward_no'])
 
     # 2. CREATE TABLES AFTER DEPENDENCIES EXIST
-    op.create_table('daily_routes',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('collector_id', sa.Integer(), nullable=False),
-        sa.Column('ward_no', sa.Integer(), nullable=False),
-        sa.Column('route_date', sa.Date(), nullable=False),
-        sa.Column('total_houses', sa.Integer(), nullable=True),
-        sa.Column('completed_houses', sa.Integer(), nullable=True),
-        sa.Column('is_synced', sa.Boolean(), nullable=True),
-        sa.Column('synced_at', sa.DateTime(timezone=True), nullable=True),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-        sa.ForeignKeyConstraint(['collector_id'], ['users.id'], ),
-        sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_daily_routes_collector_id'), 'daily_routes', ['collector_id'], unique=False)
-    op.create_index(op.f('ix_daily_routes_id'), 'daily_routes', ['id'], unique=False)
+    if 'daily_routes' not in existing_tables:
+        op.create_table('daily_routes',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('collector_id', sa.Integer(), nullable=False),
+            sa.Column('ward_no', sa.Integer(), nullable=False),
+            sa.Column('route_date', sa.Date(), nullable=False),
+            sa.Column('total_houses', sa.Integer(), nullable=True),
+            sa.Column('completed_houses', sa.Integer(), nullable=True),
+            sa.Column('is_synced', sa.Boolean(), nullable=True),
+            sa.Column('synced_at', sa.DateTime(timezone=True), nullable=True),
+            sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+            sa.ForeignKeyConstraint(['collector_id'], ['users.id'], ),
+            sa.PrimaryKeyConstraint('id')
+        )
+        op.create_index(op.f('ix_daily_routes_collector_id'), 'daily_routes', ['collector_id'], unique=False)
+        op.create_index(op.f('ix_daily_routes_id'), 'daily_routes', ['id'], unique=False)
 
-    op.create_table('redemptions',
-        sa.Column('id', sa.String(length=36), nullable=False),
-        sa.Column('citizen_house_id', sa.String(length=20), nullable=False),
-        sa.Column('merchant_id', sa.Integer(), nullable=False),
-        sa.Column('points_deducted', sa.Float(), nullable=False),
-        sa.Column('inr_value', sa.Float(), nullable=False),
-        sa.Column('description', sa.String(length=500), nullable=True),
-        sa.Column('redeemed_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-        sa.ForeignKeyConstraint(['citizen_house_id'], ['users.house_id'], ),
-        sa.ForeignKeyConstraint(['merchant_id'], ['users.id'], ),
-        sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_redemptions_citizen_house_id'), 'redemptions', ['citizen_house_id'], unique=False)
-    op.create_index(op.f('ix_redemptions_merchant_id'), 'redemptions', ['merchant_id'], unique=False)
+    if 'redemptions' not in existing_tables:
+        op.create_table('redemptions',
+            sa.Column('id', sa.String(length=36), nullable=False),
+            sa.Column('citizen_house_id', sa.String(length=20), nullable=False),
+            sa.Column('merchant_id', sa.Integer(), nullable=False),
+            sa.Column('points_deducted', sa.Float(), nullable=False),
+            sa.Column('inr_value', sa.Float(), nullable=False),
+            sa.Column('description', sa.String(length=500), nullable=True),
+            sa.Column('redeemed_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+            sa.ForeignKeyConstraint(['citizen_house_id'], ['users.house_id'], ),
+            sa.ForeignKeyConstraint(['merchant_id'], ['users.id'], ),
+            sa.PrimaryKeyConstraint('id')
+        )
+        op.create_index(op.f('ix_redemptions_citizen_house_id'), 'redemptions', ['citizen_house_id'], unique=False)
+        op.create_index(op.f('ix_redemptions_merchant_id'), 'redemptions', ['merchant_id'], unique=False)
 
-    op.create_table('transactions',
-        sa.Column('id', sa.String(length=36), nullable=False),
-        sa.Column('house_id', sa.String(length=20), nullable=False),
-        sa.Column('collector_id', sa.Integer(), nullable=False),
-        sa.Column('ward_no', sa.Integer(), nullable=False),
-        sa.Column('weight_grams', sa.Integer(), nullable=False),
-        sa.Column('points_awarded', sa.Float(), nullable=False),
-        sa.Column('is_manual_override', sa.Boolean(), nullable=True),
-        sa.Column('is_ble_verified', sa.Boolean(), nullable=True),
-        sa.Column('status', sa.Enum('pending_sync', 'synced', 'audit_required', 'approved', 'rejected', name='transactionstatus'), nullable=True),
-        sa.Column('waste_type', sa.String(length=50), nullable=True),
-        sa.Column('notes', sa.String(length=500), nullable=True),
-        sa.Column('collected_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-        sa.Column('synced_at', sa.DateTime(timezone=True), nullable=True),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-        sa.ForeignKeyConstraint(['collector_id'], ['users.id'], ),
-        sa.ForeignKeyConstraint(['house_id'], ['users.house_id'], ),
-        sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_transactions_collector_id'), 'transactions', ['collector_id'], unique=False)
-    op.create_index(op.f('ix_transactions_house_id'), 'transactions', ['house_id'], unique=False)
+    if 'transactions' not in existing_tables:
+        op.create_table('transactions',
+            sa.Column('id', sa.String(length=36), nullable=False),
+            sa.Column('house_id', sa.String(length=20), nullable=False),
+            sa.Column('collector_id', sa.Integer(), nullable=False),
+            sa.Column('ward_no', sa.Integer(), nullable=False),
+            sa.Column('weight_grams', sa.Integer(), nullable=False),
+            sa.Column('points_awarded', sa.Float(), nullable=False),
+            sa.Column('is_manual_override', sa.Boolean(), nullable=True),
+            sa.Column('is_ble_verified', sa.Boolean(), nullable=True),
+            sa.Column('status', sa.Enum('pending_sync', 'synced', 'audit_required', 'approved', 'rejected', name='transactionstatus'), nullable=True),
+            sa.Column('waste_type', sa.String(length=50), nullable=True),
+            sa.Column('notes', sa.String(length=500), nullable=True),
+            sa.Column('collected_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+            sa.Column('synced_at', sa.DateTime(timezone=True), nullable=True),
+            sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+            sa.ForeignKeyConstraint(['collector_id'], ['users.id'], ),
+            sa.ForeignKeyConstraint(['house_id'], ['users.house_id'], ),
+            sa.PrimaryKeyConstraint('id')
+        )
+        op.create_index(op.f('ix_transactions_collector_id'), 'transactions', ['collector_id'], unique=False)
+        op.create_index(op.f('ix_transactions_house_id'), 'transactions', ['house_id'], unique=False)
 
-    op.drop_table('seed_metadata')
+    if 'seed_metadata' in existing_tables:
+        op.drop_table('seed_metadata')
 
 
 def downgrade() -> None:

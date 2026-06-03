@@ -6,8 +6,7 @@ from typing import List, Optional
 from database import get_db
 from models.panchayat import Panchayat
 from models.user import User, UserRole
-from services.auth_service import get_current_user, require_role
-import bcrypt
+from services.auth_service import get_current_user, require_role, hash_password
 
 router = APIRouter(prefix="/api/admin", tags=["Panchayat"])
 
@@ -73,7 +72,7 @@ def approve_panchayat(
     if not panchayat:
         raise HTTPException(status_code=404, detail="Panchayat not found")
     
-    panchayat.is_approved = True
+    panchayat.is_approved = True  # type: ignore[assignment]
     db.commit()
     return {"status": "success", "message": "Panchayat approved successfully"}
 
@@ -96,7 +95,7 @@ def get_panchayat_vitals(
 
     progress = 0
     if panchayat.target_houses > 0:
-        progress = round((registered_houses / panchayat.target_houses) * 100, 2)
+        progress = round((registered_houses / panchayat.target_houses) * 100, 2)  # type: ignore[call-overload]
         
     return {
         "population": panchayat.population,
@@ -124,12 +123,12 @@ def create_sub_admin(
     if existing:
         raise HTTPException(status_code=400, detail="User with this email or phone already exists")
         
-    hashed_password = bcrypt.hashpw(req.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    hashed_password = hash_password(req.password)
     
     user = User(
         full_name=req.name,
         email=req.email,
-        phone=req.phone,
+        phone_number=req.phone,
         hashed_password=hashed_password,
         role=UserRole.sub_admin,
         panchayat_id=id

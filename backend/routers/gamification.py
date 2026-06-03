@@ -17,7 +17,7 @@ def get_leaderboard(
     results = db.query(
         GreenWallet.total_earned,
         GreenWallet.balance,
-        User.name,
+        User.full_name,
         User.house_id
     ).join(User, GreenWallet.user_id == User.id)\
      .filter(User.role == 'citizen')\
@@ -28,7 +28,7 @@ def get_leaderboard(
     for rank, r in enumerate(results, start=1):
         leaderboard.append({
             "rank": rank,
-            "name": r.name,
+            "name": r.full_name,
             "house_id": r.house_id,
             "total_earned": r.total_earned,
             "balance": r.balance
@@ -46,6 +46,9 @@ def get_gamification_stats(
         func.sum(GreenWallet.total_earned).label("total_awarded"),
         func.sum(GreenWallet.total_redeemed).label("total_redeemed")
     ).first()
+
+    if stats is None:
+        return {"total_circulating": 0.0, "total_awarded": 0.0, "total_redeemed": 0.0}
 
     return {
         "total_circulating": stats.total_circulating or 0.0,

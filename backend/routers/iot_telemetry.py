@@ -2,14 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from fastapi import Header
 from pydantic import BaseModel, Field
 
 from services.auth_service import require_role
 
-IOT_API_KEY = os.getenv("IOT_API_KEY", "smartwaste-iot-secret-2026")
+IOT_API_KEY = os.getenv("IOT_API_KEY")
+if not IOT_API_KEY:
+    raise RuntimeError("IOT_API_KEY environment variable is not set. Set it in your .env file before starting the server.")
 
 def verify_iot_key(x_iot_api_key: str = Header(...)):
     if x_iot_api_key != IOT_API_KEY:
@@ -96,7 +98,7 @@ def pair_scale(
     if not collector:
         raise HTTPException(status_code=404, detail="Collector not found")
         
-    scale.paired_collector_id = pair_data.collector_id
+    scale.paired_collector_id = pair_data.collector_id  # type: ignore[assignment]
     db.commit()
     db.refresh(scale)
     return scale
@@ -122,10 +124,10 @@ def heartbeat(
     if not scale:
         raise HTTPException(status_code=404, detail="Scale not found")
         
-    scale.battery_level = data.battery_level
-    scale.is_tampered = data.is_tampered
-    scale.is_online = True
-    scale.last_heartbeat = func.now()
+    scale.battery_level = data.battery_level  # type: ignore[assignment]
+    scale.is_tampered = data.is_tampered  # type: ignore[assignment]
+    scale.is_online = True  # type: ignore[assignment]
+    scale.last_heartbeat = datetime.now(timezone.utc)  # type: ignore[assignment]
     
     db.commit()
     return {"status": "success", "message": "Heartbeat received"}

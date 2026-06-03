@@ -30,7 +30,7 @@ def create_otp(db: Session, phone_number: str) -> str:
     db.add(record)
     db.commit()
     
-    logger.info(f"OTP generated for {phone_number}: {otp}")
+    logger.info(f"OTP requested for {phone_number}")
     return otp
 
 def verify_otp(db: Session, phone_number: str, otp_code: str) -> bool:
@@ -45,7 +45,7 @@ def verify_otp(db: Session, phone_number: str, otp_code: str) -> bool:
     if not record:
         return False
     
-    record.is_used = True
+    record.is_used = True  # type: ignore[assignment]
     db.commit()
     return True
 
