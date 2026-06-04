@@ -78,6 +78,7 @@ def get_reports(
     
         rows = query.order_by(BinReport.created_at.desc()).all()
     except Exception:
+        db.rollback()
         rows = []
     return [_report_payload(report, bin_obj, zone) for report, bin_obj, zone in rows]
 
@@ -222,6 +223,7 @@ def get_dashboard(
             .count()
         )
     except Exception:
+        db.rollback()
         pending_reports = 0
     try:
         verified_today = (
@@ -235,6 +237,7 @@ def get_dashboard(
             .count()
         )
     except Exception:
+        db.rollback()
         verified_today = 0
     try:
         rejected_today = (
@@ -248,6 +251,7 @@ def get_dashboard(
             .count()
         )
     except Exception:
+        db.rollback()
         rejected_today = 0
     try:
         bins_needing_collection = (
@@ -256,6 +260,7 @@ def get_dashboard(
             .count()
         )
     except Exception:
+        db.rollback()
         bins_needing_collection = 0
 
     try:
@@ -268,6 +273,7 @@ def get_dashboard(
             .all()
         )
     except Exception:
+        db.rollback()
         recent_rows = []
 
     recent_reports = [
@@ -305,6 +311,7 @@ def get_zone_bins(
     try:
         bins = db.query(Bin).filter(Bin.zone_id == current_user.zone_id).all()
     except Exception:
+        db.rollback()
         bins = []
     return [
         {
@@ -333,6 +340,7 @@ def get_zone_routes(
             .all()
         )
     except Exception:
+        db.rollback()
         routes = []
 
     result = []
@@ -346,6 +354,7 @@ def get_zone_routes(
                 .all()
             )
         except Exception:
+            db.rollback()
             stops = []
         result.append(
             {

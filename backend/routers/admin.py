@@ -84,6 +84,7 @@ def _collection_history_rows(db: Session) -> tuple[list[str], list[list[object]]
             .all()
         )
     except Exception:
+        db.rollback()
         rows = []
 
     data = [
@@ -112,6 +113,7 @@ def _user_performance_rows(db: Session) -> tuple[list[str], list[list[object]]]:
             .all()
         )
     except Exception:
+        db.rollback()
         collectors = []
 
     rows: list[list[object]] = []
@@ -168,6 +170,7 @@ def _zone_summary_rows(db: Session) -> tuple[list[str], list[list[object]]]:
     try:
         bin_query = db.query(Bin.zone_id, Bin.status, Bin.fill_level).all()
     except Exception:
+        db.rollback()
         bin_query = []
     for bin_obj in bin_query:
         zid = bin_obj.zone_id
@@ -189,6 +192,7 @@ def _zone_summary_rows(db: Session) -> tuple[list[str], list[list[object]]]:
             .all()
         )
     except Exception:
+        db.rollback()
         collection_query = []
 
     cols_by_zone = {
@@ -251,6 +255,7 @@ def _ai_analysis_rows(db: Session) -> tuple[list[str], list[list[object]]]:
             .all()
         )
     except Exception:
+        db.rollback()
         rows = []
 
     data = [
@@ -295,6 +300,7 @@ def _bin_status_rows(db: Session) -> tuple[list[str], list[list[object]]]:
             .all()
         )
     except Exception:
+        db.rollback()
         collection_query = []
 
     collection_stats = {
@@ -309,6 +315,7 @@ def _bin_status_rows(db: Session) -> tuple[list[str], list[list[object]]]:
             .all()
         )
     except Exception:
+        db.rollback()
         rows = []
 
     data = []
@@ -346,6 +353,7 @@ def _build_dashboard_data(db: Session) -> dict:
             db.query(func.coalesce(func.sum(Collection.kg_collected), 0.0)).scalar() or 0.0
         )
     except Exception:
+        db.rollback()
         total_plastic_kg = 0.0
     fuel_saved_liters = round(total_plastic_kg * 0.3, 2)
     co2_reduced_kg = round(total_plastic_kg * 2.5, 2)
@@ -353,6 +361,7 @@ def _build_dashboard_data(db: Session) -> dict:
     try:
         bins = db.query(Bin).all()
     except Exception:
+        db.rollback()
         bins = []
     active_bins = 0
     distribution = {"empty": 0, "high": 0, "full": 0, "inactive": 0}
@@ -366,6 +375,7 @@ def _build_dashboard_data(db: Session) -> dict:
     try:
         total_users = db.query(func.count(User.id)).scalar() or 0
     except Exception:
+        db.rollback()
         total_users = 0
     
     try:
@@ -376,6 +386,7 @@ def _build_dashboard_data(db: Session) -> dict:
             or 0
         )
     except Exception:
+        db.rollback()
         pending_reports = 0
 
     daily_collections = []
@@ -389,6 +400,7 @@ def _build_dashboard_data(db: Session) -> dict:
                 or 0.0
             )
         except Exception:
+            db.rollback()
             kg = 0.0
         try:
             count = (
@@ -398,6 +410,7 @@ def _build_dashboard_data(db: Session) -> dict:
                 or 0
             )
         except Exception:
+            db.rollback()
             count = 0
         daily_collections.append(
             {
@@ -414,6 +427,7 @@ def _build_dashboard_data(db: Session) -> dict:
         try:
             total_bins = db.query(func.count(Bin.id)).filter(Bin.zone_id == zone.id).scalar() or 0
         except Exception:
+            db.rollback()
             total_bins = 0
         try:
             collections_this_month = (
@@ -424,6 +438,7 @@ def _build_dashboard_data(db: Session) -> dict:
                 or 0
             )
         except Exception:
+            db.rollback()
             collections_this_month = 0
         try:
             kg_this_month = (
@@ -434,6 +449,7 @@ def _build_dashboard_data(db: Session) -> dict:
                 or 0.0
             )
         except Exception:
+            db.rollback()
             kg_this_month = 0.0
         zone_performance.append(
             {
@@ -458,6 +474,7 @@ def _build_dashboard_data(db: Session) -> dict:
             .all()
         )
     except Exception:
+        db.rollback()
         waste_type_rows = []
     waste_type_distribution = [
         {"name": row.wtype.capitalize(), "value": int(row.cnt)}
@@ -624,6 +641,7 @@ def delete_zone(
         bins_in_zone = db.query(Bin).filter(Bin.zone_id == zone_id).all()
         bin_ids = [b.id for b in bins_in_zone]
     except Exception:
+        db.rollback()
         bins_in_zone = []
         bin_ids = []
 
@@ -827,6 +845,7 @@ def list_bins(
     try:
         return db.query(Bin).all()
     except Exception:
+        db.rollback()
         return []
 
 
@@ -863,6 +882,7 @@ def update_bin(
     try:
         bin_obj = db.query(Bin).filter(Bin.id == bin_id).first()
     except Exception:
+        db.rollback()
         bin_obj = None
     if not bin_obj:
         raise HTTPException(status_code=404, detail="Bin not found")
@@ -894,6 +914,7 @@ def delete_bin(
     try:
         bin_obj = db.query(Bin).filter(Bin.id == bin_id).first()
     except Exception:
+        db.rollback()
         bin_obj = None
     if not bin_obj:
         raise HTTPException(status_code=404, detail="Bin not found")
@@ -1020,6 +1041,7 @@ def generate_routes(
                 .all()
             )
         except Exception:
+            db.rollback()
             stops = []
         stops_data = [
             {
@@ -1040,6 +1062,7 @@ def generate_routes(
         try:
             route_obj = db.query(Route).filter(Route.id == route_id).first()
         except Exception:
+            db.rollback()
             route_obj = None
         collector_name = None
         if route_obj and route_obj.collector:
@@ -1069,6 +1092,7 @@ def generate_routes(
                 .all()
             )
         except Exception:
+            db.rollback()
             all_stops = []
         
         zone_name_by_route = {r["route_id"]: r["zone_name"] for r in generated_routes}
@@ -1321,6 +1345,7 @@ def get_admin_routes(db: Session = Depends(get_db), current_user: User = Depends
     try:
         routes = db.query(Route).order_by(Route.created_at.desc()).all()
     except Exception:
+        db.rollback()
         routes = []
     return [
         {
