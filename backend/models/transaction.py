@@ -1,7 +1,9 @@
 import enum
 import uuid
+import sqlalchemy as sa
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Enum, func
 from database import Base
+
 
 class TransactionStatus(str, enum.Enum):
     pending_sync = "pending_sync"
@@ -9,6 +11,14 @@ class TransactionStatus(str, enum.Enum):
     audit_required = "audit_required"
     approved = "approved"
     rejected = "rejected"
+
+
+class WasteType(str, enum.Enum):
+    plastic = "plastic"
+    organic = "organic"
+    paper   = "paper"
+    other   = "other"
+
 
 class Transaction(Base):
     __tablename__ = "transactions"
@@ -22,8 +32,13 @@ class Transaction(Base):
     is_manual_override = Column(Boolean, default=False)
     is_ble_verified = Column(Boolean, default=False)
     status = Column(Enum(TransactionStatus), default=TransactionStatus.pending_sync)
-    waste_type = Column(String(50), default="plastic")
+    waste_type = Column(
+        sa.Enum(WasteType, name="wastetype", create_type=False),
+        nullable=True,
+        default=WasteType.plastic,
+    )
     notes = Column(String(500), nullable=True)
     collected_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     synced_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+

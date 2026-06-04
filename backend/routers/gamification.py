@@ -8,6 +8,16 @@ from services.auth_service import require_role
 
 router = APIRouter()
 
+# Canonical waste-type point multipliers.
+# These are also applied in routers/sync.py during batch upload.
+WASTE_TYPE_MULTIPLIER = {
+    "plastic": 1.0,   # full points — highest recycling priority
+    "paper":   0.8,   # moderate
+    "organic": 0.5,   # lower — harder to verify weight
+    "other":   0.3,   # lowest
+}
+
+
 @router.get("/api/admin/gamification/leaderboard")
 def get_leaderboard(
     db: Session = Depends(get_db),
@@ -35,6 +45,7 @@ def get_leaderboard(
         })
     return leaderboard
 
+
 @router.get("/api/admin/gamification/stats")
 def get_gamification_stats(
     db: Session = Depends(get_db),
@@ -48,18 +59,40 @@ def get_gamification_stats(
     ).first()
 
     if stats is None:
-        return {"total_circulating": 0.0, "total_awarded": 0.0, "total_redeemed": 0.0}
+        return {
+            "total_circulating": 0.0,
+            "total_awarded": 0.0,
+            "total_redeemed": 0.0,
+            "waste_type_multipliers": WASTE_TYPE_MULTIPLIER,
+        }
 
     return {
         "total_circulating": stats.total_circulating or 0.0,
         "total_awarded": stats.total_awarded or 0.0,
-        "total_redeemed": stats.total_redeemed or 0.0
+        "total_redeemed": stats.total_redeemed or 0.0,
+        "waste_type_multipliers": WASTE_TYPE_MULTIPLIER,
     }
+
 
 @router.post("/api/admin/gamification/configure_multiplier")
 def configure_multiplier(
     config: dict,
     current_user: User = Depends(require_role("admin"))
 ):
-    # Mock endpoint
-    return {"status": "success", "message": "Multiplier configuration updated", "config": config}
+    # Validate keys and values
+    allowed_keys = set(WASTE_TYPE_MULTIPLIER.keys())
+    invalid = [k for k in config if k not in allowed_keys]
+    if invalid:
+        return {
+            "status": "error",
+            "message": f"Unknown waste types: {invalid}. Allowed: {sorted(allowed_keys)}",
+        }
+
+    updated = {k: float(v) for k, v in config.items() if k in allowed_keys}
+    # Update multipliers in-place for this process lifetime
+    WASTE_TYPE_MULTIPLIER.update(updated)
+    return {
+        "status": "success",
+        "message": "Multiplier configuration updated",
+        "current_multipliers": WASTE_TYPE_MULTIPLIER,
+    }

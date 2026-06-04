@@ -966,6 +966,72 @@ def get_analytics(
     }
 
 
+@router.get("/analytics/segregation-breakdown")
+def get_segregation_breakdown(
+    ward_no: Optional[int] = None,
+    days: int = 30,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    """Return a 4-stream waste-type breakdown for the requested period."""
+    try:
+        from datetime import datetime, timedelta, timezone
+        from models.transaction import Transaction, WasteType
+
+        since = datetime.now(timezone.utc) - timedelta(days=days)
+
+        query = db.query(
+            Transaction.waste_type,
+            func.count(Transaction.id).label("count"),
+            func.sum(Transaction.weight_grams).label("total_grams"),
+        ).filter(Transaction.created_at >= since)
+
+        if ward_no is not None:
+            query = query.filter(Transaction.ward_no == ward_no)
+
+        results = query.group_by(Transaction.waste_type).all()
+
+        breakdown: dict = {}
+        total_grams = 0
+        for row in results:
+            key = str(row.waste_type.value if hasattr(row.waste_type, "value") else row.waste_type or "plastic")
+            grams = int(row.total_grams or 0)
+            breakdown[key] = {
+                "count": int(row.count),
+                "total_grams": grams,
+                "total_kg": round(grams / 1000, 2),
+            }
+            total_grams += grams
+
+        # Ensure all 4 streams are always present in the response
+        for stream in ("plastic", "organic", "paper", "other"):
+            breakdown.setdefault(stream, {"count": 0, "total_grams": 0, "total_kg": 0.0})
+
+        # Segregation rate = plastic fraction of total (plastic is the target stream)
+        plastic_grams = breakdown.get("plastic", {}).get("total_grams", 0)
+        segregation_rate = round(
+            (plastic_grams / total_grams * 100) if total_grams > 0 else 0.0, 1
+        )
+
+        return {
+            "breakdown": breakdown,
+            "total_grams": total_grams,
+            "total_kg": round(total_grams / 1000, 2),
+            "segregation_rate_pct": segregation_rate,
+            "period_days": days,
+        }
+    except Exception:
+        db.rollback()
+        return {
+            "breakdown": {s: {"count": 0, "total_grams": 0, "total_kg": 0.0}
+                          for s in ("plastic", "organic", "paper", "other")},
+            "total_grams": 0,
+            "total_kg": 0.0,
+            "segregation_rate_pct": 0.0,
+            "period_days": days,
+        }
+
+
 # Route Generation
 @router.post("/routes/generate")
 def generate_routes(
