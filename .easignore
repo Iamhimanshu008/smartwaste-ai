@@ -1,3 +1,11 @@
-.git
-node_modules
-.expo
+@"
+node_modules/
+.expo/
+android/
+ios/
+*.log
+*.apk
+*.aab
+__pycache__/
+.git/
+"@ | Out-File -FilePath .easignore -Encoding utf8
