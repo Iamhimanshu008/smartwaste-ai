@@ -9,10 +9,9 @@ export const citizenApi = {
     }),
   getLeaderboard: (ward_no) =>
     client.get('/points/leaderboard', { params: { ward_no } }),
-  // Note: no public store/items endpoint exists yet — /admin/store/items
-  // is admin-only. Returns empty array on 403 to avoid UI crash.
+  // Now uses the public endpoint
   fetchStoreItems: () =>
-    client.get('/admin/store/items').catch(() => ({ data: [] })),
+    client.get('/store/items'),
   redeemItem: (itemId, pointsToRedeem) =>
     client.post('/points/redeem', { item_id: itemId, points_to_redeem: pointsToRedeem }),
 };

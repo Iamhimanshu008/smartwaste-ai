@@ -7,6 +7,13 @@ from services.auth_service import require_role
 
 router = APIRouter()
 
+# Public endpoint (no auth required)
+@router.get("/api/store/items")
+def list_public_items(
+    db: Session = Depends(get_db)
+):
+    return db.query(RewardItem).all()
+
 @router.get("/api/admin/store/items")
 def list_items(
     db: Session = Depends(get_db),
