@@ -77,8 +77,43 @@ def refresh_token(payload: RefreshRequest, db: Session = Depends(get_db)):
 
 
 @router.get("/me", response_model=UserRead)
-def get_me(current_user: User = Depends(get_current_user)):
+def get_me(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Return the currently authenticated user."""
+    if current_user.qr_hash is None:
+        import hashlib
+        current_user.qr_hash = hashlib.sha256(f"SW-{current_user.id}".encode()).hexdigest()[:16].upper()
+        db.commit()
+        db.refresh(current_user)
+    return current_user
+
+@router.patch("/complete-profile")
+def complete_profile(
+    data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    import hashlib
+    full_name = data.get("full_name")
+    house_id = data.get("house_id")
+    ward_no = data.get("ward_no")
+    phone_number = data.get("phone_number")
+    
+    if full_name:
+        current_user.full_name = full_name
+    if house_id:
+        current_user.house_id = house_id
+    if ward_no:
+        current_user.ward_no = int(ward_no)
+    if phone_number:
+        current_user.phone_number = phone_number
+        current_user.phone = phone_number
+        
+    if not current_user.qr_hash and current_user.house_id:
+        current_user.qr_hash = hashlib.sha256(f"SW-{current_user.id}-{current_user.house_id}".encode()).hexdigest()[:16].upper()
+        
+    db.commit()
+    db.refresh(current_user)
+    
     return current_user
 
 
@@ -161,10 +196,8 @@ async def send_otp(
     ).first()
     
     if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="No account found with this phone number. Contact admin."
-        )
+        # User will be created upon OTP verification
+        pass
     
     otp = create_otp(db, phone_number)
     sms_sent = send_otp_sms(phone_number, otp)
@@ -223,7 +256,27 @@ async def login_with_otp(
     ).first()
     
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        import hashlib
+        import uuid
+        from models.user import UserRole
+        
+        temp_id = str(uuid.uuid4())[:8]
+        qr_hash = hashlib.sha256(f"SW-NEW-{temp_id}".encode()).hexdigest()[:16].upper()
+        
+        user = User(
+            email=f"citizen_{temp_id}@smartwaste.ai",
+            full_name="Citizen",
+            hashed_password="NOPASSWORD",
+            phone=phone_number,
+            phone_number=phone_number,
+            role=UserRole.citizen,
+            is_active=True,
+            is_citizen=True,
+            qr_hash=qr_hash
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
     
     # Generate JWT tokens (same as email login)
     from services.auth_service import create_access_token, create_refresh_token

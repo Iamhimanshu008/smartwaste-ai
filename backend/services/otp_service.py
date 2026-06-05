@@ -51,6 +51,12 @@ def verify_otp(db: Session, phone_number: str, otp_code: str) -> bool:
 
 def send_otp_sms(phone_number: str, otp: str) -> bool:
     import requests
+    
+    sms_debug = os.getenv("SMS_DEBUG", "false").lower() == "true"
+    if sms_debug:
+        logger.warning(f"SMS_DEBUG MODE: OTP for {phone_number} is {otp}")
+        return True
+        
     api_key = os.getenv("FAST2SMS_API_KEY")
     if not api_key:
         logger.warning("WARNING: FAST2SMS_API_KEY not set")

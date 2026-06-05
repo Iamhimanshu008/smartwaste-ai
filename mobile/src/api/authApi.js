@@ -73,3 +73,8 @@ export const getMe = async () => {
     const res = await client.get('/auth/me');
     return res.data;
 };
+
+export const completeProfile = async (profileData) => {
+  const response = await client.patch('/auth/complete-profile', profileData);
+  return response.data;
+};

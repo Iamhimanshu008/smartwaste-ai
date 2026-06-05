@@ -15,6 +15,7 @@ import { checkForUpdate } from '../utils/updateChecker';
 
 import LandingScreen from '../screens/LandingScreen';
 import CitizenNavigator from './CitizenNavigator';
+import CitizenOnboardingScreen from '../screens/public/CitizenOnboardingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -95,7 +96,11 @@ export default function AppNavigator() {
             ) : user?.role === 'shg' ? (
                 <Stack.Screen name="SHGTabs" component={SHGNavigator} />
             ) : user?.role === 'citizen' ? (
-                <Stack.Screen name="CitizenStack" component={CitizenNavigator} />
+                (user.house_id == null || user.ward_no == null || user.full_name === 'Citizen') ? (
+                    <Stack.Screen name="CitizenOnboarding" component={CitizenOnboardingScreen} />
+                ) : (
+                    <Stack.Screen name="CitizenStack" component={CitizenNavigator} />
+                )
             ) : (
                 <>
                     <Stack.Screen name="Landing" component={LandingScreen} />
