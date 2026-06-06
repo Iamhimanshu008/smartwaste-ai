@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  BarChart3, 
-  MapPin, 
-  ShieldCheck, 
-  Zap, 
-  CheckCircle2, 
+import {
+  BarChart3,
+  MapPin,
+  ShieldCheck,
+  Zap,
+  CheckCircle2,
   XCircle,
   UserPlus,
   ClipboardList,
@@ -47,7 +47,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-sw-bg font-sans overflow-x-hidden text-sw-text-secondary">
-      
+
       {/* SECTION 1 - TOP GOV BAR */}
       <div className="w-full bg-sw-dark py-2 px-4 flex justify-between items-center text-white text-xs sm:text-sm shadow-sm relative z-50">
         <div className="flex items-center gap-2">
@@ -115,26 +115,26 @@ export default function LandingPage() {
       <section className="w-full hero-gradient py-20 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-sw-mid/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"></div>
         <div className="max-w-7xl mx-auto flex flex-col-reverse lg:flex-row items-center gap-12 relative z-10">
-          
+
           <div className="flex-1 text-center lg:text-left text-white space-y-6">
             <div className="inline-flex items-center gap-2 bg-sw-orange/20 border border-sw-orange/50 text-sw-light px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide">
               <span className="w-2 h-2 rounded-full bg-sw-orange animate-pulse"></span>
               Swachhata Chakra Portal
             </div>
-            
+
             <h1 className="text-5xl sm:text-6xl font-bold text-sw-light" style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
               स्वच्छ छत्तीसगढ़, समृद्ध छत्तीसगढ़
             </h1>
-            
+
             <h2 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-200 to-white mt-4">
               Transforming Waste into Wealth
             </h2>
-            
+
             <p className="text-lg sm:text-xl text-green-50 max-w-2xl mx-auto lg:mx-0 opacity-90 leading-relaxed font-light">
-              An Integrated Plastic Waste Management Platform for Chhattisgarh's 
+              An Integrated Plastic Waste Management Platform for Chhattisgarh's
               Gram Panchayats — powered by AI and IoT.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 justify-center lg:justify-start">
               <Link to="/login" className="w-full sm:w-auto bg-sw-orange hover:bg-[#c2410a] text-white px-8 py-3.5 rounded-xl font-bold shadow-lg shadow-orange-900/40 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
                 Get Started →
@@ -144,11 +144,11 @@ export default function LandingPage() {
               </Link>
             </div>
           </div>
-          
+
           <div className="flex-1 flex justify-center lg:justify-end relative">
             <div className="relative group">
               <div className="absolute inset-0 bg-sw-mid rounded-full blur-[80px] opacity-40 group-hover:opacity-60 transition-opacity duration-1000"></div>
-              
+
               {/* Floating Icons */}
               <div className="absolute -top-10 -left-10 bg-white p-3 rounded-2xl shadow-xl floating-icon delay-1 z-20 hidden md:block border-2 border-sw-gold">
                 <QrCode className="w-8 h-8 text-sw-dark" />
@@ -166,11 +166,11 @@ export default function LandingPage() {
                 <Landmark className="w-8 h-8 text-sw-dark" />
               </div>
 
-              <img 
-                src="/logo.png" 
-                alt="Swachhata Chakra Logo" 
-                width="320" 
-                className="relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-700" 
+              <img
+                src="/logo.png"
+                alt="Swachhata Chakra Logo"
+                width="320"
+                className="relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-700"
                 style={{ filter: 'drop-shadow(0 25px 35px rgba(0,0,0,0.4))' }}
               />
             </div>
@@ -213,7 +213,7 @@ export default function LandingPage() {
             </h3>
             <p className="text-xl text-gray-500 mt-4 font-medium">How Swachhata Chakra Works — Simple. Transparent. Rewarding.</p>
           </div>
-          
+
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-20 relative">
             {/* Step 1 */}
             <div className="flex flex-col items-center text-center z-10 w-full md:w-1/5">
@@ -222,12 +222,11 @@ export default function LandingPage() {
               </div>
               <h4 className="font-bold text-lg text-sw-dark mb-1">From Home</h4>
               <p className="font-semibold text-gray-800 text-sm mb-1">Citizen brings plastic waste</p>
-              <p className="text-xs text-gray-500 px-2">With their laminated QR Smart Card to the collection point</p>
             </div>
-            
+
             <div className="md:hidden text-sw-mid my-2 font-bold text-xl">↓</div>
             <div className="hidden md:block text-sw-mid font-bold text-2xl -mt-20">→</div>
-            
+
             {/* Step 2 */}
             <div className="flex flex-col items-center text-center z-10 w-full md:w-1/5">
               <div className="w-24 h-24 rounded-full bg-sw-orange flex items-center justify-center mb-4 shadow-lg border-4 border-white">
@@ -235,7 +234,6 @@ export default function LandingPage() {
               </div>
               <h4 className="font-bold text-lg text-sw-dark mb-1">Auto-Weighing</h4>
               <p className="font-semibold text-gray-800 text-sm mb-1">IoT Scale measures weight automatically</p>
-              <p className="text-xs text-gray-500 px-2">No manual entry. Bluetooth sends exact weight directly to collector's app. Fraud impossible.</p>
             </div>
 
             <div className="md:hidden text-sw-mid my-2 font-bold text-xl">↓</div>
@@ -248,7 +246,6 @@ export default function LandingPage() {
               </div>
               <h4 className="font-bold text-lg text-sw-dark mb-1">AI Quality Check</h4>
               <p className="font-semibold text-gray-800 text-sm mb-1">Gemini AI analyzes plastic photo in seconds</p>
-              <p className="text-xs text-gray-500 px-2">Detects type (PET/HDPE/PP), contamination %, Grade A/B/C</p>
             </div>
 
             <div className="md:hidden text-sw-mid my-2 font-bold text-xl">↓</div>
@@ -257,11 +254,10 @@ export default function LandingPage() {
             {/* Step 4 */}
             <div className="flex flex-col items-center text-center z-10 w-full md:w-1/5">
               <div className="w-24 h-24 rounded-full bg-[#B45309] flex items-center justify-center mb-4 shadow-lg border-4 border-white">
-                <span className="text-4xl">🪙</span>
+                <span className="text-4xl">🌾</span>
               </div>
               <h4 className="font-bold text-lg text-sw-dark mb-1">Mitan-Mudra Credited</h4>
-              <p className="font-semibold text-gray-800 text-sm mb-1">10 grams = 1 <MitanCoin/> Mitan-Mudra</p>
-              <p className="text-xs text-gray-500 px-2">850g Grade A plastic = 127 <MitanCoin/> instantly!</p>
+              <p className="font-semibold text-gray-800 text-sm mb-1">10 grams = 1 <MitanCoin /> Mitan-Mudra</p>
             </div>
 
             <div className="md:hidden text-sw-mid my-2 font-bold text-xl">↓</div>
@@ -274,28 +270,27 @@ export default function LandingPage() {
               </div>
               <h4 className="font-bold text-lg text-sw-dark mb-1">Redeem Benefits</h4>
               <p className="font-semibold text-gray-800 text-sm mb-1">Redeem Mitan-Mudra for real local benefits</p>
-              <p className="text-xs text-gray-500 px-2">Tax rebate, mobile recharge, grocery vouchers</p>
             </div>
           </div>
-          
+
           {/* Below the 5 steps — 3 "Why it's different" cards */}
           <div className="grid md:grid-cols-3 gap-8 mt-12">
             <div className="bg-sw-light p-8 rounded-2xl border border-sw-mid/20 shadow-sm hover:shadow-md transition-shadow">
               <div className="text-3xl mb-4">📵</div>
               <h4 className="text-xl font-bold text-sw-dark mb-2">Zero Internet Needed</h4>
-              <p className="text-gray-700">Collectors work all day without mobile data.<br/>Data syncs when they return to Panchayat Office.</p>
+              <p className="text-gray-700">Collectors work all day without mobile data.<br />Data syncs when they return to Panchayat Office.</p>
             </div>
-            
+
             <div className="bg-[#FFF7ED] p-8 rounded-2xl border border-orange-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="text-3xl mb-4">🔒</div>
               <h4 className="text-xl font-bold text-sw-dark mb-2">100% Fraud-Proof</h4>
-              <p className="text-gray-700">Weight comes directly from IoT scale via Bluetooth.<br/>No collector can type a fake number.</p>
+              <p className="text-gray-700">Weight comes directly from IoT scale via Bluetooth.<br />No collector can type a fake number.</p>
             </div>
-            
+
             <div className="bg-[#F0F9FF] p-8 rounded-2xl border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="text-3xl mb-4">🌱</div>
               <h4 className="text-xl font-bold text-sw-dark mb-2">SBM 2026 Compliant</h4>
-              <p className="text-gray-700">Every transaction creates an audit trail for<br/>Swachh Bharat Mission reporting — automatically.</p>
+              <p className="text-gray-700">Every transaction creates an audit trail for<br />Swachh Bharat Mission reporting automatically.</p>
             </div>
           </div>
         </div>
@@ -305,7 +300,7 @@ export default function LandingPage() {
       <section className="w-full bg-gray-50 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            
+
             <div className="space-y-6">
               <span className="text-sm font-bold text-red-600 tracking-widest uppercase">The Reality</span>
               <h3 className="text-4xl font-extrabold text-sw-text-secondary leading-tight">
@@ -330,7 +325,7 @@ export default function LandingPage() {
                 </li>
               </ul>
             </div>
-            
+
             <div className="bg-white rounded-3xl p-10 shadow-2xl shadow-sw-mid/10 border border-sw-mid/20">
               <span className="text-sm font-bold text-sw-mid tracking-widest uppercase">The Digital Solution</span>
               <ul className="space-y-6 mt-8">
@@ -360,7 +355,7 @@ export default function LandingPage() {
                 </li>
               </ul>
             </div>
-            
+
           </div>
         </div>
       </section>
@@ -372,7 +367,7 @@ export default function LandingPage() {
           <p className="text-xl text-gray-500 max-w-3xl mx-auto mb-16">
             Four integrated portals ensuring seamless accountability from source to disposal.
           </p>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
             {[
               { icon: UserPlus, title: "Registration Portal", desc: "Onboarding for citizens, collectors, and SHG workers with QR card generation" },
@@ -400,7 +395,7 @@ export default function LandingPage() {
             <h3 className="text-4xl font-extrabold text-sw-text-secondary">Swachhata Chakra Mobile App</h3>
             <p className="text-xl text-gray-600 mt-4">For Collectors & SHG Workers — Offline-First Field App</p>
           </div>
-          
+
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* LEFT - Features */}
             <div className="space-y-8">
@@ -424,13 +419,13 @@ export default function LandingPage() {
                   <CheckCircle2 className="w-6 h-6 text-sw-mid shrink-0" /> Push notifications for route assignments
                 </li>
               </ul>
-              
+
               <div className="inline-block bg-white border border-gray-200 px-4 py-1.5 rounded-full text-sm font-semibold text-gray-600">
                 v2.4.0 | Android 8.0+ | Free
               </div>
-              
+
               <div>
-                <a 
+                <a
                   href="https://github.com/Iamhimanshu008/smartwaste-ai/releases/download/v2.4.0/SmartWasteAI-v2.4.0.apk"
                   className="inline-flex items-center gap-3 bg-sw-mid hover:bg-sw-dark text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-green-900/20 transition-all hover:-translate-y-1"
                 >
@@ -439,19 +434,19 @@ export default function LandingPage() {
                 <p className="text-sm text-gray-500 mt-3 ml-2">Direct APK • No Play Store required • 88 MB</p>
               </div>
             </div>
-            
+
             {/* RIGHT - Phone Mockup */}
             <div className="flex justify-center lg:justify-end">
               <div className="w-[300px] h-[600px] bg-white rounded-[3rem] border-8 border-sw-dark shadow-2xl relative overflow-hidden flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-white">
                 {/* Notch */}
                 <div className="absolute top-0 w-32 h-6 bg-sw-dark rounded-b-xl"></div>
-                
+
                 <img src="/logo.png" alt="App Logo" className="w-24 h-24 drop-shadow-xl mb-6" />
-                <h4 className="text-2xl font-bold text-sw-dark text-center px-4 leading-tight">Swachhata<br/>Chakra</h4>
+                <h4 className="text-2xl font-bold text-sw-dark text-center px-4 leading-tight">Swachhata<br />Chakra</h4>
                 <div className="mt-4 bg-sw-mid text-white px-4 py-1 rounded-full text-sm font-bold">
                   v2.4.0
                 </div>
-                
+
                 {/* Home Indicator */}
                 <div className="absolute bottom-4 w-24 h-1.5 bg-gray-300 rounded-full"></div>
               </div>
@@ -465,57 +460,57 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            
+
             <div className="text-white space-y-8">
               <div>
                 <h3 className="text-5xl font-black mb-4">Mitan-Mudra Wallet</h3>
                 <p className="text-2xl text-green-100 font-medium">Wealth out of Waste — SBM 2026 Aligned</p>
               </div>
-              
+
               <div className="bg-sw-dark p-6 rounded-2xl border border-green-500/30 shadow-2xl inline-block">
                 <div className="text-xl font-bold mb-2 flex items-center gap-3">
                   <Zap className="w-6 h-6 text-yellow-400" /> Mitan-Mudra Formula
                 </div>
                 <div className="text-green-50 space-y-1">
-                  <p className="text-lg">10 grams dry waste = <span className="font-bold text-white">1 <MitanCoin/> Mitan-Mudra</span></p>
+                  <p className="text-lg">10 grams dry waste = <span className="font-bold text-white">1 <MitanCoin /> Mitan-Mudra</span></p>
                   <p className="text-lg">Grade A waste = <span className="font-bold text-white bg-green-600 px-2 py-0.5 rounded">1.5× Bonus Mitan-Mudra</span></p>
                 </div>
               </div>
-              
+
               <div className="space-y-4 pt-4">
                 <h4 className="text-lg font-bold text-green-200 uppercase tracking-widest">Redemption Examples</h4>
                 <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
                   <span className="text-3xl">🏛️</span>
                   <div>
-                    <div className="font-bold text-xl flex items-center"><MitanCoin/> 5,000</div>
+                    <div className="font-bold text-xl flex items-center"><MitanCoin /> 5,000</div>
                     <div className="text-green-100">₹50 Panchayat Tax Rebate</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
                   <span className="text-3xl">📱</span>
                   <div>
-                    <div className="font-bold text-xl flex items-center"><MitanCoin/> 2,000</div>
+                    <div className="font-bold text-xl flex items-center"><MitanCoin /> 2,000</div>
                     <div className="text-green-100">1GB Mobile Recharge</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
                   <span className="text-3xl">🛒</span>
                   <div>
-                    <div className="font-bold text-xl flex items-center"><MitanCoin/> 500</div>
+                    <div className="font-bold text-xl flex items-center"><MitanCoin /> 500</div>
                     <div className="text-green-100">Local Store Voucher</div>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white rounded-3xl p-10 shadow-2xl">
               <div className="text-center">
                 <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Award className="w-12 h-12 text-sw-orange" />
                 </div>
-                <div className="text-5xl font-black text-sw-dark mb-2 flex items-center justify-center">85 <MitanCoin/> Mitan-Mudra</div>
+                <div className="text-5xl font-black text-sw-dark mb-2 flex items-center justify-center">85 <MitanCoin /> Mitan-Mudra</div>
                 <p className="text-lg text-gray-500 font-medium mb-10">Earned by depositing 850g Grade A plastic</p>
-                
+
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm font-bold text-sw-text-secondary">
                     <span>Current Tier: Bronze</span>
@@ -527,7 +522,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            
+
           </div>
         </div>
       </section>
@@ -561,7 +556,7 @@ export default function LandingPage() {
                 An Integrated Plastic Waste Management Platform for Chhattisgarh's Gram Panchayats.
               </p>
             </div>
-            
+
             <div>
               <h4 className="text-lg font-bold text-white mb-6">Quick Links</h4>
               <ul className="space-y-3 text-green-200/80">
@@ -571,7 +566,7 @@ export default function LandingPage() {
                 <li><a href="#" className="hover:text-white transition-colors">API Documentation</a></li>
               </ul>
             </div>
-            
+
             <div className="space-y-6">
               <h4 className="text-lg font-bold text-white mb-6">Supported By</h4>
               <div className="flex items-center gap-6">
@@ -580,7 +575,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="pt-8 border-t border-green-800/50 text-center text-sm text-green-300/60 font-medium">
             © 2026 Swachhata Chakra Portal | Team CodeX | Climatathon 2026 — NIT Raipur X Unicef India
           </div>
