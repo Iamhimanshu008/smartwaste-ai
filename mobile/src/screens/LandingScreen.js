@@ -38,9 +38,9 @@ const LandingScreen = ({ navigation }) => {
       {/* Logo + Title */}
       <View style={styles.heroSection}>
         <View style={styles.logoContainer}>
-          <MaterialCommunityIcons name="recycle" size={44} color="white" />
+          <Image source={require('../../assets/logo.png')} style={{ width: 60, height: 60 }} resizeMode="contain" />
         </View>
-        <AutoText style={styles.appName}>SmartWaste AI</AutoText>
+        <AutoText style={styles.appName}>Swachhata Chakra</AutoText>
         <AutoText style={styles.tagline}>
           Revolutionizing Rural{'\n'}Waste Management
         </AutoText>
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 90, height: 90,
     borderRadius: 45,
-    backgroundColor: '#16a34a',
+    backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,

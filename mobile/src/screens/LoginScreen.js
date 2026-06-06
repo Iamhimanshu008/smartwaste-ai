@@ -124,8 +124,8 @@ const LoginScreen = ({ navigation }) => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <MaterialCommunityIcons name="recycle" size={52} color="#16a34a" style={{ marginBottom: 8 }} />
-          <Text style={styles.title}>SmartWaste AI</Text>
+          <Image source={require('../../assets/logo.png')} style={{ width: 60, height: 60, marginBottom: 8 }} resizeMode="contain" />
+          <Text style={styles.title}>Swachhata Chakra</Text>
           <Text style={styles.subtitle}>{t('staff_login')}</Text>
         </View>
 
@@ -161,7 +161,7 @@ const LoginScreen = ({ navigation }) => {
             <Text style={styles.label}>{t('email')}</Text>
             <TextInput
               style={styles.input}
-              placeholder="staff@smartwaste.ai"
+              placeholder="staff@swachhata.ai"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"

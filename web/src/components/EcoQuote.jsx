@@ -21,7 +21,7 @@ const ECO_QUOTES = [
     { text: "What we do to the environment, we do to ourselves.", author: "Environmental Truth" },
     { text: "Be the change you wish to see in the world.", author: "Mahatma Gandhi" },
     { text: "Clean water, fresh air, and a livable climate are inalienable human rights.", author: "Leonardo DiCaprio" },
-    { text: "Collect plastic today, gift a cleaner tomorrow.", author: "SmartWaste AI" },
+    { text: "Collect plastic today, gift a cleaner tomorrow.", author: "Swachhata Chakra Portal" },
     { text: "Every recycled bottle is a small victory for the planet.", author: "Green Living" },
     { text: "The Earth provides enough to satisfy every man's needs, but not every man's greed.", author: "Mahatma Gandhi" },
 ];
