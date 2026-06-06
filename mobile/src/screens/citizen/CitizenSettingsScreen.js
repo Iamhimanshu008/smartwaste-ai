@@ -124,7 +124,7 @@ export default function CitizenSettingsScreen({ navigation }) {
             </View>
             <View style={styles.settingMiddle}>
               <Text style={styles.settingTitle}>About Swachhata Chakra</Text>
-              <Text style={styles.settingSubtitle}>v2.4.0</Text>
+              <Text style={styles.settingSubtitle}>v2.4.1</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#CCCCCC" />
           </TouchableOpacity>
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, paddingTop: 16, paddingBottom: 16, backgroundColor: BG,
   },
   headerTitle: { fontSize: 20, fontWeight: 'bold', color: DARK_GREEN },
-  
+
   scrollContent: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 40 },
 
   banner: {
