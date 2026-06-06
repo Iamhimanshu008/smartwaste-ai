@@ -4,18 +4,18 @@
     "slug": "smartwaste-ai",
     "version": "2.4.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#052e16"
+      "backgroundColor": "#1A6B2F"
     },
     "android": {
-      "package": "com.smartwaste.ai",
+      "package": "com.swachhatachakra.mobile",
       "versionCode": 2,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#052e16"
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#1A6B2F"
       }
     },
     "ios": {

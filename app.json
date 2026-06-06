@@ -10,7 +10,7 @@
       "supportsTablet": false
     },
     "android": {
-      "package": "com.smartwaste.ai",
+      "package": "com.swachhatachakra.mobile",
       "versionCode": 10,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
