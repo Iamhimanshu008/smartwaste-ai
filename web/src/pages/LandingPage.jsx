@@ -75,7 +75,7 @@ export default function LandingPage() {
           <div className="flex-1 text-center lg:text-left text-white space-y-6">
             <div className="inline-flex items-center gap-2 bg-[#EA580C]/20 border border-[#EA580C]/50 text-[#FFF7ED] px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide">
               <span className="w-2 h-2 rounded-full bg-[#EA580C] animate-pulse"></span>
-              Climatathon 2026 — NIT Raipur
+              Swachhata Chakra Portal
             </div>
             
             <h1 className="text-5xl sm:text-6xl font-bold text-[#FFF7ED]" style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
@@ -147,7 +147,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h3 className="text-4xl font-extrabold text-[#1E3A5F]">About Swachhata Chakra</h3>
-            <p className="text-xl text-gray-500 mt-4">An Offline-First Hybrid Model for Rural India</p>
+            <p className="text-xl text-gray-500 mt-4">An Offline-First Hybrid Model for Rural Chhattisgarh</p>
           </div>
           
           <div className="grid lg:grid-cols-2 gap-16 items-start">
