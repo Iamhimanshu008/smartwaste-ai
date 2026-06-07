@@ -22,6 +22,12 @@ import IoTDashboard from '../components/IoTDashboard';
 import AIAnalytics from '../components/AIAnalytics';
 import GamificationAdmin from '../components/GamificationAdmin';
 import RedemptionStoreAdmin from '../components/RedemptionStoreAdmin';
+import OverviewTab from './admin-tabs/OverviewTab';
+import GeographicAnalyticsTab from './admin-tabs/GeographicAnalyticsTab';
+import WasteOpsTab from './admin-tabs/WasteOpsTab';
+import ComplianceTab from './admin-tabs/ComplianceTab';
+import FinancialTab from './admin-tabs/FinancialTab';
+import AlertsTab from './admin-tabs/AlertsTab';
 import * as adminApi from '../api/adminApi';
 import * as recyclerApi from '../api/recyclerApi';
 import {
@@ -1240,24 +1246,47 @@ export default function AdminDashboard() {
         <div className="flex min-h-screen bg-sw-bg">
             <Sidebar activeTab={tab} onTabChange={setTab} tabs={tabs} />
             <main className={`flex-1 transition-all duration-300 main-content-mobile ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+                {/* Top Gov Bar - Matches Landing Page */}
+                <div className="w-full bg-[#14532D] py-2 px-4 flex justify-between items-center text-white text-xs sm:text-sm shadow-sm relative z-30">
+                    <div className="flex items-center gap-2">
+                        <img src="/cg-govt-logo.png" alt="CG Govt Logo" className="h-9 w-auto" onError={(e) => e.target.style.display = 'none'} />
+                        <span className="hidden sm:inline font-semibold">Government of Chhattisgarh | छत्तीसगढ़ शासन</span>
+                    </div>
+                    <div className="absolute left-1/2 -translate-x-1/2">
+                        <img src="/unicef-logo.png" alt="UNICEF Logo" className="h-8 w-auto" onError={(e) => e.target.style.display = 'none'} />
+                    </div>
+                    <div className="flex items-center gap-2 font-medium">
+                        <span className="opacity-90">Swachh Bharat Mission 2026</span>
+                    </div>
+                </div>
+
                 <div className="p-6">
                     <EcoQuote />
 
-                    {tab === 'overview' && <Overview />}
+                    {/* NEW Redesigned Tabs */}
+                    {tab === 'overview' && <OverviewTab stats={{}} analytics={{}} />}
+                    {tab === 'geographic' && <GeographicAnalyticsTab />}
+                    {tab === 'waste_ops' && <WasteOpsTab />}
+                    {tab === 'compliance' && <ComplianceTab />}
+                    {tab === 'revenue' && <FinancialTab />}
+                    {tab === 'alerts' && <AlertsTab />}
+                    {/* Reusing existing components for other sections */}
+                    {(tab === 'citizen' || tab === 'users') && <UsersManagement />}
+                    {tab === 'ai_insights' && <AIAnalytics />}
+                    {tab === 'settings' && <SettingsTab />}
+
+                    {/* Legacy Operations Tabs */}
                     {tab === 'panchayat' && <PanchayatOnboarding />}
                     {tab === 'rural' && <RuralAnalytics />}
                     {tab === 'qrmanager' && <QRManager />}
                     {tab === 'bins' && <BinsManagement />}
-                    {tab === 'users' && <UsersManagement />}
                     {tab === 'collectors' && <CollectorManagement />}
                     {tab === 'routes' && <RouteGeneration />}
                     {tab === 'iot' && <IoTDashboard />}
-                    {tab === 'ai' && <AIAnalytics />}
                     {tab === 'gamification' && <GamificationAdmin />}
                     {tab === 'store' && <RedemptionStoreAdmin />}
                     {tab === 'recyclers' && <RecyclersManagement />}
                     {tab === 'analytics' && <Analytics />}
-                    {tab === 'settings' && <SettingsTab />}
                 </div>
             </main>
 

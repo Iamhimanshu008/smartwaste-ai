@@ -3,7 +3,9 @@ import useStore from '../store';
 import {
     LayoutDashboard, Users, Trash2, MapPin, FileText,
     Settings, LogOut, Menu, ChevronLeft, Truck,
-    ClipboardCheck, BarChart3, Calendar, Recycle, Building, Newspaper
+    ClipboardCheck, BarChart3, Calendar, Recycle, Building, Newspaper,
+    Home, Globe, Package, UserCheck, IndianRupee, FileBarChart,
+    BrainCircuit, Bell, UserCog, Cpu
 } from 'lucide-react';
 
 const roleNavItems = {
@@ -35,6 +37,31 @@ const roleNavItems = {
     ],
 };
 
+/* ── New admin dashboard menu sections ── */
+const dashboardMenuSections = [
+    {
+        title: 'MAIN MENU',
+        items: [
+            { key: 'overview', icon: Home, label: 'Overview Dashboard', emoji: '🏠' },
+            { key: 'geographic', icon: Globe, label: 'Geographic Analytics', emoji: '🗺️' },
+            { key: 'waste_ops', icon: Package, label: 'Waste Collection & Ops', emoji: '♻️' },
+            { key: 'citizen', icon: Users, label: 'Citizen & Household Data', emoji: '👥' },
+            { key: 'revenue', icon: IndianRupee, label: 'Revenue & Waste Economy', emoji: '💰' },
+            { key: 'compliance', icon: FileBarChart, label: 'Compliance & Reporting', emoji: '📋' },
+            { key: 'ai_insights', icon: BrainCircuit, label: 'AI & Quality Insights', emoji: '🤖' },
+            { key: 'alerts', icon: Bell, label: 'Alerts & Notifications', emoji: '🔔' },
+            { key: 'users', icon: UserCog, label: 'User & Role Management', emoji: '👤' },
+            { key: 'settings', icon: Settings, label: 'System & Configuration', emoji: '⚙️' },
+        ]
+    },
+];
+
+/* ── Legacy tabs that still exist but are accessed from "System & Configuration" ── */
+const legacyTabKeys = [
+    'panchayat', 'rural', 'qrmanager', 'bins', 'collectors', 'routes',
+    'iot', 'ai', 'gamification', 'store', 'recyclers', 'analytics'
+];
+
 export default function Sidebar({ activeTab, onTabChange, tabs }) {
     const { user, logout, sidebarOpen, toggleSidebar } = useStore();
     const navigate = useNavigate();
@@ -53,111 +80,181 @@ export default function Sidebar({ activeTab, onTabChange, tabs }) {
         <>
             {/* Desktop Sidebar */}
             <aside
-                className={`sidebar-desktop fixed left-0 top-0 h-full bg-sw-dark text-white z-40 transition-all duration-300 flex flex-col ${
-                    sidebarOpen ? 'w-64' : 'w-20'
+                className={`sidebar-desktop fixed left-0 top-0 h-full z-40 transition-all duration-300 flex flex-col ${
+                    sidebarOpen ? 'w-[260px]' : 'w-20'
                 }`}
+                style={{ background: '#14532D' }}
             >
-                {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
+                {/* Header / Logo */}
+                <div className="flex items-center justify-between p-4 border-b border-white/10" style={{ background: 'rgba(255,255,255,0.05)' }}>
                     {sidebarOpen && (
                         <div className="flex items-center gap-2.5">
                             <div className="flex items-center justify-center">
                                 <img src="/logo.png" className="h-10 w-auto" alt="Logo" />
                             </div>
                             <div>
-                                <span className="font-bold text-sm leading-tight block">Swachhata<br/>Chakra Portal</span>
+                                <span className="font-bold text-sm leading-tight block text-white">Swachhata<br/>Chakra</span>
                             </div>
                         </div>
                     )}
                     <button
                         onClick={toggleSidebar}
-                        className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                        className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
                     >
                         {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                     </button>
                 </div>
 
                 {/* Nav Items */}
-                <nav className="flex-1 py-4 px-3 overflow-y-auto">
-                    {/* Regular nav links — always shown */}
-                    <div className="space-y-1">
-                        {navItems.map((item) => (
-                            <NavLink
-                                key={item.to}
-                                to={item.to}
-                                end={item.end}
-                                className={({ isActive }) =>
-                                    `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                                        isActive
-                                            ? 'bg-sw-mid text-white font-semibold shadow-lg shadow-sw-mid/20'
-                                            : 'text-sw-light hover:text-white hover:bg-white/10'
-                                    }`
-                                }
-                            >
-                                <item.icon className="w-5 h-5 flex-shrink-0" />
-                                {sidebarOpen && <span className="truncate text-sm">{item.label}</span>}
-                            </NavLink>
-                        ))}
-                    </div>
+                <nav className="flex-1 py-3 px-2 overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.15) transparent' }}>
+                    {/* Regular nav links — always shown for non-admin or admin on other pages */}
+                    {!isAdminDashboard && (
+                        <div className="space-y-1">
+                            {navItems.map((item) => (
+                                <NavLink
+                                    key={item.to}
+                                    to={item.to}
+                                    end={item.end}
+                                    className={({ isActive }) =>
+                                        `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+                                            isActive
+                                                ? 'text-white font-semibold shadow-lg'
+                                                : 'hover:text-white hover:bg-white/10'
+                                        }`
+                                    }
+                                    style={({ isActive }) => isActive ? { background: '#16A34A', color: '#fff' } : { color: '#D1FAE5' }}
+                                >
+                                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                                    {sidebarOpen && <span className="truncate text-sm">{item.label}</span>}
+                                </NavLink>
+                            ))}
+                        </div>
+                    )}
 
-                    {/* Dashboard tabs — only shown on /admin route, when tabs are provided */}
-                    {isAdminDashboard && tabs && tabs.length > 0 && (
+                    {/* NEW: Dashboard section menu items — shown on /admin route */}
+                    {isAdminDashboard && (
                         <>
-                            {sidebarOpen && (
-                                <p className="text-[10px] font-bold text-sw-orange uppercase tracking-widest px-3 mt-5 mb-2">
-                                    Dashboard
-                                </p>
-                            )}
-                            {!sidebarOpen && (
-                                <div className="my-3 border-t border-white/10" />
-                            )}
-                            <div className="space-y-0.5">
-                                {tabs.map((t) => {
-                                    const Icon = t.icon;
-                                    const isActive = activeTab === t.key;
-                                    return (
-                                        <button
-                                            key={t.key}
-                                            onClick={() => onTabChange && onTabChange(t.key)}
-                                            title={!sidebarOpen ? t.label : undefined}
-                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left ${
-                                                isActive
-                                                    ? 'bg-sw-mid text-white font-semibold shadow-lg shadow-sw-mid/20'
-                                                    : 'text-sw-light hover:text-white hover:bg-white/10'
-                                            }`}
-                                        >
-                                            <Icon className="w-5 h-5 flex-shrink-0" />
-                                            {sidebarOpen && <span className="truncate text-sm">{t.label}</span>}
-                                        </button>
-                                    );
-                                })}
-                            </div>
+                            {dashboardMenuSections.map((section) => (
+                                <div key={section.title}>
+                                    {sidebarOpen && (
+                                        <p className="text-[10px] font-bold uppercase tracking-widest px-3 mt-4 mb-2" style={{ color: '#EA580C' }}>
+                                            {section.title}
+                                        </p>
+                                    )}
+                                    {!sidebarOpen && (
+                                        <div className="my-2 border-t border-white/10" />
+                                    )}
+                                    <div className="space-y-0.5">
+                                        {section.items.map((item) => {
+                                            const Icon = item.icon;
+                                            const isActive = activeTab === item.key;
+                                            return (
+                                                <button
+                                                    key={item.key}
+                                                    onClick={() => onTabChange && onTabChange(item.key)}
+                                                    title={!sidebarOpen ? item.label : undefined}
+                                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left relative ${
+                                                        isActive ? 'font-semibold shadow-lg' : 'hover:bg-white/10'
+                                                    }`}
+                                                    style={
+                                                        isActive
+                                                            ? { background: '#16A34A', color: '#fff', borderLeft: '3px solid #fff' }
+                                                            : { color: '#D1FAE5' }
+                                                    }
+                                                >
+                                                    {sidebarOpen ? (
+                                                        <span className="text-base flex-shrink-0 w-5 text-center">{item.emoji}</span>
+                                                    ) : (
+                                                        <Icon className="w-5 h-5 flex-shrink-0" />
+                                                    )}
+                                                    {sidebarOpen && <span className="truncate text-sm">{item.label}</span>}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Legacy tabs section — for existing features */}
+                            {tabs && tabs.length > 0 && (() => {
+                                const legacyTabs = tabs.filter(t => legacyTabKeys.includes(t.key));
+                                if (legacyTabs.length === 0) return null;
+                                return (
+                                    <>
+                                        {sidebarOpen && (
+                                            <p className="text-[10px] font-bold uppercase tracking-widest px-3 mt-5 mb-2" style={{ color: '#EA580C' }}>
+                                                Operations
+                                            </p>
+                                        )}
+                                        {!sidebarOpen && (
+                                            <div className="my-2 border-t border-white/10" />
+                                        )}
+                                        <div className="space-y-0.5">
+                                            {legacyTabs.map((t) => {
+                                                const Icon = t.icon;
+                                                const isActive = activeTab === t.key;
+                                                return (
+                                                    <button
+                                                        key={t.key}
+                                                        onClick={() => onTabChange && onTabChange(t.key)}
+                                                        title={!sidebarOpen ? t.label : undefined}
+                                                        className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 w-full text-left ${
+                                                            isActive ? 'font-semibold shadow-lg' : 'hover:bg-white/10'
+                                                        }`}
+                                                        style={
+                                                            isActive
+                                                                ? { background: '#16A34A', color: '#fff', borderLeft: '3px solid #fff' }
+                                                                : { color: '#D1FAE5' }
+                                                        }
+                                                    >
+                                                        <Icon className="w-4 h-4 flex-shrink-0" />
+                                                        {sidebarOpen && <span className="truncate text-xs">{t.label}</span>}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </>
+                                );
+                            })()}
                         </>
                     )}
                 </nav>
 
-                {/* User Info + Logout */}
-                <div className="p-4 border-t border-white/10">
+                {/* User Info + Version + Logout */}
+                <div className="p-3 border-t border-white/10">
                     {sidebarOpen && user && (
                         <div className="mb-3 px-2">
                             <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-full bg-sw-light/20 flex items-center justify-center text-sm font-bold text-sw-light">
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'rgba(22,163,74,0.3)', color: '#D1FAE5' }}>
                                     {(user.full_name || user.name || 'U')[0].toUpperCase()}
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-sm font-medium truncate">{user.full_name || user.name}</p>
-                                    <p className="text-xs text-white/40 capitalize">{user.role?.replace('_', ' ')}</p>
+                                    <p className="text-sm font-medium truncate text-white">{user.full_name || user.name}</p>
+                                    <p className="text-xs capitalize" style={{ color: 'rgba(255,255,255,0.4)' }}>{user.role?.replace('_', ' ')}</p>
                                 </div>
                             </div>
                         </div>
                     )}
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-3 py-2 w-full rounded-xl text-white/60 hover:text-red-400 hover:bg-red-400/10 transition-colors text-sm"
+                        className="flex items-center gap-3 px-3 py-2 w-full rounded-xl hover:text-red-400 hover:bg-red-400/10 transition-colors text-sm"
+                        style={{ color: 'rgba(255,255,255,0.6)' }}
                     >
                         <LogOut className="w-5 h-5 flex-shrink-0" />
                         {sidebarOpen && <span>Logout</span>}
                     </button>
+
+                    {/* Version badge + Powered by */}
+                    {sidebarOpen && (
+                        <div className="mt-3 pt-3 border-t border-white/10 text-center">
+                            <span className="inline-block text-[10px] font-bold px-3 py-1 rounded-full" style={{ background: 'rgba(22,163,74,0.2)', color: '#86EFAC' }}>
+                                v2.4.1
+                            </span>
+                            <p className="text-[10px] mt-2" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                                Powered by Team CodeX
+                            </p>
+                        </div>
+                    )}
                 </div>
             </aside>
 
