@@ -65,7 +65,7 @@ export default function LandingPage() {
             <span className="mx-4">|</span>
             <span className="mx-4">🌱 Swachhata Chakra Portal will officially launched for Chhattisgarh Gram Panchayats</span>
             <span className="mx-4">|</span>
-            <span className="mx-4">📱 Download Swachhata Chakra App v2.4.1 — Available Now</span>
+            <span className="mx-4">📱 Download Swachhata Chakra App v2.4.2 — Available Now</span>
             <span className="mx-4">|</span>
             <span className="mx-4">🏆 Climatathon 2026 — Unicef India X NIT Raipur — Team CodeX</span>
           </div>
@@ -449,15 +449,15 @@ export default function LandingPage() {
               </ul>
 
               <div className="inline-block bg-white border border-gray-200 px-4 py-1.5 rounded-full text-sm font-semibold text-gray-600">
-                v2.4.1 | Android 8.0+ | Free
+                v2.4.2 | Android 8.0+ | Free
               </div>
 
               <div>
                 <a
-                  href="https://github.com/Iamhimanshu008/swachhata-chakra/releases/download/v2.4.1/Swachhata.Chakra.v2.4.1.apk"
+                  href="https://github.com/Iamhimanshu008/swachhata-chakra/releases/download/v2.4.2/Swachhata.Chakra.v2.4.2.apk"
                   className="inline-flex items-center gap-3 bg-sw-mid hover:bg-sw-dark text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-green-900/20 transition-all hover:-translate-y-1"
                 >
-                  📱 Download APK v2.4.1
+                  📱 Download APK v2.4.2
                 </a>
                 <p className="text-sm text-gray-500 mt-3 ml-2">Direct APK • No Play Store required • 88 MB</p>
               </div>
@@ -472,7 +472,7 @@ export default function LandingPage() {
                 <img src="/logo.png" alt="App Logo" className="w-24 h-24 drop-shadow-xl mb-6" />
                 <h4 className="text-2xl font-bold text-sw-dark text-center px-4 leading-tight">Swachhata<br />Chakra</h4>
                 <div className="mt-4 bg-sw-mid text-white px-4 py-1 rounded-full text-sm font-bold">
-                  v2.4.1
+                  v2.4.2
                 </div>
 
                 {/* Home Indicator */}

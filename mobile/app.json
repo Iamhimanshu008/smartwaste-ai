@@ -2,7 +2,7 @@
   "expo": {
     "name": "Swachhata Chakra",
     "slug": "swachhata-chakra",
-    "version": "2.4.1",
+    "version": "2.4.2",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "splash": {
@@ -12,14 +12,14 @@
     },
     "android": {
       "package": "com.swachhatachakra.mobile",
-      "versionCode": 12,
+      "versionCode": 13,
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#1A6B2F"
       }
     },
     "ios": {
-      "buildNumber": "2.4.1"
+      "buildNumber": "2.4.2"
     },
     "extra": {
       "apiUrl": "https://smartwaste-ai-f0i9.onrender.com"

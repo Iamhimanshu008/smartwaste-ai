@@ -96,11 +96,7 @@ export default function AppNavigator() {
             ) : user?.role === 'shg' ? (
                 <Stack.Screen name="SHGTabs" component={SHGNavigator} />
             ) : user?.role === 'citizen' ? (
-                (user.house_id == null || user.ward_no == null || user.full_name === 'Citizen') ? (
-                    <Stack.Screen name="CitizenOnboarding" component={CitizenOnboardingScreen} />
-                ) : (
-                    <Stack.Screen name="CitizenStack" component={CitizenNavigator} />
-                )
+                <Stack.Screen name="CitizenStack" component={CitizenNavigator} />
             ) : (
                 <>
                     <Stack.Screen name="Landing" component={LandingScreen} />

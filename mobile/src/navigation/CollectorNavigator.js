@@ -33,11 +33,11 @@ function HomeStackNavigator() {
             <HomeStack.Screen name="Notifications" component={NotificationsScreen} />
             <HomeStack.Screen name="SafetyChecklist" component={SafetyChecklistScreen} />
             <HomeStack.Screen name="NewsFeed" component={NewsFeedScreen} />
-            <HomeStack.Screen name="MorningSync" component={MorningSyncScreen} />
-            <HomeStack.Screen name="CollectionScreen" component={CollectionScreen} />
-            <HomeStack.Screen name="BleWeightScreen" component={BleWeightScreen} />
-            <HomeStack.Screen name="CaptureImageScreen" component={CaptureImageScreen} />
-            <HomeStack.Screen name="AfternoonSync" component={AfternoonSyncScreen} />
+            <HomeStack.Screen name="MorningSync" component={MorningSyncScreen} options={{ title: 'Morning Sync', headerShown: true }} />
+            <HomeStack.Screen name="Collection" component={CollectionScreen} options={{ title: 'Record Collection', headerShown: true }} />
+            <HomeStack.Screen name="BleWeight" component={BleWeightScreen} options={{ title: 'Weigh Waste', headerShown: true }} />
+            <HomeStack.Screen name="CaptureImage" component={CaptureImageScreen} options={{ title: 'Capture Waste Photo', headerShown: true }} />
+            <HomeStack.Screen name="AfternoonSync" component={AfternoonSyncScreen} options={{ title: 'Afternoon Sync', headerShown: true }} />
         </HomeStack.Navigator>
     );
 }

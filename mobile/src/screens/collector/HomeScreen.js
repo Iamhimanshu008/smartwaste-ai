@@ -126,6 +126,12 @@ export default function HomeScreen({ navigation }) {
                         <MaterialCommunityIcons name="party-popper" size={48} color="#16a34a" style={styles.emptyEmoji} />
                         <Text style={styles.emptyTitle}>{t('no_route_today')}</Text>
                         <AutoText style={styles.emptyText}>Check back later or contact your zone manager.</AutoText>
+                        <TouchableOpacity 
+                            style={[styles.offlineEntryBtn, { width: '100%', marginTop: 20 }]}
+                            onPress={() => navigation.navigate('MorningSync')}
+                        >
+                            <Text style={styles.offlineEntryText}>🌅 Start Morning Sync</Text>
+                        </TouchableOpacity>
                     </View>
                 ) : todayRoute ? (
                     <>
@@ -174,13 +180,27 @@ export default function HomeScreen({ navigation }) {
                             </View>
                         </View>
 
-                        {/* V3 Offline Flow Button */}
                         <TouchableOpacity 
-                            style={styles.offlineEntryBtn}
-                            onPress={() => navigation.navigate('MorningSync')}
+                            style={[styles.offlineEntryBtn, { backgroundColor: '#f97316' }]}
+                            onPress={() => navigation.navigate('BleWeight')}
                         >
-                            <MaterialCommunityIcons name="cloud-sync-outline" size={24} color="#ffffff" />
-                            <Text style={styles.offlineEntryText}>Offline Field Mode (V3)</Text>
+                            <Text style={styles.offlineEntryText}>📷 Capture & Weigh Waste</Text>
+                        </TouchableOpacity>
+
+                        {todayRoute.collected_stops > 0 && (
+                            <TouchableOpacity 
+                                style={[styles.offlineEntryBtn, { backgroundColor: '#3b82f6' }]}
+                                onPress={() => navigation.navigate('AfternoonSync')}
+                            >
+                                <Text style={styles.offlineEntryText}>🌆 End of Day Sync</Text>
+                            </TouchableOpacity>
+                        )}
+
+                        <TouchableOpacity 
+                            style={[styles.offlineEntryBtn, { backgroundColor: 'transparent', borderWidth: 2, borderColor: '#16a34a', elevation: 0 }]}
+                            onPress={() => navigation.navigate('Collection')}
+                        >
+                            <Text style={[styles.offlineEntryText, { color: '#16a34a' }]}>📋 View Collection List</Text>
                         </TouchableOpacity>
                     </>
                 ) : null}

@@ -3,6 +3,7 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import useStore from '../store';
 
 // Screens
 import CitizenHomeScreen from '../screens/citizen/CitizenHomeScreen';
@@ -15,6 +16,7 @@ import CitizenComplaintsScreen from '../screens/citizen/CitizenComplaintsScreen'
 import CitizenSubmitComplaintScreen from '../screens/citizen/CitizenSubmitComplaintScreen';
 import CitizenEditProfileScreen from '../screens/citizen/CitizenEditProfileScreen';
 import CitizenSettingsScreen from '../screens/citizen/CitizenSettingsScreen';
+import CitizenOnboardingScreen from '../screens/public/CitizenOnboardingScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -76,8 +78,12 @@ function CitizenTabs() {
 }
 
 export default function CitizenNavigator() {
+  const { user } = useStore();
+  const isProfileComplete = user?.house_id && user?.ward_no && user?.full_name && user?.full_name !== 'Citizen';
+
   return (
     <Stack.Navigator 
+      initialRouteName={isProfileComplete ? "CitizenHome" : "CitizenOnboarding"}
       screenOptions={{ 
         headerShown: false,
         ...(Platform.OS === 'android' ? TransitionPresets.FadeFromBottomAndroid : TransitionPresets.SlideFromRightIOS),
@@ -96,6 +102,7 @@ export default function CitizenNavigator() {
       <Stack.Screen name="CitizenSubmitComplaint" component={CitizenSubmitComplaintScreen} />
       <Stack.Screen name="CitizenEditProfile" component={CitizenEditProfileScreen} />
       <Stack.Screen name="CitizenSettings" component={CitizenSettingsScreen} />
+      <Stack.Screen name="CitizenOnboarding" component={CitizenOnboardingScreen} />
     </Stack.Navigator>
   );
 }
