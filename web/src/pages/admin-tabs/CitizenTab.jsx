@@ -1,6 +1,10 @@
 import React from 'react';
 import { Home, QrCode, ScanLine, Coins } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie,
+  AreaChart, Area, Cell, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer, ReferenceLine
+} from 'recharts';
 
 const MOCK_TRENDS = [
     { name: 'Jan', registered: 2100, scanned: 800 },

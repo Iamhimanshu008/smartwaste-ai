@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useStore from '../store';
 import toast from 'react-hot-toast';
 import {
@@ -46,6 +46,52 @@ const STATUS_COLORS = {
     default: '#9CA3AF'
 };
 const PIE_COLORS = ['#2D6A4F', '#52B788', '#F4A261'];
+
+class TabErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error('Tab crashed:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          padding: '40px',
+          textAlign: 'center',
+          color: '#666'
+        }}>
+          <h3>⚠️ This section encountered an error</h3>
+          <p style={{fontSize: '12px', marginTop: '8px'}}>
+            {this.state.error?.message}
+          </p>
+          <button 
+            onClick={() => this.setState({ 
+              hasError: false, error: null 
+            })}
+            style={{
+              marginTop: '16px',
+              padding: '8px 16px',
+              background: '#16A34A',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function AdminDashboard() {
     const { sidebarOpen } = useStore();
@@ -1265,30 +1311,32 @@ export default function AdminDashboard() {
                     <EcoQuote />
 
                     {/* NEW Redesigned Tabs */}
-                    {tab === 'overview' && <OverviewTab stats={{}} analytics={{}} />}
-                    {tab === 'geographic' && <GeographicAnalyticsTab />}
-                    {tab === 'waste_ops' && <WasteOpsTab />}
-                    {tab === 'compliance' && <ComplianceTab />}
-                    {tab === 'revenue' && <FinancialTab />}
-                    {tab === 'alerts' && <AlertsTab />}
-                    {/* Reusing existing components for other sections */}
-                    {(tab === 'citizen' || tab === 'household') && <CitizenTab />}
-                    {tab === 'users' && <UsersManagement />}
-                    {tab === 'ai_insights' && <AIAnalytics />}
-                    {tab === 'settings' && <SettingsTab />}
+                    <TabErrorBoundary key={tab}>
+                        {tab === 'overview' && <OverviewTab stats={{}} analytics={{}} />}
+                        {tab === 'geographic' && <GeographicAnalyticsTab />}
+                        {tab === 'waste_ops' && <WasteOpsTab />}
+                        {tab === 'compliance' && <ComplianceTab />}
+                        {tab === 'revenue' && <FinancialTab />}
+                        {tab === 'alerts' && <AlertsTab />}
+                        {/* Reusing existing components for other sections */}
+                        {(tab === 'citizen' || tab === 'household') && <CitizenTab />}
+                        {tab === 'users' && <UsersManagement />}
+                        {tab === 'ai_insights' && <AIAnalytics />}
+                        {tab === 'settings' && <SettingsTab />}
 
-                    {/* Legacy Operations Tabs */}
-                    {tab === 'panchayat' && <PanchayatOnboarding />}
-                    {tab === 'rural' && <RuralAnalytics />}
-                    {tab === 'qrmanager' && <QRManager />}
-                    {tab === 'bins' && <BinsManagement />}
-                    {tab === 'collectors' && <CollectorManagement />}
-                    {tab === 'routes' && <RouteGeneration />}
-                    {tab === 'iot' && <IoTDashboard />}
-                    {tab === 'gamification' && <GamificationAdmin />}
-                    {tab === 'store' && <RedemptionStoreAdmin />}
-                    {tab === 'recyclers' && <RecyclersManagement />}
-                    {tab === 'analytics' && <Analytics />}
+                        {/* Legacy Operations Tabs */}
+                        {tab === 'panchayat' && <PanchayatOnboarding />}
+                        {tab === 'rural' && <RuralAnalytics />}
+                        {tab === 'qrmanager' && <QRManager />}
+                        {tab === 'bins' && <BinsManagement />}
+                        {tab === 'collectors' && <CollectorManagement />}
+                        {tab === 'routes' && <RouteGeneration />}
+                        {tab === 'iot' && <IoTDashboard />}
+                        {tab === 'gamification' && <GamificationAdmin />}
+                        {tab === 'store' && <RedemptionStoreAdmin />}
+                        {tab === 'recyclers' && <RecyclersManagement />}
+                        {tab === 'analytics' && <Analytics />}
+                    </TabErrorBoundary>
                 </div>
             </main>
 

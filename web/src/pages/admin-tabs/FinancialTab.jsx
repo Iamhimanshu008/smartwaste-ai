@@ -1,6 +1,10 @@
 import React from 'react';
 import { IndianRupee, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Wallet, Receipt, LineChart as LineChartIcon } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie,
+  AreaChart, Area, Cell, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer, ReferenceLine
+} from 'recharts';
 
 const MOCK_FINANCIALS = {
     revenue: "₹4,25,000",

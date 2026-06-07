@@ -1,6 +1,10 @@
 import React from 'react';
 import { Truck, Trash2, Cpu, CheckCircle2, XCircle, AlertCircle, PackageSearch, Users } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie,
+  AreaChart, Area, Cell, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer, ReferenceLine
+} from 'recharts';
 
 const MOCK_STREAM_DATA = [
     { type: '🟢 Wet/Organic Waste', volume: '7,914 kg', purity: '37.5%', status: '✅ On Target', note: '' },

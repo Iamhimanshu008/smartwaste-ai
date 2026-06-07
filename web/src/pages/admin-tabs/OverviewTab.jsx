@@ -4,7 +4,9 @@ import {
     Activity, Leaf, Droplets, Battery, CheckCircle2, ShieldAlert
 } from 'lucide-react';
 import {
-    AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+  BarChart, Bar, LineChart, Line, PieChart, Pie,
+  AreaChart, Area, Cell, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts';
 
 // Mock data to match the UI requirements
