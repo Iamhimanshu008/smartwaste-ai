@@ -244,7 +244,7 @@ export default function Sidebar({ activeTab, onTabChange, tabs }) {
                     {sidebarOpen && (
                         <div className="mt-3 pt-3 border-t border-white/10 text-center">
                             <span className="inline-block text-[10px] font-bold px-3 py-1 rounded-full" style={{ background: 'rgba(22,163,74,0.2)', color: '#86EFAC' }}>
-                                v2.4.2
+                                v2.4.3
                             </span>
                             <p className="text-[10px] mt-2" style={{ color: 'rgba(255,255,255,0.3)' }}>
                                 Powered by Team CodeX

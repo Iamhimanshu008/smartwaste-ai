@@ -124,7 +124,7 @@ export default function CitizenSettingsScreen({ navigation }) {
             </View>
             <View style={styles.settingMiddle}>
               <Text style={styles.settingTitle}>About Swachhata Chakra</Text>
-              <Text style={styles.settingSubtitle}>v2.4.2</Text>
+              <Text style={styles.settingSubtitle}>v2.4.3</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#CCCCCC" />
           </TouchableOpacity>
