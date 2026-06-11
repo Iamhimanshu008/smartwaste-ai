@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/collector/HomeScreen';
-import MapScreen from '../screens/collector/MapScreen';
+import MapScreen from '../screens/public/MapScreen';
 import HistoryScreen from '../screens/collector/HistoryScreen';
 import StatsScreen from '../screens/collector/StatsScreen';
 import SafetyChecklistScreen from '../screens/collector/SafetyChecklistScreen';
